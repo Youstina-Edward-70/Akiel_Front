@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background-dark: #0F172A;
+  --color-surface-dark: #1E293B;
+  --color-border-dark: #334155;
+
+  --color-text-secondary: #64748B;
+  --color-text-muted: #94A3B8;
+  --color-border-light: #CBD5E1;
+
+  --color-background: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-text-primary: #0F172A;
+
+  --color-primary: #E23744;
+  --color-primary-hover: #CC373D;
+  --color-primary-active: #B91C1C;
+  --color-primary-light: #FEE2E2;
+  --color-primary-dark: #7F1D1D;
+  --color-secondary: #FF6D00;
+
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+
+  --color-accent: #E23744;
+  --color-shadow: rgba(0, 0, 0, 0.1) 0 1px 3px, rgba(0, 0, 0, 0.06) 0 1px 2px;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Manrope', 'Inter', sans-serif;
+
+  --image-hero-overlay: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../public/images/Food-Background.png');
+  --image-restaurant-bg: url('../public/images/restaurant-default.svg');
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  font-family: var(--font-sans);
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .auth-input-shadow {
+    box-shadow: 0px 1px 2px rgba(16, 24, 40, 0.05);
+  }
+
+  .auth-card-shadow {
+    box-shadow: 0px 32px 64px -12px rgba(16, 24, 40, 0.14);
+  }
+}
