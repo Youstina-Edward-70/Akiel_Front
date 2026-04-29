@@ -11,9 +11,9 @@ export const API_ENDPOINTS = {
     DETAILS: {
         // Take Restaurant ID
         // Reading
-        GET_BY_ID: (id: string) => `${BASE_URL}/restaurants/${id}`,
+        GET_BY_ID: (id: string) => `${BASE_URL}/restaurants/${id}`, // GET
         GET_FULL_DETAILS: (id: string) => 
-        `${BASE_URL}/restaurants/${id}/details?select=menu&select=reviews&select=gallery`,
+        `${BASE_URL}/restaurants/${id}/details?select=menu&select=reviews&select=gallery`, // GET
     },
 
     // --- User Data ---
@@ -21,12 +21,10 @@ export const API_ENDPOINTS = {
         PROFILE: `${BASE_URL}/auth/profile`,
         UPDATE_PROFILE: `${BASE_URL}/user/update`,
         REVIEWS: {
-            GET_MY_REVIEWS: `${BASE_URL}/user/reviews`,
-            ADD_REVIEW: (id: string) => `${BASE_URL}/restaurants/${id}/reviews`, // POST
-            UPDATE_REVIEW: (restaurantId: string, reviewId: string) =>
-                `/restaurants/${restaurantId}/reviews/${reviewId}`, // PUT
-            DELETE_REVIEW: (restaurantId: string, reviewId: string) =>
-                `/restaurants/${restaurantId}/reviews/${reviewId}`, // DELETE
+            GET_MY_REVIEWS: `${BASE_URL}/reviews/my-reviews`, // GET
+            ADD_OR_UPDATE_REVIEW: (restaurantId: string) => `${BASE_URL}/reviews/add-review/${restaurantId}`, // POST
+            DELETE_REVIEW: (restaurantId: string) =>
+                `/reviews/delete-review/${restaurantId}`, // DELETE
         },
         FAVORITES: {
             TOGGLE: (id: string) => `${BASE_URL}/favorites/${id}`, // add to or remove rest from favorite list
@@ -36,21 +34,28 @@ export const API_ENDPOINTS = {
 
     // --- Owner Dashboard ---
     OWNER: {
-        MY_RESTAURANTS: `${BASE_URL}/owner/restaurant`,
+        MY_RESTAURANTS: `${BASE_URL}/owner/restaurant`, // GET
         CREATE_RESTAURANT: `${BASE_URL}/owner/restaurants`, // POST
-        UPDATE_RESTAURANT: (id: string | number) => `${BASE_URL}/owner/restaurants/${id}`, // POST
+        UPDATE_RESTAURANT: (id: string) => `${BASE_URL}restaurant-data/main-data/${id}`, // PUT
+
+        // Cover Photo Actions
+        COVER: {
+            UPLOAD_OR_UPDATE_COVER: (restId: string) => `${BASE_URL}/restaurant-data/coverImage/${restId}`, // POST
+            DELETE_COVER: (restId: string) => `${BASE_URL}/restaurant-data/coverImage/${restId}`, // DELETE
+        },
 
         // Menu Actions
         MENU: {
-            ADD_DISH: (restId: string | number) => `${BASE_URL}/owner/restaurants/${restId}/menu`,
-            UPDATE_DISH: (itemId: string | number) => `${BASE_URL}/owner/menu-items/${itemId}`,
-            DELETE_DISH: (itemId: string | number) => `${BASE_URL}/owner/menu-items/${itemId}`
+            ADD_DISH: (restId: string) => `${BASE_URL}/restaurant-data/menu/${restId}`, // POST
+            GET_DISH: (restId: string, itemId: string) => `${BASE_URL}/restaurant-data/menu/${restId}/${itemId}`, // GET
+            UPDATE_DISH: (restId: string, itemId: string) => `${BASE_URL}/restaurant-data/menu/${restId}/${itemId}`, // PUT
+            DELETE_DISH: (restId: string, itemId: string) => `${BASE_URL}/restaurant-data/menu/${restId}/${itemId}` // DELETE
         },
 
         // Photos Actions
         PHOTOS: {
-            UPLOAD_PHOTO: (restId: string | number) => `${BASE_URL}/owner/restaurants/${restId}/photos`, // POST
-            DELETE_PHOTO: (photoId: string | number) => `${BASE_URL}/owner/photos/${photoId}`, // DELETE
+            UPLOAD_PHOTO: (restId: string) => `${BASE_URL}/restaurant-data/gallery/${restId}`, // POST
+            DELETE_PHOTO: (restId: string, photoId: string) => `${BASE_URL}/restaurant-data/gallery/${restId}/${photoId}`, // DELETE
         },
     },
 

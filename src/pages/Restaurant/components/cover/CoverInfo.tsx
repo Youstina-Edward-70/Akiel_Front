@@ -1,4 +1,4 @@
-const CoverInfo = ({ name, cuisineType }: { name: string; cuisineType: string[] }) => (
+const CoverInfo = ({ name, cuisineType }: { name: string;cuisineType: string[] }) => (
     <div className="max-w-2xl">
         <h1 className="text-4xl md:text-6xl font-black text-white mb-3 tracking-tighter drop-shadow-md">
             {name}

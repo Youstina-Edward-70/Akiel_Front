@@ -15,15 +15,15 @@ export default function SearchPage() {
     const navigate = useNavigate();
 
     // Reading from URL searchQuery
-    const cuisineType = searchParams.get("cuisineType");
-    const searchQuery = searchParams.get("query");
+    const cuisineTypes = searchParams.getAll("cuisineType");
+    const searchQuery = searchParams.get("searchQuery");
 
     // Fetching data based on searchParams
     const { data, isLoading, isError, isFetching } = useQuery({
-        queryKey: ["restaurants-search", Object.fromEntries(searchParams)],
+        queryKey: ["restaurants-search", searchParams.toString()],
         queryFn: async () => {
             const res = await axiosInstance.get(API_ENDPOINTS.RESTAURANTS.LIST, {
-                params: Object.fromEntries(searchParams)
+                params: searchParams
             });
             return res.data;
         },
@@ -37,7 +37,7 @@ export default function SearchPage() {
     // Change Page Title based on query
     const getPageTitle = () => {
         if (searchQuery) return `Results for "${searchQuery}"`;
-        if (cuisineType) return `Found Results for "${cuisineType}"`;
+        if (cuisineTypes.length > 0) return `Found Results for "${cuisineTypes.join(', ')}"`;
         return "Popular Restaurants in Egypt";
     };
 
@@ -90,7 +90,7 @@ export default function SearchPage() {
                     ) : (
                         // No Results Found
                         <div className="py-10">
-                            <NoResults searchTerm={searchQuery || cuisineType || ""} />
+                            <NoResults searchTerm={searchQuery || cuisineTypes.join(', ') || ""} />
                         </div>
                     )}
                 </main>

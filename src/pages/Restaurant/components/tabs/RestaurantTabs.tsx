@@ -19,8 +19,6 @@ const RestaurantTabs = ({ restaurantId, isOwner, restaurant }: { restaurantId: s
     const activeTab = queryParams.get("select") || "menu";
 
     const handleTabChange = (tabId: string) => {
-        console.log("hello");
-        
         navigate(`?select=${tabId}`, { replace: true });
     };
 

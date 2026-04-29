@@ -3,29 +3,34 @@ import axiosInstance, { type ApiError } from "../../../lib/api";
 import { API_ENDPOINTS } from "../../../lib/EndPoints";
 import { toast } from "react-hot-toast";
 import type { AxiosError } from "axios";
+import type { Image } from "../../../types/RestaurantSchema";
 
 const useRestaurantPhotos = (restaurantId: string) => {
     const queryClient = useQueryClient();
 
     // Fetch Photos
-    const query = useQuery<string[]>({
+    const query = useQuery<Image[]>({
         queryKey: ["restaurant-photos", restaurantId],
         queryFn: async () => {
             const { data } = await axiosInstance.get(
                 `${API_ENDPOINTS.DETAILS.GET_BY_ID(restaurantId)}/details?select=gallery`
             );
-            return data.data.Gallery || [];
+            return data.Data.Gallery || [];
         },
         enabled: !!restaurantId,
     });
 
     // Upload Photo Mutation
     const uploadMutation = useMutation({
-        mutationFn: async (file: File) => {
+        mutationFn: async (files: File | File[]) => {
             const formData = new FormData();
-            formData.append("image", file);
+            const filesArray = Array.isArray(files) ? files : [files];
+            filesArray.forEach((file) => {
+                formData.append("images", file);
+            });
+
             const { data } = await axiosInstance.post(
-                `${API_ENDPOINTS.DETAILS.GET_BY_ID(restaurantId)}/details?select=gallery`,
+                `${API_ENDPOINTS.OWNER.PHOTOS.UPLOAD_PHOTO(restaurantId)}`,
                 formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
@@ -33,10 +38,10 @@ const useRestaurantPhotos = (restaurantId: string) => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["restaurant-photos", restaurantId] });
-            toast.success("Photo uploaded successfully!");
+            toast.success("Photos uploaded successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to upload photo. Please try again.";
+            const msg = error.response?.data?.message || "Failed to upload photos. Please try again.";
             toast.error(msg);
         },
     });
@@ -44,7 +49,7 @@ const useRestaurantPhotos = (restaurantId: string) => {
     // Delete Photo Mutation
     const deleteMutation = useMutation({
         mutationFn: async (photoUrl: string) => {
-            await axiosInstance.delete(API_ENDPOINTS.OWNER.PHOTOS.DELETE_PHOTO(photoUrl));
+            await axiosInstance.delete(API_ENDPOINTS.OWNER.PHOTOS.DELETE_PHOTO(restaurantId, photoUrl));
             return photoUrl;
         },
         onSuccess: () => {

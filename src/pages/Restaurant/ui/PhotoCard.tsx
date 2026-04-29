@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { IoTrashOutline } from "react-icons/io5";
 import Button from "../../../ui/Button";
+import type { Image } from "../../../types/RestaurantSchema";
 
-const PhotoCard = ({ src, index, isOwner, onDelete }: { src: string; index: number; isOwner: boolean; onDelete: (src: string) => void }) => {
+type RemoteImage = Exclude<Image, File | null | undefined>;
+
+const PhotoCard = ({ img, index, isOwner, onDelete }: { img: RemoteImage; index: number; isOwner: boolean; onDelete: (img: RemoteImage) => void }) => {
     return (
         <motion.div
             layout
@@ -13,7 +16,7 @@ const PhotoCard = ({ src, index, isOwner, onDelete }: { src: string; index: numb
             className="relative group overflow-hidden rounded-2xl"
         >
             <img
-                src={src}
+                src={img.url || "/images/default-rest.svg"}
                 alt={`Restaurant view ${index}`}
                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
                 loading="lazy"
@@ -24,10 +27,10 @@ const PhotoCard = ({ src, index, isOwner, onDelete }: { src: string; index: numb
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center justify-center">
                     <Button
                         variant="normal"
-                        onClick={() => onDelete(src)}
-                        className="h-14 w-14 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-red-500 hover:border-red-500 transition-all transform translate-y-4 group-hover:translate-y-0 shadow-none"
+                        onClick={() => onDelete(img)}
+                        className="h-14 w-14 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 hover:bg-primary hover:border-primary transition-all transform translate-y-4 group-hover:translate-y-0 shadow-none duration-300"
                     >
-                        <IoTrashOutline className="inline-block" />
+                        <IoTrashOutline className="inline-block" size={24} />
                     </Button>
                 </div>
             }

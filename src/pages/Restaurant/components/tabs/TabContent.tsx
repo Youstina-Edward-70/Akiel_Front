@@ -24,7 +24,7 @@ const TabContent = ({ activeTab, restaurantId, isOwner, restaurant }: {
 
         {activeTab === "reviews" && <RestaurantReviews restaurantId={restaurantId} isOwner={isOwner} resRating={restaurant.rating} />}
 
-        {activeTab === "info" && <RestaurantInfo restaurant={restaurant} />}
+        {activeTab === "info" && <RestaurantInfo restaurant={restaurant} isOwner={isOwner} />}
     </motion.div>
 );
 

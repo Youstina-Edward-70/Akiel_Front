@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import type { Review } from "../../../../../types/UserSchema";
 import ConfirmPopUp from "../../../../../ui/ConfirmPopUp";
 import { useAuthStore } from "../../../../../store/authStore";
 import useRestaurantReviews from "../../../hooks/useRestaurantReviews";
@@ -8,22 +7,36 @@ import ReviewHeader from "./ReviewHeader";
 import ReviewCard from "../../../ui/ReviewCard";
 import SkeletonReviewCard from "../../../ui/SkeletonReviewCard";
 import EmptyState from "../../../../../ui/EmptyState";
-// import EditReviewModal from "../../ui/EditReviewModal";
 import { FaCommentSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import type { Review } from "../../../../../types/UserSchema";
 
 const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId: string; isOwner: boolean; resRating: number }) => {
+    const navigate = useNavigate();
     const {
         reviews,
         isLoading,
         deleteReview,
         isDeleting,
-        updateReview,
-        isUpdating
+        userReview,
+        hasReviewed
     } = useRestaurantReviews(restaurantId);
-
-    const [reviewToEdit, setReviewToEdit] = useState<Review | null>(null);
-    const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
     const { user: currentUser } = useAuthStore();
+
+    const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+    const handleActionClick = () => {
+        if (hasReviewed && userReview) {
+            handleEditReview(userReview);
+        } else {
+            navigate(`/restaurant/review/add/${restaurantId}`);
+        }
+    };
+
+    const handleEditReview = (rev: Review) => {
+        navigate(`/restaurant/review/edit/${restaurantId}/${rev._id}`, {
+            state: { review: rev }
+        });
+    };
 
     return (
         <div className="space-y-8">
@@ -32,10 +45,8 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
                 resRating={resRating}
                 count={reviews.length}
                 isOwner={isOwner}
-                onWriteClick={() => {
-                    // Open Add Review Modal 
-                    console.log("Open Add Review Modal");
-                }}
+                onWriteClick={handleActionClick}
+                hasReviewed={hasReviewed}
             />
 
             {/* Reviews List Section */}
@@ -53,9 +64,10 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
                                 <ReviewCard
                                     key={rev._id}
                                     rev={rev}
-                                    isAuthor={rev.user?._id === currentUser?._id}
-                                    onEdit={(selectedReview) => setReviewToEdit(selectedReview)}
-                                    onDelete={(id) => setReviewToDelete(id)}
+                                    isAuthor={rev.user?._id === currentUser?.id}
+                                    onEdit={() => handleEditReview(rev)}
+                                    onDelete={() => setReviewToDelete(rev._id!)}
+                                    isDeleting={isDeleting && reviewToDelete === rev._id}
                                 />
                             ))
                         ) : (
@@ -63,8 +75,7 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
                             <EmptyState
                                 icon={FaCommentSlash}
                                 message="No reviews for this restaurant yet."
-                                subtitle={isOwner ? "Be the first to review this restaurant!" : ""}
-                            />
+                                subtitle={isOwner ? "Your restaurant is waiting for its first rating!" : "Be the first one to share your experience!"} />
                         )}
                     </AnimatePresence >
                 )}
@@ -73,34 +84,19 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
             {/* Delete Pop Up */}
             <ConfirmPopUp
                 isOpen={!!reviewToDelete}
-                onClose={() => setReviewToDelete(null)}
-                onConfirm={() => reviewToDelete &&
-                    deleteReview(reviewToDelete, {
-                        onSuccess: () => setReviewToDelete(null)
-                    })}
+                onClose={() => !isDeleting && setReviewToDelete(null)}
+                onConfirm={() => {
+                    if (reviewToDelete) {
+                        deleteReview(undefined, {
+                            onSuccess: () => setReviewToDelete(null)
+                        });
+                    }
+                }}
                 isLoading={isDeleting}
                 title="Delete Review"
                 message="Are you sure you want to delete this review? This action cannot be undone."
                 variant="danger"
             />
-
-            {/* Edit Review Modal */}
-            {/* {reviewToEdit && (
-                <EditReviewModal
-                    isOpen={!!reviewToEdit}
-                    review={reviewToEdit}
-                    onClose={() => setReviewToEdit(null)}
-                    onSave={(newContent) => {
-                        updateReview({ 
-                            reviewId: reviewToEdit._id!, 
-                            content: newContent 
-                        }, {
-                            onSuccess: () => setReviewToEdit(null)
-                        });
-                    }}
-                    isLoading={isUpdating}
-                />
-            )} */}
         </div >
     );
 };

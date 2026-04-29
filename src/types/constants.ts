@@ -48,9 +48,7 @@ export const CuisineTypes = [
 ] as const;
 
 export const MenuCategories = [
-    'Appetizers',
-    'Main Courses',
-    'Desserts'
+    'Food','Dessert','Drinks', ''
 ] as const;
 
 export const PriceRanges = ["low", "medium", "high"] as const;

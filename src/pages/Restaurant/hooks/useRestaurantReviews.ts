@@ -1,12 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axiosInstance, {type ApiError} from "../../../lib/api";
+import axiosInstance, { type ApiError } from "../../../lib/api";
 import { API_ENDPOINTS } from "../../../lib/EndPoints";
 import { toast } from "react-hot-toast";
 import type { Review } from "../../../types/UserSchema";
 import type { AxiosError } from "axios";
+import { useAuthStore } from "../../../store/authStore";
 
 const useRestaurantReviews = (restaurantId: string) => {
     const queryClient = useQueryClient();
+    const { user: currentUser } = useAuthStore();
 
     // Fetch Reviews
     const query = useQuery<Review[]>({
@@ -15,17 +17,24 @@ const useRestaurantReviews = (restaurantId: string) => {
             const { data } = await axiosInstance.get(
                 `${API_ENDPOINTS.DETAILS.GET_BY_ID(restaurantId)}/details?select=reviews`
             );
-            return data.data.Reviews || [];
+            return data.Data.reviews || [];
         },
         enabled: !!restaurantId,
     });
 
-    // Update Review Mutation
+    const userReview = query.data?.find(
+        (rev) => rev.user?._id === currentUser?.id
+    );
+
+    // Add or Update Review Mutation
     const updateReviewMutation = useMutation({
-        mutationFn: async ({ reviewId, updatedData }: { reviewId: string, updatedData: string }) => {
-            const { data } = await axiosInstance.patch(
-                API_ENDPOINTS.USER.REVIEWS.UPDATE_REVIEW(restaurantId, reviewId),
-                { Content: updatedData }
+        mutationFn: async ({ content, rating }: { content: string, rating?: number }) => {
+            const { data } = await axiosInstance.post(
+                API_ENDPOINTS.USER.REVIEWS.ADD_OR_UPDATE_REVIEW(restaurantId),
+                {
+                    Content: content,
+                    rating: rating
+                }
             );
             return data;
         },
@@ -41,8 +50,8 @@ const useRestaurantReviews = (restaurantId: string) => {
 
     // Delete Review Mutation
     const deleteReviewMutation = useMutation({
-        mutationFn: async (reviewId: string) => {
-            await axiosInstance.delete(API_ENDPOINTS.USER.REVIEWS.DELETE_REVIEW(restaurantId, reviewId));
+        mutationFn: async () => {
+            await axiosInstance.delete(API_ENDPOINTS.USER.REVIEWS.DELETE_REVIEW(restaurantId));
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["reviews", restaurantId] });
@@ -57,6 +66,8 @@ const useRestaurantReviews = (restaurantId: string) => {
 
     return {
         reviews: query.data || [],
+        userReview,
+        hasReviewed: !!userReview,
         isLoading: query.isLoading,
         isError: query.isError,
 
@@ -66,6 +77,7 @@ const useRestaurantReviews = (restaurantId: string) => {
 
         // Update functionality
         updateReview: updateReviewMutation.mutate,
+        updateReviewAsync: updateReviewMutation.mutateAsync,
         isUpdating: updateReviewMutation.isPending,
 
         // Helpers

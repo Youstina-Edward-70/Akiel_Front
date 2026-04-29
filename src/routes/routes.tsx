@@ -10,18 +10,29 @@ import Home from '../pages/Home/Home';
 import SearchResults from '../pages/AllRestaurants/SearchResults';
 import RestaurantDetails from '../pages/Restaurant/RestaurantDetails';
 import AboutUs from '../pages/About/AboutUs';
+import NotFound from '../pages/NotFound';
+
+// User
 import Profile from '../pages/User/Profile';
 import Favorites from '../pages/User/Favorites';
 import Reviews from '../pages/User/Reviews';
 import AddRestaurant from '../pages/Owner/AddRestaurant';
-import Dashboard from '../pages/Admin/Dashboard';
-import NotFound from '../pages/NotFound';
 
-// Auth Features (The rebuilt pages)
+// Owner
+import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
+import EditDishPage from '../pages/Owner/menu/EditDishPage';
+
+// Admin
+import Dashboard from '../pages/Admin/Dashboard';
+
+// Auth Features
 import Login from "../features/auth/login";
 import Signup from "../features/auth/signup";
 import ForgetPass from "../features/auth/forgetPass";
 import ResetPass from "../features/auth/resetPass";
+
+// ------------------------------------------------
+
 
 export const Routes = createBrowserRouter([
     {
@@ -32,15 +43,18 @@ export const Routes = createBrowserRouter([
             { path: "/search", element: <SearchResults /> },
             { path: "/restaurant/:id", element: <RestaurantDetails /> },
             { path: "/about", element: <AboutUs /> },
-
+            
             // Authenticated User Routes
             { path: "/profile", element: <Profile /> },
             { path: "/favorites", element: <Favorites /> },
             { path: "/reviews", element: <Reviews /> },
-
+            
             // Owner Routes
+            { path: "/restaurant/:id", element: <RestaurantDetails /> },
             { path: "/add-restaurant", element: <AddRestaurant /> },
-            { path: "/edit-restaurant/:id", element: <AddRestaurant /> },
+            { path: "/edit-restaurant/:id", element: <AddRestaurant />},
+            { path: "/restaurant/:id/menu/add", element: <AddMenuPage /> },
+            { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
         ],
     },
     {
