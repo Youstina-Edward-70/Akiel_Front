@@ -14,9 +14,9 @@ const RestaurantCover = ({ restaurant, isFavorite, onToggleFavorite, isOwner }: 
     isOwner?: boolean;
 }) => {
     const isOpen = checkIfOpen(restaurant.openingHours);
-    const imageUrl = (typeof restaurant.coverPhoto === 'string'
-        ? restaurant.coverPhoto
-        : restaurant.coverPhoto?.url || '/images/default-rest.svg');
+    const imageUrl = restaurant.coverPhoto instanceof File
+        ? "/images/default-rest.svg"
+        : restaurant.coverPhoto?.url || "/images/default-rest.svg";
 
     return (
         <section className="group relative h-112.5 w-full overflow-hidden rounded-3xl shadow-2xl">

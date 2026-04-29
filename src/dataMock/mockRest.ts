@@ -4,8 +4,8 @@ import type { Restaurant, RestaurantCardProps } from "../types/RestaurantSchema"
 export const restaurantsCard: RestaurantCardProps[] = [
     {
         _id: '1',
-        name: 'البرنس - El Prince',
-        coverPhoto: '/images/default-rest.svg',
+        name: 'El Prince',
+        coverPhoto: { _id: "cp-1", url: "/images/default-rest.svg" },
         rating: 4.8,
         cuisineType: ['Grills', 'Egyptian'],
         priceRange: 'medium',
@@ -23,7 +23,7 @@ export const restaurantsCard: RestaurantCardProps[] = [
     {
         _id: '2',
         name: "Zack's Burgers",
-        coverPhoto: '',
+        coverPhoto: { _id: "cp-2", url: "" },
         rating: 4.5,
         cuisineType: ['Burgers', 'Fast Food'],
         priceRange: 'low',
@@ -41,7 +41,7 @@ export const restaurantsCard: RestaurantCardProps[] = [
     {
         _id: '3',
         name: 'Buffalo Burger',
-        coverPhoto: '/images/default-rest.svg',
+        coverPhoto: { _id: "cp-3", url: "/images/default-rest.svg" },
         rating: 4.2,
         cuisineType: ['Burgers', 'American'],
         priceRange: 'high',
@@ -59,7 +59,7 @@ export const restaurantsCard: RestaurantCardProps[] = [
     {
         _id: '4',
         name: 'Falafel King',
-        coverPhoto: '/images/default-rest.svg',
+        coverPhoto: { _id: "cp-4", url: "/images/default-rest.svg" },
         rating: 4.2,
         cuisineType: ['Burgers', 'American'],
         priceRange: 'high',
@@ -76,95 +76,99 @@ export const restaurantsCard: RestaurantCardProps[] = [
     }
 ];
 
-export const MOCK_RESTAURANTS: Restaurant[] = [
+export const MOCK_RESTAURANTS = [
     {
         _id: "1",
-        name: "البرنس - El Prince",
-        email: "info@elprince.com",
+        name: "El Prince",
+        email: "elprince@gmail.com",
         coverPhoto: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=2074&auto=format&fit=crop",
         rating: 4.8,
         delivery: true,
         priceRange: "medium",
         reviewsCount: 20,
-        facebookLink: "https://facebook.com/elprince",
-        cuisineType: ["Egyptian"],
+        facebookLink: "fb.com/elprince",
+        cuisineType: ["Egyptian", "FastFood"],
         phoneNumber: "01012345678",
         whatsappNumber: "01012345678",
+
+        // Description
+        description:
+"Experience the true essence of Egyptian hospitalityat El Prince, a culinary landmark dedicated to serving authentic, soul-warming flavors. Famous for its traditional cooking techniques and vibrant atmosphere, El Prince is the go-to destination for anyone seeking the best of Egyptian street-style delicacies and home-cooked comfort. From our signature Oxtail Tagines to our perfectly seasoned Mombar, every dish is crafted using fresh, local ingredients and our secret blend of spices. Whether you are dining in or ordering to your doorstep, we promise a meal that feels like home.",
 
         // Menu
         menu: [
             {
                 _id: "m1",
-                dishName: "طاجن عكاوي",
+                dishName: "Oxtail Tagine",
                 price: 350,
-                description: "طاجن عكاوي بالبصل القاورمة والفلفل الألوان مخبوز في الفرن",
+                description: "Slow-baked in the oven with pearl onions and colorful bell peppers.",
                 image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop",
-                category: "Main Courses"
+                category: "Food"
             },
             {
                 _id: "m2",
-                dishName: "ورقة لحمة",
+                dishName: "Meat Foil",
                 price: 280,
-                description: "لحم بقري بلدي مع خضروات موسمية بتتبيلة البرنس الخاصة",
+                description: "Premium local beef with seasonal vegetables and the special 'Prince' seasoning.",
                 image: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?q=80&w=2070&auto=format&fit=crop",
-                category: "Main Courses"
+                category: "Drinks"
             },
             {
                 _id: "m3",
-                dishName: "ممبار",
+                dishName: "Mombar",
                 price: 120,
-                description: "ممبار محشي بخلطة الأرز المصرية والأعشاب",
+                description: "Hand-stuffed Egyptian sausages filled with a savory mix of rice and herbs.",
                 image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=2070&auto=format&fit=crop",
-                category: "Appetizers"
+                category: "Desserts"
             },
             {
                 _id: "m4",
-                dishName: "طاجن عكاوي",
+                dishName: "Oxtail Tagine",
                 price: 350,
-                description: "طاجن عكاوي بالبصل القاورمة والفلفل الألوان مخبوز في الفرن",
+                description: "Slow-baked in the oven with pearl onions and colorful bell peppers.",
                 image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop",
-                category: "Main Courses"
+                category: "Food"
             },
             {
                 _id: "m5",
-                dishName: "ورقة لحمة",
+                dishName: "Meat Foil",
                 price: 280,
-                description: "لحم بقري بلدي مع خضروات موسمية بتتبيلة البرنس الخاصة",
+                description: "Premium local beef with seasonal vegetables and the special 'Prince' seasoning.",
                 image: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?q=80&w=2070&auto=format&fit=crop",
-                category: "Main Courses"
+                category: "Drinks"
             },
             {
                 _id: "m6",
-                dishName: "ممبار",
+                dishName: "Mombar",
                 price: 120,
-                description: "ممبار محشي بخلطة الأرز المصرية والأعشاب",
+                description: "Hand-stuffed Egyptian sausages filled with a savory mix of rice and herbs.",
                 image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=2070&auto=format&fit=crop",
-                category: "Appetizers"
+                category: "Desserts"
             },
             {
                 _id: "m7",
-                dishName: "طاجن عكاوي",
+                dishName: "Oxtail Tagine",
                 price: 350,
-                description: "طاجن عكاوي بالبصل القاورمة والفلفل الألوان مخبوز في الفرن",
+                description: "Slow-baked in the oven with pearl onions and colorful bell peppers.",
                 image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop",
-                category: "Main Courses"
+                category: "Food"
             },
             {
                 _id: "m8",
-                dishName: "ورقة لحمة",
+                dishName: "Meat Foil",
                 price: 280,
-                description: "لحم بقري بلدي مع خضروات موسمية بتتبيلة البرنس الخاصة",
+                description: "Premium local beef with seasonal vegetables and the special 'Prince' seasoning.",
                 image: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?q=80&w=2070&auto=format&fit=crop",
-                category: "Main Courses"
+                category: "Drinks"
             },
             {
                 _id: "m9",
-                dishName: "ممبار",
+                dishName: "Mombar",
                 price: 120,
-                description: "ممبار محشي بخلطة الأرز المصرية والأعشاب",
+                description: "Hand-stuffed Egyptian sausages filled with a savory mix of rice and herbs.",
                 image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=2070&auto=format&fit=crop",
-                category: "Appetizers"
-            },
+                category: "Desserts"
+            }
         ],
 
         // Photos
@@ -180,28 +184,29 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
         ],
 
         // Addresses
-        address: [
-            {
-                governorate: "Cairo",
-                city: "Imbaba",
-                street: "Talaat Harb St.",
-                details: "بجوار كبدي البرنس القديم"
-            }
-        ],
-
-        openingHours: 
+        address: 
 [
-{ "day": "monday", "opens": "12:00", "closes": "23:00", "isClosed": false },
-{ "day": "tuesday", "opens": "12:00", "closes": "23:00", "isClosed": false },
-{ "day": "wednesday", "opens": "12:00", "closes": "23:00", "isClosed": false },
-{ "day": "thursday", "opens": "2:00", "closes": "12:00", "isClosed": false },
-{ "day": "friday", "opens": "3:00", "closes": "23:00", "isClosed": false },
-{ "day": "saturday", "opens": "12:00", "closes": "23:00", "isClosed": false },
-{ "day": "sunday", "opens": "12:00", "closes": "23:00", "isClosed": false }
+{
+"governorate": "Cairo",
+"city": "Imbaba",
+"street": "Talaat Harb St.",
+"details": "Near the old prince"
+}
 ],
+
+        openingHours:
+            [
+                { "day": "monday", "opens": "12:00", "closes": "23:00", "isClosed": false },
+                { "day": "tuesday", "opens": "12:00", "closes": "23:00", "isClosed": false },
+                { "day": "wednesday", "opens": "12:00", "closes": "23:00", "isClosed": false },
+                { "day": "thursday", "opens": "2:00", "closes": "12:00", "isClosed": false },
+                { "day": "friday", "opens": "3:00", "closes": "23:00", "isClosed": false },
+                { "day": "saturday", "opens": "12:00", "closes": "23:00", "isClosed": false },
+                { "day": "sunday", "opens": "12:00", "closes": "23:00", "isClosed": false }
+            ],
 
         Owner: "user_123",
         status: "approved",
         createdAt: new Date("2024-01-01")
     }
-];
+] as unknown as Restaurant[];

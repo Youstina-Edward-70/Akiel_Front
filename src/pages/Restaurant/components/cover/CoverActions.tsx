@@ -1,29 +1,75 @@
-import { useNavigate } from "react-router-dom";
-import { IoSettingsOutline, IoHeartOutline, IoHeart } from "react-icons/io5";
+import { useRef, useState } from "react";
+import useRestaurantDetails from "../../hooks/useRestaurantDetails";
+import { IoImageOutline, IoTrashOutline, IoHeartOutline, IoHeart } from "react-icons/io5";
 import Button from "../../../../ui/Button";
+import ConfirmPopUp from "../../../../ui/ConfirmPopUp";
+
+interface CoverProps {
+    restaurantId: string;
+    isOwner: boolean;
+    isFavorite: boolean;
+    onToggleFavorite: () => void;
+};
 
 const CoverActions = ({
     restaurantId,
     isOwner,
     isFavorite,
     onToggleFavorite
-}: {
-    restaurantId: string;
-    isOwner: boolean;
-    isFavorite: boolean;
-    onToggleFavorite: () => void;
-}) => {
-    const navigate = useNavigate();
+}: CoverProps) => {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const { updateCover, isUpdatingCover, deleteCover, isDeletingCover } = useRestaurantDetails(restaurantId);
+
+    const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            updateCover(file);
+            e.target.value = "";
+        }
+    };
+
     return (
         <div className="flex items-center gap-3">
             {isOwner ? (
-                <Button
-                    variant="primary"
-                    onClick={() => navigate(`/edit-restaurant/${restaurantId}`)}
-                    className="px-8 py-4 rounded-2xl shadow-xl group/edit"            >
-                    <IoSettingsOutline className="h-5 w-5 group-hover/edit:rotate-90 transition-transform duration-500" />
-                    <span>Edit Restaurant</span>
-                </Button>
+                <>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleCoverChange}
+                    />
+                    <Button
+                        variant="normal"
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        disabled={isDeletingCover}
+                        className="w-14 h-14 rounded-full bg-white shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
+                    >
+                        <IoTrashOutline className="text-primary text-2xl" />
+                    </Button>
+
+                    <Button
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUpdatingCover}
+                        className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all"
+                    >
+                        <IoImageOutline className="text-white text-2xl" />
+                    </Button>
+
+                    <ConfirmPopUp
+                        isOpen={isDeleteModalOpen}
+                        onClose={() => setIsDeleteModalOpen(false)}
+                        onConfirm={() => {
+                            deleteCover();
+                            setIsDeleteModalOpen(false);
+                        }}
+                        title="Delete Cover Photo"
+                        message="Are you sure you want to remove the cover photo?"
+                        variant="danger"
+                    />
+                </>
             ) : (
                 <button
                     onClick={onToggleFavorite}

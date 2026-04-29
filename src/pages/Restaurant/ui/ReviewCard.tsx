@@ -3,7 +3,15 @@ import type { Review } from "../../../types/UserSchema";
 import { IoCreateOutline, IoStar, IoTrashOutline } from "react-icons/io5";
 import Button from "../../../ui/Button";
 
-const ReviewCard = ({ rev, isAuthor, onEdit, onDelete }: { rev: Review, isAuthor: boolean, onEdit: (reviwe: Review) => void, onDelete: (id: string) => void }) => {
+interface ReviewCardProps {
+    rev: Review;
+    isAuthor: boolean;
+    onEdit: () => void;
+    onDelete: () => void;
+    isDeleting?: boolean;
+}
+
+const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardProps) => {
     return (
         <motion.div
             layout
@@ -17,12 +25,12 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete }: { rev: Review, isAuthor
                 <div className="flex gap-4">
                     <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0">
                         <img
-                            src={rev.user?.profile_pic || `https://ui-avatars.com/api/?name=${rev.user?.fullname}`}
-                            alt={`${rev.user?.fullname}`}
+                            src={rev.user?.profile_pic || `https://ui-avatars.com/api/?name=${rev.user?.name || "?"}`}
+                            alt={`${rev.user?.name || "UNKNOWN"}`}
                             className="w-full h-full object-cover" />
                     </div>
                     <div className="space-y-0.5">
-                        <h4 className="font-bold text-text-primary text-lg">{rev.user?.fullname}</h4>
+                        <h4 className="font-bold text-text-primary text-lg">{rev.user?.name || "UNKNOWN"}</h4>
                         <p className="text-gray-400 text-xs font-medium">
                             {new Date(rev.createdAt).toLocaleDateString('en-GB', {
                                 day: 'numeric',
@@ -39,6 +47,7 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete }: { rev: Review, isAuthor
                         {[...Array(5)].map((_, i) => (
                             <IoStar
                                 key={i}
+                                size={18}
                                 className={i < rev.rating ? "fill-yellow-400" : "fill-gray-200"}
                             />
                         ))}
@@ -56,20 +65,24 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete }: { rev: Review, isAuthor
             {/* Action Buttons (Only for the author) */}
             {isAuthor && (
                 <div className="flex justify-end items-center gap-1 mt-3">
+                    {/* Edit Button */}
                     <Button
                         variant="normal"
-                        onClick={() => onEdit(rev)}
+                        onClick={onEdit}
                         title="Edit Review"
                         className="p-2 text-gray-400 hover:text-blue-600  hover:bg-blue-50 rounded-lg shadow-none transition-colors cursor-pointer">
-                        <IoCreateOutline className="text-xl" />
+                        <IoCreateOutline size={22} />
                     </Button>
+
+                    {/* Delete Button */}
                     <Button
                         variant="normal"
-                        onClick={() => onDelete(rev._id!)}
+                        onClick={onDelete}
                         title="Delete Review"
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg shadow-none transition-colors cursor-pointer"
+                        className={`p-2 rounded-lg shadow-none transition-colors cursor-pointer
+                            ${isDeleting? "text-gray-300" : "text-gray-400 hover:text-red-600 hover:bg-red-50"}`}
                     >
-                        <IoTrashOutline className="text-xl" />
+                        <IoTrashOutline size={22} className={isDeleting ? "animate-pulse" : ""} />
                     </Button>
                 </div>
             )}

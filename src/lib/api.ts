@@ -3,9 +3,6 @@ import { useAuthStore } from '../store/authStore';
 
 const api = axios.create({
     baseURL: 'https://all-restaurants-in-one.vercel.app/',
-    headers: {
-        'Content-Type': 'application/json',
-    },
 });
 
 export interface ApiError {
@@ -19,6 +16,13 @@ api.interceptors.request.use(
 
         if (Token) {
             config.headers.Authorization = `Bearer ${Token}`;
+        }
+
+        // Let browser set multipart boundaries for FormData requests.
+        if (config.data instanceof FormData) {
+            delete config.headers["Content-Type"];
+        } else {
+            config.headers["Content-Type"] = "application/json";
         }
         return config;
     },

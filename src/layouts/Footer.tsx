@@ -8,7 +8,7 @@ const Footer = () => {
                 <div className="flex flex-col md:flex-row gap-12 justify-around">
                     {/* Logo and description */}
                     <div className="flex flex-col gap-4 md:max-w-[30%] max-w-nonet items-center md:items-start">
-                        <div className="logo"><img src="../../public/LogoLight.svg" alt="logo" /></div>
+                        <div className="logo"><img src="/LogoLight.svg" alt="logo" /></div>
                         <p className="text-sm opacity-90 md:text-left">
                             Your ultimate guide to discovering the best
                             authentic Egyptian dining experiences. Explore our

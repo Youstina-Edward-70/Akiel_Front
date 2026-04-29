@@ -27,18 +27,19 @@ export const favoriteSchema = z.object({
 
 export const reviewSchema = z.object({
     _id: z.string().optional(),
+    restaurant: z.string(),
     Content: z.string().min(3, "Comment is too short"),
     rating: z.number().min(1).max(5),
     createdAt: z.string(),
     user: z.object({
         _id: z.string(),
-        fullname: z.string(),
+        name: z.string(),
         profile_pic: z.string().optional(),
     }),
 });
 
 export const userSchema = z.object({
-    _id: z.string().optional(),
+    id: z.string().optional(),
 
     fullname: z.string()
         .min(2, "Name must be at least 2 characters")

@@ -6,7 +6,7 @@ export const useSearchActions = () => {
     const [searchParams, setSearchParams] = useSearchParams()
 
     const selectedCuisines = searchParams.getAll('cuisineType');
-    const searchQuery = searchParams.get('query') || '';
+    const searchQuery = searchParams.get('searchQuery') || '';
 
     const handleTagClick = (tagName: string) => {
         const params = new URLSearchParams(searchParams);
@@ -50,7 +50,7 @@ export const useSearchActions = () => {
 
     const clearFilters = () => {
         const params = new URLSearchParams();
-        if (searchQuery) params.set('query', searchQuery);
+        if (searchQuery) params.set('searchQuery', searchQuery);
         selectedCuisines.forEach(c => params.append('cuisineType', c));
         setSearchParams(params, { replace: true });
     };

@@ -8,7 +8,7 @@ const SearchBox_PopularTags = () => {
 
     return (
         <section className="w-full py-12 flex flex-col gap-4 bg-white p-6 shadow z-5">
-<div className="w-full flex justify-center">
+            <div className="w-full flex justify-center">
                 <Search placeholder="Search for restaurants or dishes..." />
             </div>
             <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
@@ -38,11 +38,11 @@ const SearchBox_PopularTags = () => {
                                 `}
                             >
                                 {/* عرض الأيقونة */}
-                                <Icon 
-                                    className={`text-lg ${isActive ? 'text-white' : ''}`} 
-                                    style={{ color: !isActive ? cuisine.color : '' }} 
+                                <Icon
+                                    className={`text-lg ${isActive ? 'text-white' : ''}`}
+                                    style={{ color: !isActive ? cuisine.color : '' }}
                                 />
-                                
+
                                 <span className="font-medium">{cuisine.name}</span>
                             </Button>
                         )

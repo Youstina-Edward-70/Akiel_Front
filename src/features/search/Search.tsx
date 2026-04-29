@@ -8,14 +8,14 @@ export default function Search({ placeholder }: { placeholder: string }) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const currentQuery = searchParams.get('query') || '';
+    const currentQuery = searchParams.get('searchQuery') || '';
     const isHomePage = location.pathname === '/';
 
     const updateUrl = (value: string) => {
         const params = new URLSearchParams(searchParams);
         params.set('page', '1');
-        if (value.trim()) params.set('query', value.trim());
-        else params.delete('query');
+        if (value.trim()) params.set('searchQuery', value.trim());
+        else params.delete('searchQuery');
 
         if (isHomePage) {
             navigate(`/search?${params.toString()}`);
@@ -42,9 +42,9 @@ export default function Search({ placeholder }: { placeholder: string }) {
                 <input
                     key={currentQuery}
                     type='search'
-                    name='search'
+                    name='searchQuery'
                     id='search'
-                    className="peer block w-full h-12 rounded-full bg-white text-text-primary placeholder:text-text-muted py-3 pl-10 pr-26 text-sm outline-none transition-all shadow-sm relative"
+                    className="peer block w-full h-12 rounded-full bg-white text-text-primary placeholder:text-text-muted py-3 pl-10 pr-32 text-sm outline-none transition-all shadow-sm relative [&::-webkit-search-cancel-button]:appearance-none"
                     placeholder={placeholder}
                     defaultValue={currentQuery}
                     onChange={(e) => debouncedSearch(e.target.value) }

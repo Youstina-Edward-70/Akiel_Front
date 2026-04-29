@@ -7,18 +7,23 @@ import ConfirmPopUp from "../../../../../ui/ConfirmPopUp";
 import EmptyState from "../../../../../ui/EmptyState";
 import { MdImageNotSupported } from "react-icons/md";
 import Button from "../../../../../ui/Button";
+import type { Image } from "../../../../../types/RestaurantSchema";
+
+type RemoteImage = Exclude<Image, File | null | undefined>;
 
 const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isOwner: boolean }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
+    const [photoToDelete, setPhotoToDelete] = useState<RemoteImage | null>(null);
 
     const { photos, isLoading, uploadPhoto, deletePhoto, isDeleting } = useRestaurantPhotos(restaurantId);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            uploadPhoto(file);
+        const selectedFiles = e.target.files;
+        if (selectedFiles && selectedFiles.length > 0) {
+            const filesArray = Array.from(selectedFiles);
+            uploadPhoto(filesArray);
+            e.target.value = "";
         }
     };
 
@@ -31,6 +36,7 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
                 onChange={handleFileChange}
                 className="hidden"
                 accept="image/*"
+                multiple
             />
 
             {/* Header */}
@@ -47,10 +53,11 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
                     <Button
                         variant="primary"
                         onClick={() => fileInputRef.current?.click()}
-                        className="group px-4 py-3 rounded-full shadow-xl"
+                        disabled={isLoading}
+                        className="group p-4 rounded-full shadow-2xl flex items-center gap-0 hover:gap-2 transition-all duration-300"
                     >
                         <IoAddOutline className="text-3xl" />
-                        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 whitespace-nowrap">
+                        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-bold whitespace-nowrap">
                             Add New Photo
                         </span>
                     </Button>
@@ -67,13 +74,13 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
             ) : photos.length > 0 ? (
                 <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
                     <AnimatePresence mode="popLayout">
-                        {photos.map((src, index) => (
+                        {photos.filter((img): img is RemoteImage => !!img && !(img instanceof File)).map((img, index) => (
                             <PhotoCard
-                                key={src}
-                                src={src}
+                                key={img._id}
+                                img={img}
                                 index={index}
                                 isOwner={isOwner}
-                                onDelete={setPhotoToDelete}
+                                onDelete={() => setPhotoToDelete(img)}
                             />
                         ))}
                     </AnimatePresence>
@@ -92,7 +99,7 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
                 isOpen={!!photoToDelete}
                 onClose={() => setPhotoToDelete(null)}
                 onConfirm={() => photoToDelete &&
-                    deletePhoto(photoToDelete, {
+                    deletePhoto(photoToDelete._id, {
                         onSuccess: () => setPhotoToDelete(null)
                     })}
                 isLoading={isDeleting}

@@ -13,9 +13,9 @@ const RestaurantDetails = () => {
     const { id } = useParams<{ id: string }>();
     const { user } = useAuthStore();
 
-    const { data: restaurantData, isLoading, isError, error } = useRestaurantDetails(id!);
+    const { restaurant: restaurantData, isLoading, isError, error } = useRestaurantDetails(id!);
 
-    const isOwner = user?._id === restaurantData?.Owner;
+    const isOwner = user?.id === restaurantData?.Owner;
 
     const { isFavorite, toggleFavorite } = useToggleFavorite(id!);
 

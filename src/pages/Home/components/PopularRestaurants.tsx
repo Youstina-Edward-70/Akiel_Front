@@ -60,8 +60,8 @@ const PopularRestaurantsSection = () => {
                             {restaurants.slice(0, 4).map((res, index) => (
                                 <motion.div
                                     key={res._id || index}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ delay: index * 0.1 }}
                                 >

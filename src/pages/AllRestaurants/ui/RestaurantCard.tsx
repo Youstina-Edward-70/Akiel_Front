@@ -7,8 +7,9 @@ import { useToggleFavorite } from "../../Restaurant/hooks/useToggleFavorite";
 
 const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange, openingHours, delivery }: RestaurantCardProps) => {
     const isOpen = checkIfOpen(openingHours);
-    const imageUrl = coverPhoto?.url || "/images/default-rest.svg";
-
+    const imageUrl = coverPhoto instanceof File
+        ? "/images/default-rest.svg"
+        : coverPhoto?.url || "/images/default-rest.svg";
     const { isFavorite, toggleFavorite } = useToggleFavorite(_id!);
 
     return (
@@ -36,7 +37,8 @@ const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange
                         e.stopPropagation();
                         toggleFavorite();
                     }}
-                    className="absolute top-3 right-3 p-2 bg-white/70 backdrop-blur-md rounded-full text-gray-600 cursor-pointer hover:bg-white hover:text-red-500 transition-all shadow-sm active:scale-90 z-5"                >
+                    className="absolute top-3 right-3 p-2 bg-white/70 backdrop-blur-md rounded-full text-gray-600 cursor-pointer hover:bg-white hover:text-red-500 transition-all shadow-sm active:scale-90 z-5"
+                >
                     {isFavorite ? (
                         <IoHeart className="text-red-500 h-5 w-5" />
                     ) : (

@@ -32,7 +32,7 @@
   --font-heading: 'Manrope', 'Inter', sans-serif;
 
   --image-hero-overlay: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../public/images/Food-Background.png');
-  --image-restaurant-bg: url('../public/images/restaurant-default.svg');
+  --image-restaurant-bg: url('/images/restaurant-default.svg');
 }
 
 :root {
