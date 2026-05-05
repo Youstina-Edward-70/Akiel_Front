@@ -15,7 +15,7 @@ export const NameInput = ({ label, register, index, error }: InputProps & { regi
         <input
             type="text"
             placeholder="e.g. Truffle Infused Risotto"
-            {...register(`dishes.${index}.name`)}
+            {...register(`dishes.${index}.dishName`)}
             className={`w-full rounded-xl border bg-gray-50 px-5 py-4 text-base outline-none transition focus:border-primary focus:bg-white
                 ${error ? "border-danger" : "border-gray-100"}`}
         />

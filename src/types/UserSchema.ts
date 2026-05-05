@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 const addressSchema = z.object({
-    governorate: z.string().min(1, "Governorate is required"),
-    city: z.string().min(1, "City is required"),
-    street: z.string().min(1, "Street is required"),
-    details: z.string().default(""),
+    governorate: z.string().optional().default(""),
+    city: z.string().optional().default(""),
+    street: z.string().optional().default(""),
+    details: z.string().optional().default(""),
 });
 
 export const favoriteSchema = z.object({
@@ -39,6 +39,7 @@ export const reviewSchema = z.object({
 });
 
 export const userSchema = z.object({
+    _id: z.string().optional(),
     id: z.string().optional(),
 
     fullname: z.string()
@@ -54,20 +55,21 @@ export const userSchema = z.object({
         .trim(),
 
     profile_pic: z.string()
-        .default("default.png"),
+        .nullable(),
 
     role: z.enum(['user', 'admin', 'restaurant_owner'])
         .default('user'),
 
-    favoritesCount: z.number(),
-    reviewsCount: z.number(),
+    favoritesCount: z.number().default(0),
+    reviewsCount: z.number().default(0),
+    isRestaurantOwner: z.boolean().default(false),
 
-    address: z.array(addressSchema).default([]),
+    address: addressSchema.optional(),
 
     Token: z.string().optional(),
 
-    createdAt: z.string().optional(),
-    updatedAt: z.string().optional(),
+    createdAt: z.date().optional(),
+    updatedAt: z.date().optional(),
 });
 
 export interface LoginResponse {
@@ -108,6 +110,7 @@ export const ResetPasswordSchema = z.object({
 });
 
 export type User = z.infer<typeof userSchema>;
+export type Address = z.infer<typeof addressSchema>;
 export type Favorite = z.infer<typeof favoriteSchema>;
 export type Review = z.infer<typeof reviewSchema>;
 export type LoginFormValues = z.infer<typeof LoginSchema>;

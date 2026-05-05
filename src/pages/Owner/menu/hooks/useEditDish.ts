@@ -40,14 +40,11 @@ export const useEditDish = () => {
         mutationFn: async (data: MenuFormInput) => {
             const formData = new FormData();
             const targetDish = data.dishes[0];
-            const payload = {
-                dishName: targetDish.dishName,
-                price: targetDish.price,
-                description: targetDish.description,
-                category: targetDish.category,
-            };
+            formData.append("dishName", targetDish.dishName);
+            formData.append("price", targetDish.price);
+            formData.append("description", targetDish.description);
+            formData.append("category", targetDish.category);
 
-            formData.append("dishData", JSON.stringify(payload));
             if (targetDish.image instanceof File) {
                 formData.append("image", targetDish.image);
             }

@@ -56,13 +56,13 @@ export const PriceRanges = ["low", "medium", "high"] as const;
 export const RestaurantStatuses = ["pending", "approved", "rejected"] as const;
 
 export const LIMITS = {
-    MENU_ITEMS: 10,
+    MENU_ITEMS: 30,
     GALLERY_PHOTOS: 40,
     Gallery_MIN: 4,
+    Gallery_Max: 40,
     BRANCHES: 5,
     CUISINE_TYPES: 5,
     NAME_MIN: 3,
     NAME_MAX: 50,
     DESCRIPTION_MIN: 10,
-    DESCRIPTION_MAX: 500
 };

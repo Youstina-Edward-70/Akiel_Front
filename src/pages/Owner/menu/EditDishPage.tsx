@@ -16,7 +16,7 @@ const EditDishPage = () => {
 
                 <DishCard
                     index={0}
-                    title={`Editing: ${existingDish?.name || "Dish"}`}
+                    title={`Editing: ${existingDish?.dishName || "Dish"}`}
                     register={register}
                     errors={errors.dishes?.[0]}
                     remove={() => { }}

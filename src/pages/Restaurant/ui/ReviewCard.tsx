@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import type { Review } from "../../../types/UserSchema";
-import { IoCreateOutline, IoStar, IoTrashOutline } from "react-icons/io5";
+import { IoCreateOutline, IoStar, IoStarHalf, IoTrashOutline } from "react-icons/io5";
 import Button from "../../../ui/Button";
 
 interface ReviewCardProps {
@@ -44,13 +44,21 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                 {/* Rating Stars */}
                 <div className="flex flex-col items-end gap-2">
                     <div className="flex text-yellow-400 gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                            <IoStar
-                                key={i}
-                                size={18}
-                                className={i < rev.rating ? "fill-yellow-400" : "fill-gray-200"}
-                            />
-                        ))}
+                        {[...Array(5)].map((_, i) => {
+                            const ratingValue = i + 1;
+
+                            return (
+                                <span key={i}>
+                                    {rev.rating >= ratingValue ? (
+                                        <IoStar size={18} className="fill-yellow-400" />
+                                    ) : rev.rating >= ratingValue - 0.5 ? (
+                                        <IoStarHalf size={18} className="fill-yellow-400" />
+                                    ) : (
+                                        <IoStar size={18} className="fill-gray-200" />
+                                    )}
+                                </span>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -80,7 +88,7 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                         onClick={onDelete}
                         title="Delete Review"
                         className={`p-2 rounded-lg shadow-none transition-colors cursor-pointer
-                            ${isDeleting? "text-gray-300" : "text-gray-400 hover:text-red-600 hover:bg-red-50"}`}
+                            ${isDeleting ? "text-gray-300" : "text-gray-400 hover:text-red-600 hover:bg-red-50"}`}
                     >
                         <IoTrashOutline size={22} className={isDeleting ? "animate-pulse" : ""} />
                     </Button>
