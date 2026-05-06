@@ -1,17 +1,36 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoCallOutline, IoLogoWhatsapp, IoLocationOutline, IoCreateOutline } from "react-icons/io5";
+import { IoCallOutline, IoLogoWhatsapp, IoLocationOutline, IoCreateOutline, IoTrashOutline } from "react-icons/io5";
 import { FaFacebook } from "react-icons/fa";
 import type { Restaurant } from "../../../../../types/RestaurantSchema";
 import Button from "../../../../../ui/Button";
+import ConfirmPopUp from "../../../../../ui/ConfirmPopUp";
+import { useDeleteRestaurant } from "../../../../Owner/hooks/useDeleteRestaurant";
+import { useAuthStore } from "../../../../../store/authStore";
 
 const RestaurantInfo = ({ restaurant, isOwner }: { restaurant: Restaurant; isOwner: boolean }) => {
     const navigate = useNavigate();
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+    const updateUserRole = useAuthStore((state) => state.updateUserRole);
+    const deleteRestaurantMutation = useDeleteRestaurant();
+
     const handleEditNavigation = () => {
         navigate(`/edit-restaurant/${restaurant._id}`);
     };
 
+    const handleDelete = () => {
+        deleteRestaurantMutation.mutate(restaurant._id, {
+            onSuccess: () => {
+                updateUserRole('user');
+                navigate('/', {replace: true});
+            }
+        });
+        setIsDeleteModalOpen(false);
+    };
+
     return (
-        <div className="relative min-h-100 pb-24 space-y-12 font-sans">
+        <div className="relative min-h-100 space-y-12 font-sans">
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100 pb-8">
                 <div className="flex items-center gap-4">
@@ -103,6 +122,37 @@ const RestaurantInfo = ({ restaurant, isOwner }: { restaurant: Restaurant; isOwn
                     </p>
                 </div>
             </section>
+
+            {isOwner && (
+                <section className="pt-12 border-t border-red-50">
+                    <div className="bg-red-50/50 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-red-100">
+                        <div className="text-center md:text-left">
+                            <h3 className="text-xl font-bold text-red-600">Danger Zone</h3>
+                            <p className="text-red-400 font-medium mt-1">
+                                Once you delete a restaurant, there is no going back. Please be certain.
+                            </p>
+                        </div>
+                        <Button
+                            onClick={() => setIsDeleteModalOpen(true)}
+                            className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-red-200"
+                        >
+                            <IoTrashOutline className="text-xl" />
+                            Delete Restaurant
+                        </Button>
+                    </div>
+                </section>
+            )}
+
+            {/* Confirm Delete PopUp */}
+            <ConfirmPopUp
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                title="Delete Restaurant?"
+                message={`Are you sure you want to delete "${restaurant.name}"? This action cannot be undone and all data will be lost.`}
+                variant="danger"
+                isLoading={deleteRestaurantMutation.isPending}
+            />
         </div >
     );
 };

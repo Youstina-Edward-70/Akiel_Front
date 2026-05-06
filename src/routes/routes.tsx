@@ -3,7 +3,6 @@ import { createBrowserRouter } from 'react-router-dom';
 // Layouts
 import MainLayout from '../layouts/layout/MainLayout';
 import AuthLayout from '../layouts/layout/AuthLayout';
-import AdminLayout from '../layouts/layout/AdminLayout';
 
 // Pages
 import Home from '../pages/Home/Home';
@@ -12,9 +11,11 @@ import RestaurantDetails from '../pages/Restaurant/RestaurantDetails';
 import AboutUs from '../pages/About/AboutUs';
 import NotFound from '../pages/NotFound';
 
-// User
+// Authenticated
 import Profile from '../pages/User/Profile';
 import EditProfile from '../pages/User/EditProfile';
+
+// User
 import Favorites from '../pages/User/Favorites';
 import Reviews from '../pages/User/Reviews';
 import AddRestaurant from '../pages/Owner/AddRestaurant';
@@ -24,13 +25,16 @@ import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
 import EditDishPage from '../pages/Owner/menu/EditDishPage';
 
 // Admin
-import Dashboard from '../pages/Admin/Dashboard';
+import Requests from '../pages/Admin/Requsets';
+import Users from '../pages/Admin/Users';
+import Settings from '../pages/Admin/Settings';
 
 // Auth Features
 import Login from "../features/auth/login";
 import Signup from "../features/auth/signup";
 import ForgetPass from "../features/auth/forgetPass";
 import ResetPass from "../features/auth/resetPass";
+import ProtectedRoute from './ProtectedRoute';
 
 export const Routes = createBrowserRouter([
     {
@@ -41,18 +45,43 @@ export const Routes = createBrowserRouter([
             { path: "/search", element: <SearchResults /> },
             { path: "/restaurant/:id", element: <RestaurantDetails /> },
             { path: "/about", element: <AboutUs /> },
-            
-            // Authenticated User Routes
-            { path: "/profile", element: <Profile /> },
-            { path: "/profile/edit", element: <EditProfile /> },
-            { path: "/favorites", element: <Favorites /> },
-            { path: "/reviews", element: <Reviews /> },
-            
+
+            // Authenticated Routes
+            {
+                element: <ProtectedRoute allowedRoles={["user", "admin", "owner"]} />,
+                children: [
+                    { path: "/profile", element: <Profile /> },
+                    { path: "/profile/edit", element: <EditProfile /> },
+                ]
+            },
+            // User Routes
+            {
+                element: <ProtectedRoute allowedRoles={["user"]} />,
+                children: [
+                    { path: "/favorites", element: <Favorites /> },
+                    { path: "/reviews", element: <Reviews /> },
+                    { path: "/add-restaurant", element: <AddRestaurant /> },
+                ]
+            },
             // Owner Routes
-            { path: "/add-restaurant", element: <AddRestaurant /> },
-            { path: "/edit-restaurant/:id", element: <AddRestaurant />},
-            { path: "/restaurant/:id/menu/add", element: <AddMenuPage /> },
-            { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
+            {
+                element: <ProtectedRoute allowedRoles={["owner"]} />,
+                children: [
+                    { path: "/my-restaurant", element: <AddRestaurant /> },
+                    { path: "/edit-restaurant/:id", element: <AddRestaurant /> },
+                    { path: "/restaurant/:id/menu/add", element: <AddMenuPage /> },
+                    { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
+                ]
+            },
+            // Admin Routes
+            {
+                element: <ProtectedRoute allowedRoles={["admin"]} />,
+                children: [
+                    { path: "requests", element: <Requests /> },
+                    { path: "users", element: <Users /> },
+                    { path: "settings", element: <Settings /> },
+                ],
+            },
         ],
     },
     {
@@ -63,13 +92,6 @@ export const Routes = createBrowserRouter([
             { path: "signup", element: <Signup /> },
             { path: "forget-password", element: <ForgetPass /> },
             { path: "reset-password", element: <ResetPass /> },
-        ],
-    },
-    {
-        path: "/admin",
-        element: <AdminLayout />,
-        children: [
-            { path: "dashboard", element: <Dashboard /> },
         ],
     },
     // Catch-all for 404

@@ -1,10 +1,13 @@
 import { NavLink, Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../store/authStore";
+import { useMyRestaurant } from "../pages/Owner/hooks/useMyRestaurant";
 import Button from "../ui/Button";
 
 const Navbar = () => {
     const user = useAuthStore((state) => state.user);
     const navigate = useNavigate();
+
+    const {data: myRestaurant} = useMyRestaurant();
 
     const activeLink = ({ isActive }: { isActive: boolean }) => 
         `transition ${isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary/90"}`;
@@ -27,8 +30,8 @@ const Navbar = () => {
                         <NavLink to="/" className={activeLink}>
                             Home
                         </NavLink>
-                        {user?.role === 'restaurant_owner' && (
-                            <NavLink to="/my-restaurant" className={activeLink}>
+                        {myRestaurant && (
+                            <NavLink to={`/restaurant/${myRestaurant._id}`} className={activeLink}>
                                 My Restaurant
                             </NavLink>
                         )}

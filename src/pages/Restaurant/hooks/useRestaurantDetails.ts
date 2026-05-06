@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import axiosInstance, { type ApiError } from "../../../lib/api";
 import { API_ENDPOINTS } from "../../../lib/EndPoints";
 import { toast } from "react-hot-toast";
 import type { Restaurant } from "../../../types/RestaurantSchema";
-import type { AxiosError } from "axios";
 
 const useRestaurantDetails = (id: string) => {
     const queryClient = useQueryClient();

@@ -8,6 +8,7 @@ interface AuthState {
     login: (userData: User/*, remember: boolean*/) => void;
     logout: () => void;
     getRole: () => string | undefined;
+    updateUserRole: (newRole: 'user' | 'owner' | 'admin') => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -16,7 +17,7 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             isAuthenticated: false,
 
-            login: (userData/*, remember*/) => set({
+            login: (userData) => set({
                 user: userData,
                 isAuthenticated: true
             }),
@@ -26,7 +27,11 @@ export const useAuthStore = create<AuthState>()(
                 localStorage.removeItem('akiel-auth-storage');
             },
 
-            getRole: () => get().user?.role
+            getRole: () => get().user?.role,
+
+            updateUserRole: (newRole) => set((state) => ({
+                user: state.user ? { ...state.user, role: newRole } : null
+            })),
         }),
         {
             name: 'akiel-auth-storage',

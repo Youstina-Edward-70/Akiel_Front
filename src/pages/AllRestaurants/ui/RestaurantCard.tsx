@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { checkIfOpen } from "../../Restaurant/components/assets/utils";
 import type { RestaurantCardProps } from "../../../types/RestaurantSchema";
 import { useToggleFavorite } from "../../Restaurant/hooks/useToggleFavorite";
+import { useAuthStore } from "../../../store/authStore";
 
 const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange, openingHours, delivery }: RestaurantCardProps) => {
     const isOpen = checkIfOpen(openingHours);
@@ -11,6 +12,7 @@ const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange
         ? "/images/default-rest.svg"
         : coverPhoto?.url || "/images/default-rest.svg";
     const { isFavorite, toggleFavorite } = useToggleFavorite(_id!);
+    const { user } = useAuthStore();
 
     return (
         <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full">
@@ -30,21 +32,25 @@ const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange
                     {isOpen ? 'Open Now' : 'Closed'}
                 </div>
 
-                {/* Favorite Button */}
-                <button
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleFavorite();
-                    }}
-                    className="absolute top-3 right-3 p-2 bg-white/70 backdrop-blur-md rounded-full text-gray-600 cursor-pointer hover:bg-white hover:text-red-500 transition-all shadow-sm active:scale-90 z-5"
-                >
-                    {isFavorite ? (
-                        <IoHeart className="text-red-500 h-5 w-5" />
-                    ) : (
-                        <IoHeartOutline className="h-5 w-5" />
+                {/* Favorite Button (Only for Users) */}
+                <div className="absolute top-3 right-3 z-10">
+                    {user?.role !== "owner" && user?.role !== "admin" && (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite();
+                            }}
+                            className="p-2 bg-white/70 backdrop-blur-md rounded-full text-gray-600 cursor-pointer hover:bg-white hover:text-red-500 transition-all shadow-sm active:scale-90"
+                        >
+                            {isFavorite ? (
+                                <IoHeart className="text-red-500 h-5 w-5" />
+                            ) : (
+                                <IoHeartOutline className="h-5 w-5" />
+                            )}
+                        </button>
                     )}
-                </button>
+                </div>
             </div>
 
             <div className="p-4 flex flex-col flex-1 text-start">

@@ -13,7 +13,9 @@ export const useToggleFavorite = (restaurantId: string) => {
     const location = useLocation();
     const { isAuthenticated, user } = useAuthStore();
 
-    // Fetch favorites with long staleTime to prevent "flickering"
+    const isRegularUser = user?.role === "user";
+
+    // Fetch favorites
     const { data: favoriteList } = useQuery<Favorite[]>({
         queryKey: ["user-favorites"],
         queryFn: async () => {
@@ -21,42 +23,39 @@ export const useToggleFavorite = (restaurantId: string) => {
             const data = res.data.Data || res.data.data || res.data;
             return Array.isArray(data) ? data : [];
         },
-        enabled: isAuthenticated && !!user,
+        enabled: isAuthenticated && !!user && isRegularUser,
         staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 60, // Cache for 1 hour
     });
 
     // Determine if the current restaurant is in favorites
-    const isFavorite = Array.isArray(favoriteList)
-        ? favoriteList.some((fav: Favorite) => {
-            const restaurantObj = typeof fav.restaurant === 'object' ? fav.restaurant : null;
-            const favId = restaurantObj?._id || fav.restaurant || (typeof fav === 'string' ? fav : null);
-            return String(favId) === String(restaurantId);
-        })
-        : false;
+    const isFavorite = Array.isArray(favoriteList) && favoriteList.some((fav: Favorite) => {
+        const restaurantObj = typeof fav.restaurant === 'object' ? fav.restaurant : null;
+        const favId = restaurantObj?._id || fav.restaurant || (typeof fav === 'string' ? fav : null);
+        return String(favId) === String(restaurantId);
+    });
 
     const mutation = useMutation({
         mutationFn: async (currentStatus: boolean) => {
-            const method = currentStatus ? 'delete' : 'get';
+            const method = currentStatus ? 'delete' : 'post';
             const url = API_ENDPOINTS.USER.FAVORITES.TOGGLE(restaurantId);
             const { data } = await axiosInstance({ method, url });
             return data;
         },
-        onMutate: async (currentStatus) => {
+        onMutate: async (currentlyFavorite) => {
             await queryClient.cancelQueries({ queryKey: ["user-favorites"] });
             const previousFavorites = queryClient.getQueryData<Favorite[]>(["user-favorites"]);
 
             if (previousFavorites) {
                 queryClient.setQueryData<Favorite[]>(["user-favorites"], (old = []) => {
-                    if (currentStatus) {
-                        return old.filter(fav => {
+                    if (currentlyFavorite) {
+                        return old.filter((fav: Favorite) => {
                             const restaurantObj = typeof fav.restaurant === 'object' ? fav.restaurant : null;
                             const id = restaurantObj?._id || fav.restaurant || (typeof fav === 'string' ? fav : fav._id);
                             return String(id) !== String(restaurantId);
                         });
                     } else {
                         const newFav = {
-                            _id: Math.random().toString(),
+                            _id: Date.now().toString(),
                             restaurant: { _id: restaurantId }
                         } as Favorite;
 
@@ -67,42 +66,36 @@ export const useToggleFavorite = (restaurantId: string) => {
 
             return { previousFavorites };
         },
-        onError: (error: AxiosError<ApiError>, currentStatus, context) => {
-            const msg = error.response?.data?.message || "";
-
-            // If the error says it's already there, we don't rollback (UI stays red)
-            if (msg.toLowerCase().includes("already") && !currentStatus) return;
-
-            // Rollback to the previous state on actual errors
+        onError: (error: AxiosError<ApiError>, _vars, context) => {
             if (context?.previousFavorites) {
                 queryClient.setQueryData(["user-favorites"], context.previousFavorites);
             }
-
-            if (error.response?.status === 401) {
-                toast.error("Please login first");
-                navigate("/auth/login", { state: { from: location.pathname } });
-            } else {
-                toast.error(msg || "Action failed");
-            }
+            toast.error(error.response?.data?.message || "Operation failed");
         },
-        onSuccess: (_data, currentStatus) => {
-            const message = currentStatus ? "Removed" : "Added";
-            toast.success(`${message} successfully`);
-            queryClient.invalidateQueries({ queryKey: ["restaurant", restaurantId] });
+        onSuccess: (_data, currentlyFavorite) => {
+            toast.success(`${currentlyFavorite ? "Removed from favorites" : "Added to favorites"} successfully`);
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ["user-favorites"] });
         },
     });
 
     const handleToggle = () => {
         if (!isAuthenticated) {
-            toast.error("Login required");
+            toast.error("Please login first");
             navigate("/auth/login", { state: { from: location.pathname } });
+            return;
+        }
+
+        if(!isRegularUser) {
+            toast.error("Admins and Owners cannot add restaurants to favorites.");
             return;
         }
 
         if (mutation.isPending) return;
         mutation.mutate(isFavorite);
     };
-    
+
     return {
         isFavorite,
         toggleFavorite: handleToggle,

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { IoWarningOutline, IoCloseOutline } from "react-icons/io5";
+import {createPortal} from "react-dom"
 
 interface ConfirmPopUpProps {
     isOpen: boolean;
@@ -14,10 +15,10 @@ interface ConfirmPopUpProps {
 const ConfirmPopUp = ({ 
     isOpen, onClose, onConfirm, title, message, isLoading, variant = "danger" 
 }: ConfirmPopUpProps) => {
-    return (
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-999 flex items-center justify-center p-4 overflow-hidden">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -71,7 +72,8 @@ const ConfirmPopUp = ({
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 };
 

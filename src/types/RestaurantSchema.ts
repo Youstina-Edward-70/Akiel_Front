@@ -104,8 +104,7 @@ export const restaurantSchema = z.object({
 
   email: z.string().email("Invalid email address"),
   description: z.string()
-    .min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`)
-    .max(LIMITS.DESCRIPTION_MAX, `Description cannot exceed ${LIMITS.DESCRIPTION_MAX} characters`),
+    .min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
 
   phoneNumber: z.string().min(10, "Invalid phone number"),
   facebookLink: z.string().url("Invalid Facebook URL").optional,

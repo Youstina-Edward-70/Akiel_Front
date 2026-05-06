@@ -34,7 +34,7 @@ export const reviewSchema = z.object({
     user: z.object({
         _id: z.string(),
         name: z.string(),
-        profile_pic: z.string().optional(),
+        profile: z.string().optional(),
     }),
 });
 
@@ -57,7 +57,7 @@ export const userSchema = z.object({
     profile_pic: z.string()
         .nullable(),
 
-    role: z.enum(['user', 'admin', 'restaurant_owner'])
+    role: z.enum(['user', 'admin', 'owner'])
         .default('user'),
 
     favoritesCount: z.number().default(0),

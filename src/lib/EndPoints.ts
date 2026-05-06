@@ -27,16 +27,17 @@ export const API_ENDPOINTS = {
                 `/reviews/delete-review/${restaurantId}`, // DELETE
         },
         FAVORITES: {
-            TOGGLE: (id: string) => `${BASE_URL}/favorites/${id}`, // add to or remove rest from favorite list
-            GET_MY_FAVORITES: `${BASE_URL}/favorites`,
+            TOGGLE: (id: string) => `${BASE_URL}/favorites/${id}`, // POST / DELETE (add to or remove rest from favorite list)
+            GET_MY_FAVORITES: `${BASE_URL}/favorites`, // GET
         },
     },
 
     // --- Owner Dashboard ---
     OWNER: {
-        MY_RESTAURANTS: `${BASE_URL}/owner/restaurant`, // GET
+        MY_RESTAURANT: `${BASE_URL}/user/my/dashboard`, // GET
         CREATE_RESTAURANT: `${BASE_URL}/owner/restaurants`, // POST
         UPDATE_RESTAURANT: (id: string) => `${BASE_URL}restaurant-data/main-data/${id}`, // PUT
+        DELETE_RESTAURANT: (id:string) => `${BASE_URL}restaurants/${id}`, // DELETE
 
         // Cover Photo Actions
         COVER: {
@@ -70,10 +71,10 @@ export const API_ENDPOINTS = {
 
     // --- Auth ---
     AUTH: {
-        LOGIN: `${BASE_URL}/auth/login`,
-        REGISTER: `${BASE_URL}/auth/register`,
-        RESET_PASSWORD: `${BASE_URL}/auth/reset-password`,
-        FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password`,
+        LOGIN: `${BASE_URL}/auth/login`, // POST
+        REGISTER: `${BASE_URL}/auth/register`, // POST
+        RESET_PASSWORD: `${BASE_URL}/auth/reset-password`, // POST
+        FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password`, // POST
         LOGOUT: `${BASE_URL}/auth/logout`,
     }
 };

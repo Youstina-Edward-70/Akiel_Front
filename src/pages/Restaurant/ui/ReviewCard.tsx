@@ -25,7 +25,7 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                 <div className="flex gap-4">
                     <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0">
                         <img
-                            src={rev.user?.profile_pic || `https://ui-avatars.com/api/?name=${rev.user?.name || "?"}`}
+                            src={rev.user?.profile || `https://ui-avatars.com/api/?name=${rev.user?.name || "?"}`}
                             alt={`${rev.user?.name || "UNKNOWN"}`}
                             className="w-full h-full object-cover" />
                     </div>
@@ -42,23 +42,31 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                 </div>
 
                 {/* Rating Stars */}
-                <div className="flex flex-col items-end gap-2">
-                    <div className="flex text-yellow-400 gap-0.5">
-                        {[...Array(5)].map((_, i) => {
-                            const ratingValue = i + 1;
-
-                            return (
-                                <span key={i}>
-                                    {rev.rating >= ratingValue ? (
-                                        <IoStar size={18} className="fill-yellow-400" />
-                                    ) : rev.rating >= ratingValue - 0.5 ? (
-                                        <IoStarHalf size={18} className="fill-yellow-400" />
-                                    ) : (
-                                        <IoStar size={18} className="fill-gray-200" />
-                                    )}
-                                </span>
-                            );
-                        })}
+                <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-500">
+                            ({rev.rating.toFixed(2)})
+                        </span>
+                        <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => {
+                                const ratingValue = i + 1;
+                                const starProps = {
+                                    size: 18,
+                                    className: "transition-colors duration-200"
+                                }
+                                return (
+                                    <span key={i}>
+                                        {rev.rating >= ratingValue ? (
+                                            <IoStar {...starProps} className={`${starProps.className} fill-yellow-400`} />
+                                        ) : rev.rating >= ratingValue - 0.5 ? (
+                                            <IoStarHalf {...starProps} className={`${starProps.className} fill-yellow-400`} />
+                                        ) : (
+                                            <IoStar {...starProps} className={`${starProps.className} fill-gray-200`} />
+                                        )}
+                                    </span>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
