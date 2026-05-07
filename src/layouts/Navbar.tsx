@@ -3,6 +3,15 @@ import { useAuthStore } from "../store/authStore";
 import { useMyRestaurant } from "../pages/Owner/hooks/useMyRestaurant";
 import Button from "../ui/Button";
 
+const API_URL = "https://all-restaurants-in-one.vercel.app";
+
+// دالة معالجة الصور (معدلة عشان تدعم ميزة الحروف الأولى بتاعتك)
+const getValidImageUrl = (url: any) => {
+    if (!url || typeof url !== 'string' || url === "undefined" || url === "null" || url === "/default-avatar.png") return null;
+    if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
+    return `${API_URL}/${url.replace(/^\/+/, '')}`;
+};
+
 const Navbar = () => {
     const user = useAuthStore((state) => state.user);
     const navigate = useNavigate();
@@ -62,10 +71,11 @@ const Navbar = () => {
                                 <p className="text-sm font-bold text-text-primary group-hover:text-primary transition">
                                     {user.fullname}
                                 </p>
-                                <p className="text-xs text-text-secondary font-bold capitalize">{user.role.replace('_', ' ')}</p>
+                                <p className="text-xs text-text-secondary font-bold capitalize">{user.role?.replace('_', ' ')}</p>
                             </div>
                             <img
-                                src={user.profile_pic? user.profile_pic : `https://ui-avatars.com/api/?name=${user.fullname}`}
+                                // هنا استخدمنا معالج الصور، ولو مفيش صورة هيجيب حروف الاسم تلقائي
+                                src={getValidImageUrl(user.profile_pic) || `https://ui-avatars.com/api/?name=${user.fullname}`}
                                 alt="Profile"
                                 className="rounded-full border-2 border-border-light w-10 h-10 object-cover p-0.5"
                             />

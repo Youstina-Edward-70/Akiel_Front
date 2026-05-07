@@ -5,10 +5,12 @@ import type { User } from '../types/UserSchema';
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
-    login: (userData: User/*, remember: boolean*/) => void;
+    login: (userData: User) => void;
     logout: () => void;
     getRole: () => string | undefined;
     updateUserRole: (newRole: 'user' | 'owner' | 'admin') => void;
+    // الدالة الجديدة اللي هتحدث الصورة والبيانات في النافبار
+    updateUser: (updatedData: Partial<User>) => void; 
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -31,6 +33,11 @@ export const useAuthStore = create<AuthState>()(
 
             updateUserRole: (newRole) => set((state) => ({
                 user: state.user ? { ...state.user, role: newRole } : null
+            })),
+
+            // تنفيذ الدالة الجديدة
+            updateUser: (updatedData) => set((state) => ({
+                user: state.user ? { ...state.user, ...updatedData } : null
             })),
         }),
         {
