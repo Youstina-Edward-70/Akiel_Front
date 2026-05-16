@@ -165,7 +165,7 @@ const EditProfile = () => {
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="bg-background rounded-[2rem] p-8 shadow-sm border border-border-light">
+                    <div className="bg-background rounded-2xl p-8 shadow-sm border border-border-light">
                         <h3 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Basic Information
                         </h3>

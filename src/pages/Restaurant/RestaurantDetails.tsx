@@ -4,7 +4,7 @@ import RestaurantTabs from "./components/tabs/RestaurantTabs";
 import { useToggleFavorite } from "./hooks/useToggleFavorite";
 import { useAuthStore } from "../../store/authStore";
 import useRestaurantDetails from "./hooks/useRestaurantDetails";
-import SkeletonRestaurantDetails from "./ui/SkeletonRestaurantDetails";
+import SkeletonRestaurantDetails from "./components/SkeletonRestaurantDetails";
 import NotFound from "../NotFound";
 import { AxiosError } from "axios";
 

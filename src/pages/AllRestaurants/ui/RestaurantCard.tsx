@@ -1,7 +1,7 @@
 import { IoStarOutline, IoHeartOutline, IoHeart, IoBicycleOutline } from "react-icons/io5";
 import { FaMoneyBills } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-import { checkIfOpen } from "../../Restaurant/components/assets/utils";
+import { checkIfOpen } from "../../../utils/formatters";
 import type { RestaurantCardProps } from "../../../types/RestaurantSchema";
 import { useToggleFavorite } from "../../Restaurant/hooks/useToggleFavorite";
 import { useAuthStore } from "../../../store/authStore";

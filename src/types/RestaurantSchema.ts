@@ -16,11 +16,13 @@ const imageSchema = z.union([
     }),
   z.object({
     url: z.string().url(),
-    _id: z.string()
+    _id: z.string().optional(),
+    publicId: z.string().optional(),
   })
 ]).nullable().refine(val => val !== null, "Image is required.");
 
 const addressSchema = z.object({
+  _id: z.string().optional(),
   governorate: z.string().min(1, "Governorate is required"),
   city: z.string().min(1, "City is required"),
   street: z.string().min(1, "Street is required"),
@@ -81,6 +83,55 @@ const openingHoursSchema = z.object({
 
 const cuisineNames = CuisineTypes.map(c => c.name) as [string, ...string[]];
 
+const ownerSummarySchema = z.object({
+  _id: z.string(),
+  fullname: z.string(),
+  profile_pic: z.string().nullable().optional(),
+});
+
+export const RequestSummarySchema = z.object({
+  _id: z.string(),
+  name: z.string(),
+  coverPhoto: z.object({
+    url: z.string().url(),
+    publicId: z.string(),
+    _id: z.string(),
+  }),
+  Owner: ownerSummarySchema,
+  rejectionCount: z.number(),
+  createdAt: z.string(),
+});
+
+export const AllRequestsResponseSchema = z.object({
+  message: z.string(),
+  RequestsCount: z.number(),
+  Data: z.array(RequestSummarySchema),
+});
+
+export const SingleRequestResponseSchema = z.object({
+  message: z.string(),
+  Data: z.object({
+    _id: z.string(),
+    email: z.string().email(),
+    name: z.string(),
+    coverPhoto: z.object({
+      url: z.string().url(),
+      publicId: z.string(),
+      _id: z.string(),
+    }),
+    delivery: z.boolean(),
+    cuisineType: z.array(z.string()),
+    phoneNumber: z.string(),
+    whatsappNumber: z.string().nullable(),
+    address: z.array(addressSchema),
+    openingHours: z.array(openingHoursSchema),
+    Owner: ownerSummarySchema,
+    status: z.enum(["pending", "approved", "rejected"]),
+    rejectionCount: z.number(),
+    createdAt: z.string(),
+  }),
+});
+
 export const restaurantSchema = z.object({
   _id: z.string(),
   name: z.string()
@@ -107,7 +158,7 @@ export const restaurantSchema = z.object({
     .min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
 
   phoneNumber: z.string().min(10, "Invalid phone number"),
-  facebookLink: z.string().url("Invalid Facebook URL").optional,
+  facebookLink: z.string().url("Invalid Facebook URL").optional(),
   whatsappNumber: z.string().min(10).nullable().optional(),
 
   menu: z.array(DishSchema)
@@ -136,6 +187,8 @@ export type Dish = z.infer<typeof DishSchema>;
 export type DishFieldValue = string | File | Image | null | undefined;
 export type Address = z.infer<typeof addressSchema>;
 export type Image = z.infer<typeof imageSchema>;
+export type RequestSummary = z.infer<typeof RequestSummarySchema>;
+export type SingleRequestData = z.infer<typeof SingleRequestResponseSchema>["Data"];
 
 export interface RestaurantCardProps {
   _id: string;

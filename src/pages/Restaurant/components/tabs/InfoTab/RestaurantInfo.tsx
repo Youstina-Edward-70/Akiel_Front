@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoCallOutline, IoLogoWhatsapp, IoLocationOutline, IoCreateOutline, IoTrashOutline } from "react-icons/io5";
-import { FaFacebook } from "react-icons/fa";
+import { IoCreateOutline } from "react-icons/io5";
 import type { Restaurant } from "../../../../../types/RestaurantSchema";
 import Button from "../../../../../ui/Button";
 import ConfirmPopUp from "../../../../../ui/ConfirmPopUp";
 import { useDeleteRestaurant } from "../../../../Owner/hooks/useDeleteRestaurant";
 import { useAuthStore } from "../../../../../store/authStore";
+
+import { ContactDetails } from "./ContactDetails";
+import { OpeningHoursCard } from "./OpeningHoursCard";
+import { LocationCard } from "./LocationCard";
+import { DangerZone } from "./DangerZone";
 
 const RestaurantInfo = ({ restaurant, isOwner }: { restaurant: Restaurant; isOwner: boolean }) => {
     const navigate = useNavigate();
@@ -32,7 +36,7 @@ const RestaurantInfo = ({ restaurant, isOwner }: { restaurant: Restaurant; isOwn
     return (
         <div className="relative min-h-100 space-y-12 font-sans">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100 pb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100">
                 <div className="flex items-center gap-4">
                     <div className="w-2 h-10 bg-primary rounded-full shadow-sm shadow-primary/20" />
                     <div>
@@ -67,81 +71,19 @@ const RestaurantInfo = ({ restaurant, isOwner }: { restaurant: Restaurant; isOwn
             </section>
 
             {/* Contact Details */}
-            <section className="space-y-6">
-                <h3 className="text-xl font-bold text-text-primary">Contact Details</h3>
-                <div className="grid gap-4">
-                    <div className="flex items-center gap-4 text-text-secondary">
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                            <IoCallOutline className="text-xl text-primary" />
-                        </div>
-                        <span className="font-bold">{restaurant.phoneNumber}</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-text-secondary">
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                            <IoLogoWhatsapp className="text-xl text-green-500" />
-                        </div>
-                        <span className="font-bold">{restaurant.whatsappNumber || 'Not Available'}</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-text-secondary">
-                        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                            <FaFacebook className="text-xl text-blue-600" />
-                        </div>
-                        <span className="font-bold">{(restaurant.facebookLink as string) || 'Not Available'}</span>
-                    </div>
-                </div>
-            </section>
+            <ContactDetails 
+                phoneNumber={restaurant.phoneNumber}
+                whatsappNumber={restaurant.whatsappNumber}
+                facebookLink={restaurant.facebookLink as string}
+            />
 
             {/* Opening Hours */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-text-primary">Opening Hours</h3>
-                </div>
-                <div className="bg-gray-50/50 rounded-3xl p-6 space-y-4 border border-gray-100 shadow-sm">
-                    {restaurant.openingHours.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center border-b border-gray-200 last:border-0 pb-3 last:pb-0">
-                            <span className={'font-bold text-text-primary'}>
-                                {item.day}
-                            </span>
-                            <span className={'font-black text-text-secondary'}>
-                                {item.opens} - {item.closes}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            </section>
+            <OpeningHoursCard openingHours={restaurant.openingHours} />
 
             {/* Location */}
-            <section className="space-y-6">
-                <h3 className="text-xl font-bold text-text-primary">Location</h3>
-                <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center shrink-0">
-                        <IoLocationOutline className="text-xl text-primary" />
-                    </div>
-                    <p className="text-text-secondary leading-relaxed font-medium">
-                        {restaurant.address[0].details}, {restaurant.address[0].street}, {restaurant.address[0].city}, {restaurant.address[0].governorate}
-                    </p>
-                </div>
-            </section>
+            <LocationCard address={restaurant.address} />
 
-            {isOwner && (
-                <section className="pt-12 border-t border-red-50">
-                    <div className="bg-red-50/50 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-red-100">
-                        <div className="text-center md:text-left">
-                            <h3 className="text-xl font-bold text-red-600">Danger Zone</h3>
-                            <p className="text-red-400 font-medium mt-1">
-                                Once you delete a restaurant, there is no going back. Please be certain.
-                            </p>
-                        </div>
-                        <Button
-                            onClick={() => setIsDeleteModalOpen(true)}
-                            className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-red-200"
-                        >
-                            <IoTrashOutline className="text-xl" />
-                            Delete Restaurant
-                        </Button>
-                    </div>
-                </section>
-            )}
+            {isOwner && <DangerZone onDeleteClick={() => setIsDeleteModalOpen(true)} />}
 
             {/* Confirm Delete PopUp */}
             <ConfirmPopUp

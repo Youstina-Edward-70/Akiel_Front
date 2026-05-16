@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 // Layouts
 import MainLayout from '../layouts/layout/MainLayout';
 import AuthLayout from '../layouts/layout/AuthLayout';
+import ProtectedRoute from './ProtectedRoute';
 
 // Pages
 import Home from '../pages/Home/Home';
@@ -25,16 +26,17 @@ import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
 import EditDishPage from '../pages/Owner/menu/EditDishPage';
 
 // Admin
-import Requests from '../pages/Admin/Requsets';
-import Users from '../pages/Admin/Users';
-import Settings from '../pages/Admin/Settings';
+import AdminDashboard from '../pages/Admin/AdminDashboard';
+import Requests from '../pages/Admin/Requests/Requsets';
+import Users from '../pages/Admin/Users/Users';
+import Settings from '../pages/Admin/Settings/Settings';
 
 // Auth Features
 import Login from "../features/auth/login";
 import Signup from "../features/auth/signup";
 import ForgetPass from "../features/auth/forgetPass";
 import ResetPass from "../features/auth/resetPass";
-import ProtectedRoute from './ProtectedRoute';
+import SingleRequest from '../pages/Admin/Requests/SingleRequest';
 
 export const Routes = createBrowserRouter([
     {
@@ -73,15 +75,23 @@ export const Routes = createBrowserRouter([
                     { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
                 ]
             },
-            // Admin Routes
+        ],
+    },
+    // Admin Routes
+    {
+        element: <ProtectedRoute allowedRoles={["admin"]} />,
+        children: [
             {
-                element: <ProtectedRoute allowedRoles={["admin"]} />,
+                path: "/admin",
+                element: <AdminDashboard />,
                 children: [
+                    { index: true, element: <Requests /> },
                     { path: "requests", element: <Requests /> },
+                    {path: "/admin/requests/:id", element: <SingleRequest />},
                     { path: "users", element: <Users /> },
                     { path: "settings", element: <Settings /> },
-                ],
-            },
+                ]
+            }
         ],
     },
     {

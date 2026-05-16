@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { IoAddOutline } from "react-icons/io5";
 import useRestaurantPhotos from "../../../hooks/useRestaurantPhotos";
-import PhotoCard from "../../../ui/PhotoCard";
+import PhotoCard from "./PhotoCard";
 import ConfirmPopUp from "../../../../../ui/ConfirmPopUp";
 import EmptyState from "../../../../../ui/EmptyState";
 import { MdImageNotSupported } from "react-icons/md";

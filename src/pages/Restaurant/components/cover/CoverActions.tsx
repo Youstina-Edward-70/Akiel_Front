@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import useRestaurantDetails from "../../hooks/useRestaurantDetails";
+import { useAuthStore } from "../../../../store/authStore";
 import { IoImageOutline, IoTrashOutline, IoHeartOutline, IoHeart } from "react-icons/io5";
 import Button from "../../../../ui/Button";
 import ConfirmPopUp from "../../../../ui/ConfirmPopUp";
@@ -20,6 +21,9 @@ const CoverActions = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+    const { user } = useAuthStore();
+    const role = user?.role;
+
     const { updateCover, isUpdatingCover, deleteCover, isDeletingCover } = useRestaurantDetails(restaurantId);
 
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,6 +33,8 @@ const CoverActions = ({
             e.target.value = "";
         }
     };
+
+    const showHeartButton = !isOwner && role !== 'admin';
 
     return (
         <div className="flex items-center gap-3">
@@ -71,6 +77,7 @@ const CoverActions = ({
                     />
                 </>
             ) : (
+                showHeartButton && (
                 <button
                     onClick={onToggleFavorite}
                     className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 transition-all active:scale-90 shadow-2xl cursor-pointer group/heart"
@@ -81,6 +88,7 @@ const CoverActions = ({
                         <IoHeartOutline className="text-white h-6 w-6 group-hover/heart:text-red-400 transition-colors" />
                     )}
                 </button>
+                )
             )}
         </div>
     );

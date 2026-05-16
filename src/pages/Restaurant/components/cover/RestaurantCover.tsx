@@ -1,6 +1,6 @@
 import { motion } from "framer-motion"
 import type { Restaurant } from "../../../../types/RestaurantSchema.ts";
-import { checkIfOpen } from "../assets/utils.ts";
+import { checkIfOpen } from "../../../../utils/formatters.ts";
 
 import CoverImage from "./CoverImage.tsx";
 import CoverBadges from "./CoverBadges.tsx";
