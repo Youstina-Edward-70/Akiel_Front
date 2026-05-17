@@ -3,6 +3,7 @@ import { createBrowserRouter } from 'react-router-dom';
 // Layouts
 import MainLayout from '../layouts/layout/MainLayout';
 import AuthLayout from '../layouts/layout/AuthLayout';
+import ProtectedRoute from './ProtectedRoute';
 
 // Pages
 import Home from '../pages/Home/Home';
@@ -19,23 +20,24 @@ import EditProfile from '../pages/User/EditProfile';
 import Favorites from '../pages/User/Favorites';
 import Reviews from '../pages/User/Reviews';
 import AddRestaurant from '../pages/Owner/AddRestaurant';
-import AddReview from '../pages/User/AddReview'
+import AddReview from '../pages/User/AddReview';
 
 // Owner
 import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
 import EditDishPage from '../pages/Owner/menu/EditDishPage';
 
 // Admin
-import Requests from '../pages/Admin/Requsets';
-import Users from '../pages/Admin/Users';
-import Settings from '../pages/Admin/Settings';
+import AdminDashboard from '../pages/Admin/AdminDashboard';
+import Requests from '../pages/Admin/Requests/Requsets';
+import Users from '../pages/Admin/Users/Users';
+import Settings from '../pages/Admin/Settings/Settings';
+import SingleRequest from '../pages/Admin/Requests/SingleRequest';
 
 // Auth Features
 import Login from "../features/auth/login";
 import Signup from "../features/auth/signup";
 import ForgetPass from "../features/auth/forgetPass";
 import ResetPass from "../features/auth/resetPass";
-import ProtectedRoute from './ProtectedRoute';
 
 export const Routes = createBrowserRouter([
     {
@@ -75,15 +77,23 @@ export const Routes = createBrowserRouter([
                     { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
                 ]
             },
-            // Admin Routes
+        ],
+    },
+    // Admin Routes
+    {
+        element: <ProtectedRoute allowedRoles={["admin"]} />,
+        children: [
             {
-                element: <ProtectedRoute allowedRoles={["admin"]} />,
+                path: "/admin",
+                element: <AdminDashboard />,
                 children: [
-                    { path: "/requests", element: <Requests /> }, 
-                    { path: "/users", element: <Users /> },      
-                    { path: "/settings", element: <Settings /> }, 
-                ],
-            },
+                    { index: true, element: <Requests /> },
+                    { path: "requests", element: <Requests /> },
+                    { path: "requests/:id", element: <SingleRequest /> },
+                    { path: "users", element: <Users /> },
+                    { path: "settings", element: <Settings /> },
+                ]
+            }
         ],
     },
     {
@@ -99,6 +109,6 @@ export const Routes = createBrowserRouter([
     // Catch-all for 404
     {
         path: "*", 
-        element: <NotFound code="404" message="Page Not Found!" subtitle="The page you are looking for doesn't exist or has been moved." /> // 👈 تم تعديل الكود لـ 404
+        element: <NotFound code="404" message="Page Not Found!" subtitle="The page you are looking for doesn't exist or has been moved." />
     }
 ]);

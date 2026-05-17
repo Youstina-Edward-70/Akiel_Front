@@ -12,8 +12,8 @@ export const API_ENDPOINTS = {
         // Take Restaurant ID
         // Reading
         GET_BY_ID: (id: string) => `${BASE_URL}/restaurants/${id}`, // GET
-        GET_FULL_DETAILS: (id: string) => 
-        `${BASE_URL}/restaurants/${id}/details?select=menu&select=reviews&select=gallery`, // GET
+        GET_FULL_DETAILS: (id: string) =>
+            `${BASE_URL}/restaurants/${id}/details?select=menu&select=reviews&select=gallery`, // GET
     },
 
     // --- User Data ---
@@ -37,7 +37,7 @@ export const API_ENDPOINTS = {
         MY_RESTAURANT: `${BASE_URL}/user/my/dashboard`, // GET
         CREATE_RESTAURANT: `${BASE_URL}/owner/restaurants`, // POST
         UPDATE_RESTAURANT: (id: string) => `${BASE_URL}restaurant-data/main-data/${id}`, // PUT
-        DELETE_RESTAURANT: (id:string) => `${BASE_URL}restaurants/${id}`, // DELETE
+        DELETE_RESTAURANT: (id: string) => `${BASE_URL}restaurants/${id}`, // DELETE
 
         // Cover Photo Actions
         COVER: {
@@ -62,11 +62,12 @@ export const API_ENDPOINTS = {
 
     // --- Admin Dashboard ---
     ADMIN: {
-        SETTINGS: `${BASE_URL}/admin/settings`,
-        USERS: `${BASE_URL}/admin/users`,
-        ALL_RESTAURANTS: `${BASE_URL}/admin/restaurants`,
-        // REVIEWS_MODERATION: `${BASE_URL}/admin/reviews`,
-        // SYSTEM_STATS: `${BASE_URL}/admin/system-stats`,
+        GET_ALL_REQUESTS: `${BASE_URL}/admin/requests`, // GET
+        GET_ONE_REQUEST: (requestId: string) => `${BASE_URL}/admin/requests/${requestId}`, // GET
+        ACCEPT_OR_REGECT_RESTAURANT: (requestId: string) => `${BASE_URL}/admin/requests/${requestId}/decision`, // POST
+        GET_ALL_USERS: `${BASE_URL}/user/getAllUsers`, // GET
+        GET_SETTINGS: `${BASE_URL}/admin/settings`, // GET
+        UPDATE_SETTINGS: `${BASE_URL}/admin/settings`, // PUT
     },
 
     // --- Auth ---

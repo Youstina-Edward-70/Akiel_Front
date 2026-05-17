@@ -1,6 +1,31 @@
-import { type OpeningHour } from "../../../../types/RestaurantSchema";
+import type { Address, OpeningHour } from "../types/RestaurantSchema";
 
-export const checkIfOpen = (openingHours: OpeningHour[]) => {
+export const formatTime = (timeStr: string | null | undefined): string => {
+    if (!timeStr) return "";
+    const [hours, minutes] = timeStr.split(":");
+    const hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+};
+
+
+export const formatDate = (dateStr: string | null | undefined): string => {
+    if (!dateStr) return "";
+    return new Date(dateStr).toLocaleDateString('en-US', {
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric'
+    });
+};
+
+
+export const formatAddress = (address: Address): string => {
+    if (!address) return "";
+    return `${address.details}, ${address.street} - ${address.city}, ${address.governorate}`;
+};
+
+export const checkIfOpen = (openingHours: OpeningHour[]): boolean => {
     if (!openingHours || openingHours.length === 0) return false;
 
     const now = new Date();
@@ -30,3 +55,4 @@ export const checkIfOpen = (openingHours: OpeningHour[]) => {
 
     return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
 };
+

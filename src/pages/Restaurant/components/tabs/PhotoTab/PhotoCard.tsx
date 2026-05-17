@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { IoTrashOutline } from "react-icons/io5";
-import Button from "../../../ui/Button";
-import type { Image } from "../../../types/RestaurantSchema";
+import Button from "../../../../../ui/Button";
+import type { Image } from "../../../../../types/RestaurantSchema";
 
 type RemoteImage = Exclude<Image, File | null | undefined>;
 

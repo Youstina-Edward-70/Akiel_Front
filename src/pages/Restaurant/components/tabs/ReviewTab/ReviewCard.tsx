@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import type { Review } from "../../../types/UserSchema";
+import type { Review } from "../../../../../types/UserSchema";
 import { IoCreateOutline, IoStar, IoStarHalf, IoTrashOutline } from "react-icons/io5";
-import Button from "../../../ui/Button";
+import Button from "../../../../../ui/Button";
 
 interface ReviewCardProps {
     rev: Review;

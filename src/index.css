@@ -31,7 +31,7 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-heading: 'Manrope', 'Inter', sans-serif;
 
-  --image-hero-overlay: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../public/images/Food-Background.png');
+  --image-hero-overlay: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/Food-Background.png');
   --image-restaurant-bg: url('/images/restaurant-default.svg');
 }
 

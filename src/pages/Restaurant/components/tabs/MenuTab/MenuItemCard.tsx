@@ -1,6 +1,6 @@
-import type { Dish } from "../../../types/RestaurantSchema";
+import type { Dish } from "../../../../../types/RestaurantSchema";
 import { IoCreateOutline, IoTrashOutline } from "react-icons/io5";
-import Button from "../../../ui/Button";
+import Button from "../../../../../ui/Button";
 
 interface MenuItemCardProps {
     item: Dish;
