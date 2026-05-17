@@ -5,7 +5,7 @@ import {
   PriceRanges,
   RestaurantStatuses,
   LIMITS,
-} from "./constants.ts";
+} from "./constants";
 
 const imageSchema = z.union([
   z.instanceof(File).refine((file) => file.type.startsWith("image/"), {
@@ -51,7 +51,7 @@ export const DishSchema = z.object({
   image: imageSchema,
 });
 
-export interface DishErrors {
+export interface DishIssues {
   name?: string;
   price?: string;
   description?: string;
@@ -107,7 +107,7 @@ export const restaurantSchema = z.object({
     .min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
 
   phoneNumber: z.string().min(10, "Invalid phone number"),
-  facebookLink: z.string().url("Invalid Facebook URL").optional,
+  facebookLink: z.string().url("Invalid Facebook URL").optional(),
   whatsappNumber: z.string().min(10).nullable().optional(),
 
   menu: z.array(DishSchema)
@@ -137,13 +137,19 @@ export type DishFieldValue = string | File | Image | null | undefined;
 export type Address = z.infer<typeof addressSchema>;
 export type Image = z.infer<typeof imageSchema>;
 
-export interface RestaurantCardProps {
-  _id: string;
-  name: string;
-  coverPhoto: Image;
-  rating: number;
-  cuisineType: string[];
-  priceRange: string;
-  openingHours: OpeningHour[];
-  delivery: boolean;
-}
+export const RestaurantFormSchema = z.object({
+  name: z.string().min(LIMITS.NAME_MIN, `Name must be at least ${LIMITS.NAME_MIN} characters`),
+  description: z.string().min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
+  phoneNumber: z.string().regex(/^01[0125][0-9]{8}$/, "Invalid Egyptian phone number"),
+  email: z.string().email("Invalid email address"),
+  delivery: z.boolean().default(false),
+  address: z.array(addressSchema).min(1, "At least one address is required"),
+  openingHours: z.array(z.object({
+      day: z.string(),
+      opens: z.string().optional().nullable(),
+      closes: z.string().optional().nullable(),
+      isClosed: z.boolean().default(false)
+  })).optional()
+});
+
+export type RestaurantFormInput = z.input<typeof RestaurantFormSchema>;

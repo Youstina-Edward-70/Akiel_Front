@@ -19,6 +19,7 @@ import EditProfile from '../pages/User/EditProfile';
 import Favorites from '../pages/User/Favorites';
 import Reviews from '../pages/User/Reviews';
 import AddRestaurant from '../pages/Owner/AddRestaurant';
+import AddReview from '../pages/User/AddReview'
 
 // Owner
 import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
@@ -61,6 +62,7 @@ export const Routes = createBrowserRouter([
                     { path: "/favorites", element: <Favorites /> },
                     { path: "/reviews", element: <Reviews /> },
                     { path: "/add-restaurant", element: <AddRestaurant /> },
+                    { path: "/restaurant/:id/review", element: <AddReview /> }, 
                 ]
             },
             // Owner Routes
@@ -77,9 +79,9 @@ export const Routes = createBrowserRouter([
             {
                 element: <ProtectedRoute allowedRoles={["admin"]} />,
                 children: [
-                    { path: "requests", element: <Requests /> },
-                    { path: "users", element: <Users /> },
-                    { path: "settings", element: <Settings /> },
+                    { path: "/requests", element: <Requests /> }, 
+                    { path: "/users", element: <Users /> },      
+                    { path: "/settings", element: <Settings /> }, 
                 ],
             },
         ],
@@ -96,6 +98,7 @@ export const Routes = createBrowserRouter([
     },
     // Catch-all for 404
     {
-        path: "*", element: <NotFound code="500" message="The kitchen is currently in a rush!" subtitle="Our chefs are dealing with a temporary issue. Please take a seat and refresh the page in a moment." />
+        path: "*", 
+        element: <NotFound code="404" message="Page Not Found!" subtitle="The page you are looking for doesn't exist or has been moved." /> // 👈 تم تعديل الكود لـ 404
     }
 ]);

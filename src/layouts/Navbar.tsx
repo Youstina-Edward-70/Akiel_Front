@@ -1,22 +1,30 @@
-import { NavLink, Link, useNavigate } from "react-router-dom"
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useMyRestaurant } from "../pages/Owner/hooks/useMyRestaurant";
 import Button from "../ui/Button";
 
 const API_URL = "https://all-restaurants-in-one.vercel.app";
 
-// دالة معالجة الصور (معدلة عشان تدعم ميزة الحروف الأولى بتاعتك)
-const getValidImageUrl = (url: any) => {
+type ImageUrlType = string | null | undefined;
+
+const getValidImageUrl = (url: ImageUrlType) => {
     if (!url || typeof url !== 'string' || url === "undefined" || url === "null" || url === "/default-avatar.png") return null;
     if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
     return `${API_URL}/${url.replace(/^\/+/, '')}`;
 };
 
-const Navbar = () => {
-    const user = useAuthStore((state) => state.user);
-    const navigate = useNavigate();
+interface NavbarUser {
+    fullname?: string;
+    role?: string;
+    profile_pic?: string;
+}
 
-    const {data: myRestaurant} = useMyRestaurant();
+const Navbar = () => {
+    const authStoreState = useAuthStore() as unknown as { user: NavbarUser | null };
+    const user = authStoreState.user;
+    
+    const navigate = useNavigate();
+    const { data: myRestaurant } = useMyRestaurant();
 
     const activeLink = ({ isActive }: { isActive: boolean }) => 
         `transition ${isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary/90"}`;
@@ -33,7 +41,6 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Navigation Links */}
                 <div className="flex justify-between items-center">
                     <div className="hidden md:flex space-x-8">
                         <NavLink to="/" className={activeLink}>
@@ -53,15 +60,13 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* User Actions */}
                 <div className="flex items-center gap-4">
                     {!user ? (
                         <>
                             <Link to="/auth/login" className="px-4 py-2 text-text-primary hover:text-primary/90 transition">
                                 Sign In
                             </Link>
-                            <Button  onClick={() => navigate('/auth/signup')}
-                                className="px-5 py-1.5 rounded-full">
+                            <Button onClick={() => navigate('/auth/signup')} className="px-5 py-1.5 rounded-full">
                                 Join
                             </Button>
                         </>
@@ -71,10 +76,11 @@ const Navbar = () => {
                                 <p className="text-sm font-bold text-text-primary group-hover:text-primary transition">
                                     {user.fullname}
                                 </p>
-                                <p className="text-xs text-text-secondary font-bold capitalize">{user.role?.replace('_', ' ')}</p>
+                                <p className="text-xs text-text-secondary font-bold capitalize">
+                                    {user.role?.replace('_', ' ')}
+                                </p>
                             </div>
                             <img
-                                // هنا استخدمنا معالج الصور، ولو مفيش صورة هيجيب حروف الاسم تلقائي
                                 src={getValidImageUrl(user.profile_pic) || `https://ui-avatars.com/api/?name=${user.fullname}`}
                                 alt="Profile"
                                 className="rounded-full border-2 border-border-light w-10 h-10 object-cover p-0.5"
