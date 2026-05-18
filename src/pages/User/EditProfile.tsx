@@ -1,143 +1,14 @@
-import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { useAuthStore } from "../../store/authStore";
-import { useUserStore } from "../../store/userStore";
-import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 import { FaCamera, FaArrowLeft, FaSave } from "react-icons/fa";
-import toast from "react-hot-toast";
-
-const API_URL = "https://all-restaurants-in-one.vercel.app";
-
-const getValidImageUrl = (url: any) => {
-    if (!url || typeof url !== 'string' || url === "undefined" || url === "null" || url === "/default-avatar.png") return "/default-avatar.png";
-    if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
-    return `${API_URL}/${url.replace(/^\/+/, '')}`;
-};
+import { useEditProfile } from "./hooks/useEditProfile";
 
 const EditProfile = () => {
-    const authUser = useAuthStore((state) => state.user);
-    const updateUserAuth = useAuthStore((state) => (state as any).updateUser);
-    const { profile, updateProfile } = useUserStore();
-    
-    const safeProfile = profile as any;
-    const safeAuthUser = authUser as any;
-    
-    const token = (useAuthStore.getState() as any).token || safeAuthUser?.Token || safeAuthUser?.token;
-    const userId = safeAuthUser?._id || safeAuthUser?.id;
-    
-    const navigate = useNavigate();
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null); 
-
-    const currentFullName = safeProfile?.fullname || safeAuthUser?.fullname || "";
-    const currentEmail = safeProfile?.email || safeAuthUser?.email || "";
-    const currentPhone = safeProfile?.phone || safeAuthUser?.phone || "";
-    const currentAddress = safeProfile?.address?.[0] || safeAuthUser?.address?.[0] || { governorate: "", city: "", street: "", details: "" };
-    
-    const currentPic = getValidImageUrl(selectedImage || safeProfile?.profile_pic || safeAuthUser?.profile_pic || safeAuthUser?.image);
-
-    const { register, handleSubmit } = useForm({
-        defaultValues: {
-            fullname: currentFullName,
-            email: currentEmail,
-            phone: currentPhone,
-            address: currentAddress
-        }
-    });
-
-    const onImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImageFile(file); 
-            setSelectedImage(URL.createObjectURL(file)); 
-        }
-    };
-
-    const onSubmit = async (data: any) => {
-        if (!userId || !token) return toast.error("Session expired, please login again.");
-        const toastId = toast.loading("Updating profile...");
-
-        try {
-            const updateResponse = await fetch(`${API_URL}/user/editUserProfile/${userId}`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data) 
-            });
-
-            if (!updateResponse.ok) {
-                const err = await updateResponse.json();
-                throw new Error(err.message || "Failed to update profile data");
-            }
-
-            let finalImageUrl = safeAuthUser?.profile_pic || safeAuthUser?.image;
-
-            if (imageFile) {
-                const formData = new FormData();
-                formData.append("image", imageFile);
-                const photoResponse = await fetch(`${API_URL}/user/uploadProfilePhoto`, {
-                    method: "PATCH",
-                    headers: { "Authorization": `Bearer ${token}` },
-                    body: formData
-                });
-                
-                if (photoResponse.ok) {
-                    const photoData = await photoResponse.json();
-                    
-                    // استخراج الرابط المبدئي
-                    let serverUrl = photoData?.profile_pic || photoData?.user?.profile_pic || photoData?.data?.profile_pic || photoData?.image;
-                    
-                    // حل ذكي للإيرور: لو السيرفر رجع object بدل string، نحاول نطلع جواه كلمة url أو path
-                    if (typeof serverUrl === 'object' && serverUrl !== null) {
-                        serverUrl = serverUrl.url || serverUrl.path || serverUrl.secure_url;
-                    }
-
-                    // التأكد إن الرابط نص صحيح قبل ما نستخدم .includes
-                    if (typeof serverUrl === 'string') {
-                        finalImageUrl = `${serverUrl}${serverUrl.includes('?') ? '&' : '?'}t=${new Date().getTime()}`;
-                    } else {
-                        finalImageUrl = URL.createObjectURL(imageFile); 
-                    }
-                } else {
-                    throw new Error("Data updated, but photo failed.");
-                }
-            }
-
-            const newUserData: any = {
-                ...safeAuthUser, 
-                fullname: data.fullname,
-                email: data.email,
-                phone: data.phone,
-                address: [data.address],
-                profile_pic: finalImageUrl,
-                image: finalImageUrl 
-            };
-
-            updateProfile(newUserData);
-            
-            if (typeof updateUserAuth === "function") {
-                updateUserAuth(newUserData);
-            }
-            useAuthStore.setState({ user: newUserData });
-
-            toast.success("Profile updated successfully!", { id: toastId });
-            
-            setTimeout(() => {
-                navigate("/profile");
-            }, 500);
-
-        } catch (error: any) {
-            toast.error(error.message || "Failed to update profile", { id: toastId });
-        }
-    };
+    const { register, handleSubmit, saveProfileData, onImageChange, currentPic, currentFullName, navigate } = useEditProfile();
 
     return (
         <div className="min-h-screen bg-surface py-12 font-sans text-left">
             <div className="max-w-3xl mx-auto px-4">
-                
                 <div className="flex items-center gap-4 mb-2">
                     <button type="button" onClick={() => navigate(-1)} className="p-3 bg-background rounded-full shadow-sm border border-border-light hover:bg-gray-50 transition text-text-secondary">
                         <FaArrowLeft size={18} />
@@ -160,12 +31,12 @@ const EditProfile = () => {
                             <FaCamera size={14} />
                         </button>
                     </div>
-                    <h2 className="mt-4 text-2xl font-black text-text-primary">{currentFullName || "User"}</h2>
-                    <p className="text-sm text-text-secondary font-medium">User</p>
+                    <h2 className="mt-4 text-2xl font-black text-text-primary">{currentFullName}</h2>
+                    <p className="text-sm text-text-secondary font-medium">Update Photo</p>
                 </div>
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="bg-background rounded-2xl p-8 shadow-sm border border-border-light">
+                <form onSubmit={handleSubmit(saveProfileData)} className="space-y-8">
+                    <div className="bg-background rounded-3xl p-8 shadow-sm border border-border-light">
                         <h3 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Basic Information
                         </h3>
@@ -185,7 +56,7 @@ const EditProfile = () => {
                         </div>
                     </div>
 
-                    <div className="bg-background rounded-[2rem] p-8 shadow-sm border border-border-light">
+                    <div className="bg-background rounded-3xl p-8 shadow-sm border border-border-light">
                         <h3 className="text-lg font-black text-text-primary mb-6 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-primary rounded-full"></span> Address Details
                         </h3>
@@ -210,10 +81,8 @@ const EditProfile = () => {
                     </div>
 
                     <div className="flex gap-4">
-                        <button type="button" onClick={() => navigate(-1)} className="flex-1 py-4 bg-background border border-border-light text-text-secondary rounded-2xl font-black hover:bg-surface transition">
-                            Cancel
-                        </button>
-                        <button type="submit" className="flex-[2] py-4 bg-primary text-white rounded-2xl font-black shadow-lg hover:bg-primary-hover transition flex items-center justify-center gap-2">
+                        <button type="button" onClick={() => navigate(-1)} className="flex-1 py-4 bg-background border border-border-light text-text-secondary rounded-2xl font-black hover:bg-surface transition">Cancel</button>
+                        <button type="submit" className="flex-2 py-4 bg-primary text-white rounded-2xl font-black shadow-lg hover:bg-primary-hover transition flex items-center justify-center gap-2">
                             <FaSave /> Save Changes
                         </button>
                     </div>

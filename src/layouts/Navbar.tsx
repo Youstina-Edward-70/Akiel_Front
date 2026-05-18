@@ -1,4 +1,4 @@
-import { NavLink, Link, useNavigate } from "react-router-dom"
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useMyRestaurant } from "../pages/Owner/hooks/useMyRestaurant";
 import Button from "../ui/Button";
@@ -8,7 +8,6 @@ const Navbar = () => {
     const navigate = useNavigate();
 
     const {data: myRestaurant} = useMyRestaurant();
-
     const activeLink = ({ isActive }: { isActive: boolean }) => 
         `transition ${isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary/90"}`;
 
@@ -24,7 +23,6 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* Navigation Links */}
                 <div className="flex justify-between items-center">
                     <div className="hidden md:flex space-x-8">
                         <NavLink to="/" className={activeLink}>
@@ -44,15 +42,13 @@ const Navbar = () => {
                     </div>
                 </div>
 
-                {/* User Actions */}
                 <div className="flex items-center gap-4">
                     {!user ? (
                         <>
                             <Link to="/auth/login" className="px-4 py-2 text-text-primary hover:text-primary/90 transition">
                                 Sign In
                             </Link>
-                            <Button  onClick={() => navigate('/auth/signup')}
-                                className="px-5 py-1.5 rounded-full">
+                            <Button onClick={() => navigate('/auth/signup')} className="px-5 py-1.5 rounded-full">
                                 Join
                             </Button>
                         </>
@@ -62,10 +58,12 @@ const Navbar = () => {
                                 <p className="text-sm font-bold text-text-primary group-hover:text-primary transition">
                                     {user.fullname}
                                 </p>
-                                <p className="text-xs text-text-secondary font-bold capitalize">{user.role?.replace('_', ' ')}</p>
+                                <p className="text-xs text-text-secondary font-bold capitalize">
+                                    {user.role?.replace('_', ' ')}
+                                </p>
                             </div>
                             <img
-                                src={user.profile_pic || `https://ui-avatars.com/api/?name=${user.fullname}`}
+                                src={user.profile_pic?.url || `https://ui-avatars.com/api/?name=${user.fullname}`}
                                 alt="Profile"
                                 className="rounded-full border-2 border-border-light w-10 h-10 object-cover p-0.5"
                             />

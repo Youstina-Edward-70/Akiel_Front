@@ -1,0 +1,77 @@
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useAuthStore } from "../../../store/authStore";
+
+const API_URL = "https://all-restaurants-in-one.vercel.app";
+
+export interface ReviewItem {
+    _id?: string;
+    id?: string;
+    restaurantName?: string;
+    date?: string;
+    rating: number;
+    Content?: string;
+    content?: string;
+}
+
+interface StoreState {
+    token?: string;
+    user?: { Token?: string; token?: string };
+}
+
+export const useReviews = () => {
+    const [reviews, setReviews] = useState<ReviewItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const state = useAuthStore.getState() as unknown as StoreState;
+    const authUser = useAuthStore((s: unknown) => (s as StoreState).user);
+    const token = state.token || authUser?.Token || authUser?.token;
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            const response = await fetch(`${API_URL}/reviews/my-reviews`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setReviews(data.reviews || data || []);
+            }
+        };
+
+        if (token) {
+            fetchReviews().then(
+                () => setIsLoading(false),
+                () => setIsLoading(false)
+            );
+        } else {
+            setIsLoading(false);
+        }
+    }, [token]);
+
+    const handleDelete = async (id: string) => {
+        const performDelete = async () => {
+            const response = await fetch(`${API_URL}/reviews/delete-review/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                setReviews(prev => prev.filter(review => (review._id || review.id) !== id));
+                toast.success("Review deleted successfully");
+            } else {
+                toast("Failed to delete review", { icon: "❌" });
+            }
+        };
+
+        performDelete().then(
+            () => {},
+            () => toast("Network issue", { icon: "❌" })
+        );
+    };
+
+    return { reviews, isLoading, handleDelete };
+};
