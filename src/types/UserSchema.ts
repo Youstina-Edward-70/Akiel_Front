@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 const addressSchema = z.object({
-    governorate: z.string().optional().default(""),
-    city: z.string().optional().default(""),
-    street: z.string().optional().default(""),
-    details: z.string().optional().default(""),
+    governorate: z.string().default(""),
+    city: z.string().default(""),
+    street: z.string().default(""),
+    details: z.string().default(""),
 });
 
 export const favoriteSchema = z.object({
@@ -29,7 +29,7 @@ export const reviewSchema = z.object({
     _id: z.string().optional(),
     restaurant: z.string(),
     Content: z.string().min(3, "Comment is too short"),
-    rating: z.number().min(1).max(5),
+    rating: z.number().min(0).max(5),
     createdAt: z.string(),
     user: z.object({
         _id: z.string(),
@@ -54,8 +54,11 @@ export const userSchema = z.object({
         .min(11, "Phone number must be at least 11 digits")
         .trim(),
 
-    profile_pic: z.string()
-        .nullable(),
+    profile_pic: z.object({
+        url: z.string(),
+        publicId: z.string(),
+        _id: z.string().optional(),
+    }).nullable().default(null),
 
     role: z.enum(['user', 'admin', 'owner'])
         .default('user'),
@@ -64,14 +67,75 @@ export const userSchema = z.object({
     reviewsCount: z.number().default(0),
     isRestaurantOwner: z.boolean().default(false),
 
-    address: addressSchema.optional(),
+    address: addressSchema.default({
+        details: "",
+        street: "",
+        city: "",
+        governorate: ""
+    }),
 
     Token: z.string().optional(),
 
-    createdAt: z.date().optional(),
-    updatedAt: z.date().optional(),
+    createdAt: z.string().optional(),
+    updatedAt: z.string().optional(),
 });
 
+// Admin Users Schemas
+export const adminUserSummarySchema = z.object({
+    _id: z.string(),
+    fullname: z.string(),
+    email: z.string(),
+    role: z.enum(['user', 'admin', 'owner']),
+    profile_pic: z.object({
+        url: z.string(),
+        publicId: z.string(),
+        _id: z.string().optional(),
+    }).nullable().optional(),
+    phone: z.string().optional().nullable(),
+    createdAt: z.string().optional(),
+});
+
+export const allUsersResponseSchema = z.object({
+    message: z.string().optional(),
+    data: z.array(adminUserSummarySchema),
+    meta: z.object({
+        pagesCount: z.number(),
+        totalInDatabase: z.number(),
+    }).optional(),
+});
+
+export const singleUserResponseSchema = z.object({
+    message: z.string().optional(),
+    Data: z.object({
+        _id: z.string(),
+        fullname: z.string(),
+        email: z.string(),
+        role: z.enum(['user', 'admin', 'owner']),
+        profile_pic: z.object({
+            url: z.string(),
+            publicId: z.string(),
+            _id: z.string().optional(),
+        }).nullable().optional(),
+        phone: z.string().optional().nullable(),
+        address: addressSchema.optional(),
+        createdAt: z.string().optional(),
+    }),
+});
+
+export const editUserSchema = z.object({
+    fullname: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    phone: z.string().optional(),
+    role: z.enum(["admin", "owner", "user"]),
+    address: z.object({
+        details: z.string().optional(),
+        street: z.string().optional(),
+        city: z.string().optional(),
+        governorate: z.string().optional(),
+    }).optional(),
+});
+
+// Login schema
 export interface LoginResponse {
     user: Omit<User, 'Token'>;
     Token: string;
@@ -84,10 +148,11 @@ export const LoginSchema = z.object({
     remember: z.boolean().optional(),
 });
 
+// Signup schema
 export const SignupSchema = z.object({
     fullname: z.string().min(3, "Name must be at least 3 characters"),
     email: z.string().email("Invalid email format"),
-    phone: z.string().regex(/^01[0125][0-9]{8}$/, "Phone number must be a valid Egyptian number"),
+    phone: z.string().regex(/^(?:\+20|0020)?0?1[0125]\d{8}$/, "Phone number must be a valid Egyptian number"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
@@ -95,10 +160,12 @@ export const SignupSchema = z.object({
     path: ["confirmPassword"],
 });
 
+// Forget Password Schema
 export const ForgetSchema = z.object({
     email: z.string().email("Invalid email format"),
 });
 
+// Reset Password Schema
 export const ResetPasswordSchema = z.object({
     email: z.string().email("Invalid email format"),
     otp: z.string().min(6, "OTP must be at least 6 characters"),
@@ -113,6 +180,10 @@ export type User = z.infer<typeof userSchema>;
 export type Address = z.infer<typeof addressSchema>;
 export type Favorite = z.infer<typeof favoriteSchema>;
 export type Review = z.infer<typeof reviewSchema>;
+export type AdminUserSummary = z.infer<typeof adminUserSummarySchema>;
+export type SingleUserData = z.infer<typeof singleUserResponseSchema>["Data"];
+export type EditUserFormData = z.infer<typeof editUserSchema>;
+
 export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type SignupFormValues = z.infer<typeof SignupSchema>;
 export type ForgetFormValues = z.infer<typeof ForgetSchema>;

@@ -1,6 +1,14 @@
-import type { ButtonsFilterProps } from "../../../../types/SearchSchema";
 import { useSearchActions } from "../../../../features/search/hooks/useSearchActions";
 import Button from "../../../../ui/Button";
+
+export interface ButtonsFilterProps {
+    delivery: { have: boolean; dontHave: boolean };
+    minRating: number;
+    priceRange: number;
+    setDelivery: React.Dispatch<React.SetStateAction<{ have: boolean; dontHave: boolean }>>;
+    setMinRating: React.Dispatch<React.SetStateAction<number>>;
+    setPriceRange: React.Dispatch<React.SetStateAction<number>>;
+}
 
 const ButtonsFilter = (
     {

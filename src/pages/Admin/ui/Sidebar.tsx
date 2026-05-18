@@ -18,7 +18,7 @@ export default function Sidebar() {
                         alt="Logo"
                         className="w-8 h-8 md:brightness-0 md:invert transition-all"
                     />
-                    <span className="text-lg md:text-xl font-black text-gray-800 md:text-white tracking-tight">
+                    <span className="text-lg md:text-xl font-black text-text-primary md:text-white tracking-tight">
                         Akiel
                     </span>
                 </div>
@@ -28,7 +28,7 @@ export default function Sidebar() {
                 
                 <NavLinks />
 
-                <div className="hidden h-auto w-full rounded-xl bg-gray-50/50 grow md:block"></div>
+                <div className="hidden h-auto w-full rounded-xl bg-gray-50 grow md:block"></div>
 
                 <Link
                     to="/profile"
@@ -37,17 +37,17 @@ export default function Sidebar() {
                     {/* User Avatar */}
                     <div className="w-7 h-7 md:w-9 md:h-9 rounded-full bg-white overflow-hidden shrink-0 border border-gray-200">
                         <img
-                            src={user?.profile_pic || `https://ui-avatars.com/api/?name=${user?.fullname || 'Admin'}`}
+                            src={user?.profile_pic?.url || `https://ui-avatars.com/api/?name=${user?.fullname || 'Admin'}`}
                             alt="Profile"
                             className="w-full h-full object-cover"
                         />
                     </div>
 
                     <div className="hidden md:block overflow-hidden">
-                        <p className="text-xs font-bold text-gray-800 truncate leading-tight">
+                        <p className="text-xs font-bold text-text-primary truncate leading-tight">
                             {user?.fullname || "Admin Name"}
                         </p>
-                        <div className="flex items-center gap-1 text-gray-400 mt-0.5">
+                        <div className="flex items-center gap-1 text-text-secondary mt-0.5">
                             <IoArrowBackOutline size={10} />
                             <span className="text-[9px] font-medium uppercase tracking-wider">Back to Profile</span>
                         </div>

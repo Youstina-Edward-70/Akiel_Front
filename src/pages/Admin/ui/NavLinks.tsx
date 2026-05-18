@@ -18,7 +18,7 @@ export default function NavLinks() {
                         key={link.name}
                         to={link.href}
                         className={({ isActive }) => clsx(
-                            "flex h-14 grow items-center justify-center gap-2 rounded-xl p-3 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3 transition-all duration-300",
+                            "flex h-14 grow items-center justify-center gap-2 rounded-xl p-3 bg-gray-50 text-sm font-medium md:flex-none md:justify-start md:p-2 md:px-3 transition-all duration-300",
                             {
                                 "bg-primary/10 text-primary font-bold": isActive,
                                 "text-text-secondary hover:bg-gray-100": !isActive,

@@ -25,11 +25,13 @@ const CategorySelect = ({ index, value, options, setValue, error }: CategorySele
         <label className="mb-2 block text-sm font-bold text-text-primary">Category</label>
         <details className="group relative">
             <summary className={clsx(
-                "flex list-none w-full cursor-pointer items-center justify-between rounded-xl border bg-gray-50 px-5 py-4 font-medium outline-none transition marker:content-none",
-                "group-open:border-primary group-open:bg-white",
+                "flex list-none w-full cursor-pointer items-center justify-between rounded-xl border bg-gray-50 px-5 py-4 text-sm font-medium outline-none transition marker:content-none",
+                "group-open:border-primary/40 group-open:bg-white",
                 error ? "border-danger" : "border-gray-100"
             )}>
-                <span>{value || "Select category..."}</span>
+                <span className={clsx(!value && "text-text-secondary")}>
+                    {options.find(opt => opt.value === value)?.label || "Select category..."}
+                </span>
                 <IoChevronDown className="transition-transform group-open:rotate-180" size={20} />
             </summary>
             <AnimatePresence>
@@ -38,7 +40,7 @@ const CategorySelect = ({ index, value, options, setValue, error }: CategorySele
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -6, scale: 0.98 }}
                     transition={{ duration: 0.16 }}
-                    className="absolute z-20 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
+                    className="absolute space-y-1 z-20 mt-2 w-full overflow-hidden rounded-xl border border-gray-100 bg-white p-2 shadow-xl"
                 >
                     {options.map((opt) => (
                         <button

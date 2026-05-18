@@ -1,14 +1,26 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { IoFilter } from "react-icons/io5";
 import DeliveryFilter from "./DeliveryFilter";
 import RatingFilter from "./RatingFilter";
 import PriceFilter from "./PriceFilter";
 import ButtonsFilter from "./ButtonsFilter";
 
+const priceLabels = ["low", "medium", "high"];
+
 const FilterSection = () => {
-    const [delivery, setDelivery] = useState({ have: true, dontHave: false });
-    const [minRating, setMinRating] = useState(4);
-    const [priceRange, setPriceRange] = useState(0);
+    const [searchParams] = useSearchParams();
+    
+    const hasDeliveryParam = searchParams.get("hasDelivery");
+    const minRatingParam = Number(searchParams.get("minRating")) || 4;
+    const priceRangeParam = priceLabels.indexOf(searchParams.get("priceRange") || "low");
+
+    const [delivery, setDelivery] = useState<{ have: boolean; dontHave: boolean }>({
+        have: hasDeliveryParam === null? true : hasDeliveryParam === "true",
+        dontHave: hasDeliveryParam === "false",
+        });
+    const [minRating, setMinRating] = useState(minRatingParam);
+    const [priceRange, setPriceRange] = useState(priceRangeParam === -1? 0 : priceRangeParam);
 
     return (
         <div className="w-full max-w-xs mx-auto md:mx-0 px-6 py-10 text-left flex flex-col gap-8 font-sans border border-gray-50 ">

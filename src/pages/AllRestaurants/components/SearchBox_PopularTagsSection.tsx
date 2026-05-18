@@ -1,10 +1,27 @@
+import { useSearchParams } from "react-router-dom";
 import Search from "../../../features/search/Search";
 import { CuisineTypes } from "../../../types/constants";
-import { useSearchActions } from "../../../features/search/hooks/useSearchActions";
 import Button from "../../../ui/Button";
 
 const SearchBox_PopularTags = () => {
-    const { selectedCuisines, handleTagClick } = useSearchActions();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const selectedCuisines = searchParams.getAll("cuisineType")
+
+    const handleTagClick = (cuisineName: string) => {
+        const params = new URLSearchParams(searchParams);
+        const currentSelected = params.getAll("cuisineType");
+
+        if (currentSelected.includes(cuisineName)) {
+            const updated = currentSelected.filter((name) => name !== cuisineName);
+            params.delete("cuisineType");
+            updated.forEach((name) => params.append("cuisineType", name));
+        } else {
+            params.append("cuisineType", cuisineName);
+        }
+
+        params.set("page", "1");
+        setSearchParams(params);
+    };
 
     return (
         <section className="w-full py-12 flex flex-col gap-4 bg-white p-6 shadow z-5">
@@ -37,7 +54,7 @@ const SearchBox_PopularTags = () => {
                                     }
                                 `}
                             >
-                                {/* عرض الأيقونة */}
+
                                 <Icon
                                     className={`text-lg ${isActive ? 'text-white' : ''}`}
                                     style={{ color: !isActive ? cuisine.color : '' }}

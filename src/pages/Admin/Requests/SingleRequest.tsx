@@ -7,7 +7,7 @@ import { PermanentDeleteModal } from "./components/PermanentDeleteModal";
 import { IoArrowBackOutline, IoCloseOutline, IoCheckmarkOutline } from "react-icons/io5";
 import Button from "../../../ui/Button";
 import { SingleRequestSkeleton } from "./components/oneRequest/SingleRequestSkeleton";
-import { RequestErrorState } from "./components/oneRequest/RequestErrorState";
+import { ErrorState } from "../ui/ErrorState";
 
 const SingleRequest = () => {
     const {
@@ -33,7 +33,7 @@ const SingleRequest = () => {
     }
 
     if (error || !request) {
-        return <RequestErrorState onGoBack={goBack} />;
+        return <ErrorState onGoBack={goBack} errorInWhat="Requests" message="Failed to load request details." />;
     }
 
     return (

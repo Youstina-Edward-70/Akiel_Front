@@ -21,7 +21,7 @@ export const useRequestsData = () => {
     const { data: requests, isLoading } = useQuery({
         queryKey: ["admin-requests"],
         queryFn: async () => {
-            const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN.GET_ALL_REQUESTS);
+            const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN.REQUESTS.GET_ALL_REQUESTS);
             const validatedData = AllRequestsResponseSchema.parse(data);
             return validatedData.Data;
         },
@@ -29,7 +29,7 @@ export const useRequestsData = () => {
 
     const { mutate: handleDecision, isPending } = useMutation({
         mutationFn: async ({ id, action, reason }: { id: string; action: 'approve' | 'reject'; reason?: string }) => {
-            return await axiosInstance.post(API_ENDPOINTS.ADMIN.ACCEPT_OR_REGECT_RESTAURANT(id), { action, reason });
+            return await axiosInstance.post(API_ENDPOINTS.ADMIN.REQUESTS.ACCEPT_OR_REGECT_RESTAURANT(id), { action, reason });
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-requests"] });
