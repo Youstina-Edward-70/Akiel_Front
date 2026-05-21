@@ -12,7 +12,7 @@ const Navbar = () => {
         `transition ${isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary/90"}`;
 
     return (
-        <nav className="bg-white shadow w-full top-0 left-0 z-10 sticky">
+        <nav className="bg-white shadow w-full top-0 left-0 z-999 sticky">
             <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
