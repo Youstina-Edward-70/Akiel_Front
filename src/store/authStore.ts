@@ -9,8 +9,7 @@ interface AuthState {
     logout: () => void;
     getRole: () => string | undefined;
     updateUserRole: (newRole: 'user' | 'owner' | 'admin') => void;
-    updateUser: (updatedData: Partial<User>) => void;
-    setToken: (token: string) => void;
+    updateUser: (updatedData: Partial<User>) => void; 
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -37,10 +36,6 @@ export const useAuthStore = create<AuthState>()(
 
             updateUser: (updatedData) => set((state) => ({
                 user: state.user ? { ...state.user, ...updatedData } : null
-            })),
-
-            setToken: (token) => set((state) => ({
-                user: state.user ? { ...state.user, Token: token } : null
             })),
         }),
         {
