@@ -3,6 +3,7 @@ export interface RestaurantDetails {
     id?: string;
     name: string;
     image?: string;
+    coverPhoto?: { url: string; publicId?: string };
     rating?: number | string;
 }
 

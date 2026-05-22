@@ -9,7 +9,7 @@ interface ProfileUser {
     _id?: string; id?: string; role?: string; fullname?: string; email?: string;
     phone?: string; profile_pic?: string; image?: string;
     address?: { governorate: string; city: string; street: string; details: string; }[];
-    favoritesCount?: number; reviewsCount?: number;
+    favoritesCount?: number; reviewsCount?: number; restaurantId?: string;
 }
 interface AuthStoreType {
     user: ProfileUser | null;

@@ -29,7 +29,6 @@ const RoleActions = ({ role, onLogout, favoritesCount = 0, reviewsCount = 0, res
         
         {role === "owner" && (
             <>
-            // يوستينا اربطي الصفحات دي علشان معرفتش المسار اللي اتعملت بيه ودور عليهم ملقتهوش 
                 <ActionCard 
                     icon={FaUtensils} 
                     title="My Restaurant" 
@@ -56,7 +55,7 @@ const RoleActions = ({ role, onLogout, favoritesCount = 0, reviewsCount = 0, res
             </>
         )}
         
-        <button onClick={onLogout} className="w-full bg-background p-5 rounded-3xl shadow-sm border border-border-light flex items-center gap-4 hover:shadow-md transition group">
+        <button onClick={onLogout} className="w-full bg-background p-5 rounded-3xl shadow-sm border border-border-light flex items-center gap-4 hover:shadow-md transition group cursor-pointer">
             <div className="bg-surface p-3.5 rounded-xl text-text-muted group-hover:text-primary transition-colors"><FaSignOutAlt size={20} /></div>
             <div className="flex-1 text-left"><h4 className="font-black text-text-primary">Logout</h4><p className="text-xs text-text-muted font-medium">Securely sign out</p></div>
             <FaChevronRight className="text-border-light" />

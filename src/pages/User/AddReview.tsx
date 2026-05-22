@@ -11,6 +11,7 @@ const AddReview = () => {
         setContent,
         isSubmitting,
         isLoading,
+        isEditing,
         handleSubmit,
         handleCancel
     } = useAddReview();
@@ -19,15 +20,18 @@ const AddReview = () => {
         return <div className="min-h-screen bg-surface flex items-center justify-center font-sans text-text-muted">Loading...</div>;
     }
 
+    const restaurantRating = Number(restaurant?.rating || 0);
+    const placeholderImg = `https://ui-avatars.com/api/?name=${restaurant?.name || "R"}&background=FDEADD&color=F2704E&size=150`;
+    const restaurantImage = restaurant?.coverPhoto?.url || restaurant?.image || placeholderImg;
+
     return (
         <div className="min-h-screen bg-surface flex items-center justify-center p-4 font-sans text-center">
             <div className="bg-background w-full max-w-xl rounded-4xl p-10 shadow-sm border border-border-light">
                 
-                {/* Header (Restaurant Info) */}
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-4 shadow-sm">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden mb-4 shadow-sm bg-gray-100 border border-gray-200">
                         <img 
-                            src={restaurant?.image || "/placeholder.jpg"} 
+                            src={restaurantImage} 
                             alt={restaurant?.name || "Restaurant"} 
                             className="w-full h-full object-cover"
                         />
@@ -38,24 +42,20 @@ const AddReview = () => {
                     <div className="flex items-center gap-1 text-sm font-bold text-text-muted">
                         <div className="flex text-[#FFD700]">
                             {[...Array(5)].map((_, i) => (
-                                <FaStar key={i} size={14} className={i < Math.floor(Number(restaurant?.rating || 0)) ? "text-[#FFD700]" : "text-border-light"} />
+                                <FaStar key={i} size={14} className={i < Math.floor(restaurantRating) ? "text-[#FFD700]" : "text-border-light"} />
                             ))}
                         </div>
-                        <span className="ml-1">{restaurant?.rating || "N/A"} Rating</span>
+                        <span className="ml-1">{restaurant?.rating ? `${restaurantRating.toFixed(1)} Rating` : "No Ratings Yet"}</span>
                     </div>
                 </div>
 
                 <h2 className="text-xl font-heading font-black text-text-primary mb-6">
-                    Write your review for {restaurant?.name || "this restaurant"}
+                    {isEditing ? "Edit your review for" : "Write your review for"} {restaurant?.name || "this restaurant"}
                 </h2>
 
-                {/* Form */}
                 <form onSubmit={handleSubmit} className="flex flex-col text-left">
-                    
-                    {/* Interactive Star Rating */}
                     <InteractiveStars rating={rating} setRating={setRating} />
 
-                    {/* Feedback Textarea */}
                     <div className="mb-8">
                         <label className="block text-xs font-bold text-text-secondary mb-2">
                             Your Feedback
@@ -68,22 +68,21 @@ const AddReview = () => {
                         ></textarea>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-4">
                         <button
                             type="button"
                             onClick={handleCancel}
                             disabled={isSubmitting}
-                            className="flex-1 bg-surface border border-border-light text-text-primary font-bold py-3.5 rounded-xl hover:bg-gray-100 transition-colors"
+                            className="flex-1 bg-surface border border-border-light text-text-primary font-bold py-3.5 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                            className="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            {isSubmitting ? "Posting..." : "Post Review"}
+                            {isSubmitting ? (isEditing ? "Updating..." : "Posting...") : (isEditing ? "Update Review" : "Post Review")}
                         </button>
                     </div>
                 </form>

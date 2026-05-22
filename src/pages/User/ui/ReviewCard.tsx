@@ -6,41 +6,78 @@ interface Props {
     onDelete: (id: string) => void;
 }
 
+// 👈 واجهة مرنة عشان نستخرج الداتا المتداخلة بدون استخدام any نهائياً
+type FlexibleReviewData = {
+    restaurantId?: { name?: string };
+    restaurant?: { name?: string };
+    restaurantName?: string;
+    createdAt?: string;
+    date?: string;
+    Content?: string;
+    content?: string;
+    rating?: number;
+    _id?: string;
+    id?: string;
+};
+
 const ReviewCard = ({ review, onDelete }: Props) => {
+    // استخراج الداتا بالطريقة الآمنة
+    const data = review as unknown as FlexibleReviewData;
+    
+    // 👈 الكود دلوقتي هيدور على اسم المطعم في كل الأماكن المحتملة
+    const restaurantName = data.restaurantName || data.restaurantId?.name || data.restaurant?.name || "Restaurant";
+    
+    // 👈 تظبيط شكل التاريخ عشان يطلع زي الصورة الأولى (Month DD, YYYY)
+    const rawDate = data.createdAt || data.date;
+    let displayDate = "Recently";
+    if (rawDate) {
+        const dateObj = new Date(rawDate);
+        if (!isNaN(dateObj.getTime())) {
+            displayDate = dateObj.toLocaleDateString("en-US", {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    }
+
+    const reviewContent = data.Content || data.content || "No review content provided.";
+    const ratingValue = Number(data.rating) || 0;
+
     return (
         <div className="bg-background rounded-4xl p-8 shadow-sm border border-border-light relative group transition-all hover:border-primary/20">
             <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-surface border border-border-light flex items-center justify-center font-bold text-text-muted text-xl">
-                        {review.restaurantName ? review.restaurantName.charAt(0).toUpperCase() : "R"}
+                        {restaurantName.charAt(0).toUpperCase()}
                     </div>
                     <div>
                         <h3 className="font-heading font-black text-lg text-text-primary">
-                            {review.restaurantName || "Restaurant"}
+                            {restaurantName}
                         </h3>
                         <p className="text-xs font-medium text-text-muted">
-                            {review.date || "Recently"}
+                            {displayDate}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm font-black text-text-primary">
                     <div className="flex text-warning">
                         {[...Array(5)].map((_, i) => (
-                            <FaStar key={i} className={i < Math.floor(review.rating) ? "text-warning" : "text-border-light"} />
+                            <FaStar key={i} className={i < Math.floor(ratingValue) ? "text-[#FFD700]" : "text-border-light"} />
                         ))}
                     </div>
-                    <span className="ml-1 bg-surface px-2 py-0.5 rounded-md border border-border-light">{review.rating}</span>
+                    <span className="ml-1 bg-surface px-2 py-0.5 rounded-md border border-border-light">{ratingValue}</span>
                 </div>
             </div>
             <div className="mb-6">
                 <p className="text-text-secondary text-sm leading-relaxed italic">
-                    "{review.Content || review.content}"
+                    "{reviewContent}"
                 </p>
             </div>
             <div className="flex justify-end border-t border-border-light pt-4 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button 
-                    onClick={() => onDelete(review._id || review.id || "")} 
-                    className="text-danger hover:text-primary transition-colors text-sm font-bold flex items-center gap-2"
+                    onClick={() => onDelete(data._id || data.id || "")} 
+                    className="text-danger hover:text-primary transition-colors text-sm font-bold flex items-center gap-2 cursor-pointer"
                 >
                     <FaTrash size={12} /> Delete Review
                 </button>

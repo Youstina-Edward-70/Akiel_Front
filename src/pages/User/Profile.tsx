@@ -1,9 +1,13 @@
 import { FaUser, FaEnvelope, FaMapMarkerAlt, FaTrash } from "react-icons/fa";
 import { FiPhone } from "react-icons/fi";
-import { Link } from "react-router-dom";
 import { useProfile } from "./hooks/useProfile";
 import ProfileHeader from "./ui/ProfileHeader";
 import RoleActions from "./ui/RoleActions";
+import { useMyRestaurant } from "../Owner/hooks/useMyRestaurant";
+import { useFavorites } from "./hooks/useFavorites";
+import { useReviews } from "./hooks/useReviews";
+import { Link } from "react-router-dom";
+
 interface InfoProps {
     icon: React.ComponentType<{ size?: number; className?: string }>;
     label: string;
@@ -17,10 +21,18 @@ const Profile = () => {
         processAccountDeletion
     } = useProfile();
 
+    const { data: myRestaurantData } = useMyRestaurant();
+
+    const { favorites } = useFavorites();
+    const { reviews } = useReviews();
+
     if (isLoadingState) return <div className="min-h-screen flex justify-center items-center font-bold text-text-muted bg-surface">Loading Profile...</div>;
+    
     const addr = user?.address?.[0];
     const fullAddress = addr ? `${addr.street}, ${addr.city}, ${addr.governorate}` : "Not provided";
     const profilePic = user?.profile_pic || user?.image || "";
+    
+    const ownerRestaurantId = user?.restaurantId || myRestaurantData?._id || myRestaurantData?.id || "";
 
     return (
         <div className="min-h-screen bg-surface pb-16 font-sans text-left">
@@ -48,8 +60,9 @@ const Profile = () => {
                         <RoleActions 
                             role={currentRole} 
                             onLogout={() => setIsLogoutOpen(true)} 
-                            favoritesCount={user?.favoritesCount}
-                            reviewsCount={user?.reviewsCount}
+                            favoritesCount={favorites ? favorites.length : 0}
+                            reviewsCount={reviews ? reviews.length : 0}
+                            restaurantId={ownerRestaurantId} 
                         />
                         <button onClick={handleDeleteClick} className="w-full bg-danger text-white py-4 rounded-3xl font-bold text-lg hover:bg-danger/90 transition mt-4 flex items-center justify-center gap-2">
                             <FaTrash size={16} /> Delete Account
@@ -57,6 +70,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
+            
             {isLogoutOpen && (
                 <div className="fixed inset-0 z-999 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
                     <div className="bg-background rounded-4xl p-8 max-w-md w-full text-center border border-border-light shadow-2xl">
@@ -85,6 +99,7 @@ const Profile = () => {
         </div>
     );
 };
+
 const InfoItem = ({ icon: Icon, label, value }: InfoProps) => (
     <div className="flex items-start gap-4 text-left">
         <div className="bg-surface p-3.5 rounded-xl text-text-secondary border border-border-light/50"><Icon size={20} /></div>

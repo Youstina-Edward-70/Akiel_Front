@@ -23,6 +23,7 @@ import AddRestaurant from '../pages/Owner/AddRestaurant';
 import AddReview from '../pages/User/AddReview';
 
 // Owner
+import MyRestaurant from '../pages/Owner/MyRestaurant';
 import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
 import EditDishPage from '../pages/Owner/menu/EditDishPage';
 
@@ -74,6 +75,7 @@ export const Routes = createBrowserRouter([
             {
                 element: <ProtectedRoute allowedRoles={["owner"]} />,
                 children: [
+                    { path: "/my-restaurant", element: <MyRestaurant /> },
                     { path: "/my-restaurant", element: <AddRestaurant /> },
                     { path: "/edit-restaurant/:id", element: <AddRestaurant /> },
                     { path: "/restaurant/:id/menu/add", element: <AddMenuPage /> },
