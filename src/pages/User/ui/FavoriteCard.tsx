@@ -7,8 +7,8 @@ interface Props {
 }
 
 type FlexibleRestaurantData = {
-    restaurantId?: FlexibleRestaurantData;
-    restaurant?: FlexibleRestaurantData;
+    restaurantId?: string | { _id: string };
+    restaurant?: string | { _id: string };
     name?: string;
     coverPhoto?: { url?: string };
     image?: string;
@@ -19,17 +19,30 @@ type FlexibleRestaurantData = {
 };
 
 const FavoriteCard = ({ rest, onRemove }: Props) => {
-    // استخراج البيانات بالطريقة الآمنة 
-    const data = rest as unknown as FlexibleRestaurantData; 
+    const data = rest as unknown as FlexibleRestaurantData;
+    
+    // استخراج بيانات المطعم
     const restaurantObj = data.restaurantId || data.restaurant || data;
+    
+    // استخراج الـ ID للحذف
+    const restId = (typeof restaurantObj === 'object' && '_id' in restaurantObj) 
+        ? restaurantObj._id 
+        : (typeof restaurantObj === 'string' ? restaurantObj : rest._id || rest.id || "");
 
-    const name = restaurantObj?.name || "Unknown Restaurant";
+    // استخراج الـ name مع قيمة افتراضية لتجنب خطأ الـ charAt
+    const name = (typeof restaurantObj === 'object' && 'name' in restaurantObj && restaurantObj.name) 
+        ? restaurantObj.name 
+        : "Unknown";
+
+    // الـ placeholderImg الآن يعمل بأمان
     const placeholderImg = `https://ui-avatars.com/api/?name=${name.charAt(0)}&background=FDEADD&color=F2704E&size=150`;
     
-    const image = restaurantObj?.coverPhoto?.url || restaurantObj?.image || placeholderImg;
-    const rating = restaurantObj?.rating || "N/A";
-    
-    const cuisines = restaurantObj?.cuisineType;
+    const image = (typeof restaurantObj === 'object' && 'coverPhoto' in restaurantObj ? restaurantObj.coverPhoto?.url : null) || 
+                  (typeof restaurantObj === 'object' && 'image' in restaurantObj ? restaurantObj.image : null) || 
+                  placeholderImg;
+                  
+    const rating = (typeof restaurantObj === 'object' && 'rating' in restaurantObj) ? restaurantObj.rating : "N/A";
+    const cuisines = (typeof restaurantObj === 'object' && 'cuisineType' in restaurantObj) ? restaurantObj.cuisineType : [];
     const cuisineText = cuisines && Array.isArray(cuisines) ? cuisines.join(" • ") : "Restaurant";
 
     return (
@@ -41,7 +54,9 @@ const FavoriteCard = ({ rest, onRemove }: Props) => {
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
                 />
                 <button 
-                    onClick={() => onRemove(rest._id || rest.id || "")} 
+                    onClick={() => {
+                        onRemove(restId as string);
+                    }} 
                     className="absolute top-3 right-3 bg-background p-2.5 rounded-full text-primary shadow-md hover:scale-110 transition group/btn cursor-pointer"
                 >
                     <FaHeart size={16} className="block group-hover/btn:hidden" />
