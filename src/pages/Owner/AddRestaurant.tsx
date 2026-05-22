@@ -11,7 +11,8 @@ const AddRestaurant = () => {
     const {
         register, handleSubmit, formIssues, addressArray, isEditMode, isLoadingData,
         selectedImageURL, handleImageChange, selectedCuisines, toggleCuisine,
-        selectedDays, toggleDay, onSubmit, navigate
+        selectedDays, toggleDay, onSubmit, navigate,
+        whatsappNum, setWhatsappNum, fbLink, setFbLink 
     } = useAddEditRestaurant();
 
     const listIssues = formIssues?.address as Record<string, Record<string, { message?: string }>> | undefined;
@@ -90,14 +91,38 @@ const AddRestaurant = () => {
                                     <textarea {...register("description")} className="w-full mt-2 bg-surface border border-border-light rounded-3xl p-5 outline-none focus:border-primary transition font-semibold text-text-primary h-32 resize-none" />
                                     {formIssues?.description && <p className="text-danger text-xs font-bold">{formIssues.description.message}</p>}
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                                     <div>
-                                        <input {...register("phoneNumber")} placeholder="01xxxxxxxxx" className="w-full bg-surface border border-border-light rounded-2xl p-4 outline-none focus:border-primary transition font-semibold text-text-primary" />
+                                        <label className="text-xs font-black text-text-muted uppercase ml-1 block mb-2">Phone Number</label>
+                                        <div className="flex">
+                                            <span className="bg-surface border border-r-0 border-border-light rounded-l-2xl p-4 font-bold text-text-muted">+20</span>
+                                            <input {...register("phoneNumber")} placeholder="123 456 7890" className="w-full bg-surface border border-border-light rounded-r-2xl p-4 outline-none focus:border-primary transition font-semibold text-text-primary" />
+                                        </div>
                                         {formIssues?.phoneNumber && <p className="text-danger text-xs font-bold mt-1">{formIssues.phoneNumber.message}</p>}
                                     </div>
                                     <div>
-                                        <input {...register("email")} type="email" placeholder="Email" className="w-full bg-surface border border-border-light rounded-2xl p-4 outline-none focus:border-primary transition font-semibold text-text-primary" />
+                                        <label className="text-xs font-black text-text-muted uppercase ml-1 block mb-2">Email Address</label>
+                                        <input {...register("email")} type="email" placeholder="contact@restaurant.com" className="w-full bg-surface border border-border-light rounded-2xl p-4 outline-none focus:border-primary transition font-semibold text-text-primary" />
                                         {formIssues?.email && <p className="text-danger text-xs font-bold mt-1">{formIssues.email.message}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black text-text-muted uppercase ml-1 block mb-2">Whatsapp Number</label>
+                                        <input 
+                                            value={whatsappNum} 
+                                            onChange={(e) => setWhatsappNum(e.target.value)} 
+                                            placeholder="123 456 7890" 
+                                            className="w-full bg-surface border border-border-light rounded-2xl p-4 outline-none focus:border-primary transition font-semibold text-text-primary" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-black text-text-muted uppercase ml-1 block mb-2">Facebook Link</label>
+                                        <input 
+                                            value={fbLink} 
+                                            onChange={(e) => setFbLink(e.target.value)} 
+                                            placeholder="https://facebook.com/..." 
+                                            className="w-full bg-surface border border-border-light rounded-2xl p-4 outline-none focus:border-primary transition font-semibold text-text-primary" 
+                                        />
                                     </div>
                                 </div>
                             </div>
