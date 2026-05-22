@@ -28,7 +28,7 @@ const NoResults = ({ searchTerm }: { searchTerm: string }) => {
 
             {/* Action Button */}
             <Button
-                onClick={() => navigate("/search")}
+                onClick={() => navigate(-1)}
                 className="px-6 py-3 rounded-2xl"
             >
                 Go Back

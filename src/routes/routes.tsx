@@ -30,9 +30,10 @@ import EditDishPage from '../pages/Owner/menu/EditDishPage';
 // Admin
 import AdminDashboard from '../pages/Admin/AdminDashboard';
 import Requests from '../pages/Admin/Requests/Requsets';
-import Users from '../pages/Admin/Users/Users';
-import Settings from '../pages/Admin/Settings/Settings';
 import SingleRequest from '../pages/Admin/Requests/SingleRequest';
+import Users from '../pages/Admin/Users/Users';
+import EditSingleUser from '../pages/Admin/Users/EditSingleUser';
+import Settings from '../pages/Admin/Settings/Settings';
 
 // Auth Features
 import Login from "../features/auth/login";
@@ -91,8 +92,9 @@ export const Routes = createBrowserRouter([
                 children: [
                     { index: true, element: <Requests /> },
                     { path: "requests", element: <Requests /> },
-                    { path: "requests/:id", element: <SingleRequest /> },
+                    { path: "requests/:id", element: <SingleRequest />},
                     { path: "users", element: <Users /> },
+                    { path: "users/:id", element: <EditSingleUser /> },
                     { path: "settings", element: <Settings /> },
                 ]
             }

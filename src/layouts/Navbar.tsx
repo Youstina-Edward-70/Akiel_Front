@@ -3,31 +3,16 @@ import { useAuthStore } from "../store/authStore";
 import { useMyRestaurant } from "../pages/Owner/hooks/useMyRestaurant";
 import Button from "../ui/Button";
 
-const API_URL = "https://all-restaurants-in-one.vercel.app";
-
-type ImageUrlType = string | null | undefined;
-
-const getValidImageUrl = (url: ImageUrlType) => {
-    if (!url || typeof url !== 'string' || url === "undefined" || url === "null" || url === "/default-avatar.png") return null;
-    if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
-    return `${API_URL}/${url.replace(/^\/+/, '')}`;
-};
-interface NavbarUser {
-    fullname?: string;
-    role?: string;
-    profile_pic?: string;
-}
-
 const Navbar = () => {
-    const authStoreState = useAuthStore() as unknown as { user: NavbarUser | null };
-    const user = authStoreState.user;
+    const user = useAuthStore((state) => state.user);
     const navigate = useNavigate();
-    const { data: myRestaurant } = useMyRestaurant();
+
+    const {data: myRestaurant} = useMyRestaurant();
     const activeLink = ({ isActive }: { isActive: boolean }) => 
         `transition ${isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary/90"}`;
 
     return (
-        <nav className="bg-white shadow w-full top-0 left-0 z-10 sticky">
+        <nav className="bg-white shadow w-full top-0 left-0 z-999 sticky">
             <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                 <div className="flex justify-between items-center">
                     {/* Logo */}
@@ -78,7 +63,7 @@ const Navbar = () => {
                                 </p>
                             </div>
                             <img
-                                src={getValidImageUrl(user.profile_pic) || `https://ui-avatars.com/api/?name=${user.fullname}`}
+                                src={user.profile_pic?.url || `https://ui-avatars.com/api/?name=${user.fullname}`}
                                 alt="Profile"
                                 className="rounded-full border-2 border-border-light w-10 h-10 object-cover p-0.5"
                             />

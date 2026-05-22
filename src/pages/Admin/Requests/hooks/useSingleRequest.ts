@@ -24,7 +24,7 @@ export const useSingleRequest = () => {
         queryKey: ["admin-request", id],
         queryFn: async () => {
             if (!id) throw new Error("Request ID is missing");
-            const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN.GET_ONE_REQUEST(id));
+            const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN.REQUESTS.GET_ONE_REQUEST(id));
             const validatedData = SingleRequestResponseSchema.parse(data);
             return validatedData.Data;
         },
@@ -34,7 +34,7 @@ export const useSingleRequest = () => {
     const { mutate: handleDecision, isPending } = useMutation({
         mutationFn: async ({ action, reason }: { action: 'approve' | 'reject'; reason?: string }) => {
             if (!id) return;
-            return await axiosInstance.post(API_ENDPOINTS.ADMIN.ACCEPT_OR_REGECT_RESTAURANT(id), { action, reason });
+            return await axiosInstance.post(API_ENDPOINTS.ADMIN.REQUESTS.ACCEPT_OR_REGECT_RESTAURANT(id), { action, reason });
         },
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({ queryKey: ["admin-requests"] });

@@ -62,12 +62,21 @@ export const API_ENDPOINTS = {
 
     // --- Admin Dashboard ---
     ADMIN: {
-        GET_ALL_REQUESTS: `${BASE_URL}/admin/requests`, // GET
-        GET_ONE_REQUEST: (requestId: string) => `${BASE_URL}/admin/requests/${requestId}`, // GET
-        ACCEPT_OR_REGECT_RESTAURANT: (requestId: string) => `${BASE_URL}/admin/requests/${requestId}/decision`, // POST
-        GET_ALL_USERS: `${BASE_URL}/user/getAllUsers`, // GET
-        GET_SETTINGS: `${BASE_URL}/admin/settings`, // GET
-        UPDATE_SETTINGS: `${BASE_URL}/admin/settings`, // PUT
+        REQUESTS: {
+            GET_ALL_REQUESTS: `${BASE_URL}/admin/requests`, // GET
+            GET_ONE_REQUEST: (requestId: string) => `${BASE_URL}/admin/requests/${requestId}`, // GET
+            ACCEPT_OR_REGECT_RESTAURANT: (requestId: string) => `${BASE_URL}/admin/requests/${requestId}/decision`, // POST
+        },
+        USERS: {
+            GET_ALL_USERS: `${BASE_URL}/user/getAllUsers`, // GET
+            GET_ONE_USER: (userId: string) => `${BASE_URL}/user/getUserProfile/${userId}`, // GET
+            EDIT_USER: (userId: string) => `${BASE_URL}/user/editUserProfile/${userId}`, // PATCH
+            DELETE_USER: (userId: string) => `${BASE_URL}/user/deleteAccount/${userId}`, // DELETE
+        },
+        SETTIGNS: {
+            GET_SETTINGS: `${BASE_URL}/admin/settings`, // GET
+            EDIT_SETTINGS: `${BASE_URL}/admin/settings`, // PUT
+        }
     },
 
     // --- Auth ---
