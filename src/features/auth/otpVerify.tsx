@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useOtpVerify } from './hooks/useOtpVerify';
 import Button from '../../ui/Button';
 
@@ -16,7 +17,12 @@ const OtpVerify: React.FC = () => {
     } = useOtpVerify();
 
     return (
-        <>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="w-full"
+        >
             {/* Header */}
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-text-primary mb-3 font-heading">Verify Your Identity</h1>
@@ -62,7 +68,7 @@ const OtpVerify: React.FC = () => {
                     Confirm
                 </Button>
 
-                {/* Resend actions triggers */}
+                {/* Resend link */}
                 <div className="text-center text-sm font-medium text-text-secondary">
                     Did not receive the code?{" "}
                     <button
@@ -75,7 +81,7 @@ const OtpVerify: React.FC = () => {
                     </button>
                 </div>
             </form>
-        </>
+        </motion.div>
     );
 };
 

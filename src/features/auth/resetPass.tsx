@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LuLock, LuEye, LuEyeOff } from "react-icons/lu";
+import { motion } from 'framer-motion'; // استيراد motion
 import Button from '../../ui/Button';
 import { useResetPass } from './hooks/useResetPass';
 
@@ -19,7 +20,12 @@ const ResetPass: React.FC = () => {
   } = useResetPass();
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, rotateX: -10 }}
+      animate={{ opacity: 1, rotateX: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="w-full"
+    >
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-3 font-heading">Reset Password</h1>
@@ -96,7 +102,7 @@ const ResetPass: React.FC = () => {
           </Link>
         </div>
       </form>
-    </>
+    </motion.div>
   );
 };
 

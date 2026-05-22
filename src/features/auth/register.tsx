@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { motion } from 'framer-motion';
