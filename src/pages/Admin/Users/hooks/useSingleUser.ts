@@ -64,7 +64,7 @@ export const useSingleUser = () => {
             navigate("/admin/users");
         },
         onError: (error: AxiosError<ApiError>) => {
-            toast.error(error?.response?.data?.message || "Failed to update user");
+            toast.error(error?.response?.data?.message || error?.response?.data?.error || "Failed to update user");
         },
     });
 

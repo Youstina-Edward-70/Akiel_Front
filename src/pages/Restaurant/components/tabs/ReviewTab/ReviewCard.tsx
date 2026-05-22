@@ -12,6 +12,10 @@ interface ReviewCardProps {
 }
 
 const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardProps) => {
+    const profilePicUrl =
+        rev.user?.profile && !(rev.user.profile instanceof File)
+            ? rev.user.profile.url
+            : `https://ui-avatars.com/api/?name=${rev.user?.name || "?"}`;
     return (
         <motion.div
             layout
@@ -25,7 +29,7 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                 <div className="flex gap-4">
                     <div className="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0">
                         <img
-                            src={rev.user?.profile || `https://ui-avatars.com/api/?name=${rev.user?.name || "?"}`}
+                            src={profilePicUrl}
                             alt={`${rev.user?.name || "UNKNOWN"}`}
                             className="w-full h-full object-cover" />
                     </div>

@@ -1,5 +1,7 @@
 import { z } from 'zod';
+import { apiImageSchema, fileUploadSchema } from './RestaurantSchema';
 
+// Address Schema
 const addressSchema = z.object({
     governorate: z.string().default(""),
     city: z.string().default(""),
@@ -7,16 +9,14 @@ const addressSchema = z.object({
     details: z.string().default(""),
 });
 
+// Favorite & Review Schemas
 export const favoriteSchema = z.object({
     _id: z.string(),
     user: z.string(),
     restaurant: z.object({
         _id: z.string(),
         name: z.string().optional(),
-        coverPhoto: z.object({
-            url: z.string(),
-            publicId: z.string(),
-        }).optional(),
+        coverPhoto: apiImageSchema,
         rating: z.number().optional(),
         delivery: z.boolean().optional(),
         priceRange: z.string().optional(),
@@ -34,34 +34,33 @@ export const reviewSchema = z.object({
     user: z.object({
         _id: z.string(),
         name: z.string(),
-        profile: z.string().optional(),
+        profile: apiImageSchema,
     }),
 });
 
+// Main User Schema
 export const userSchema = z.object({
     _id: z.string().optional(),
     id: z.string().optional(),
 
     fullname: z.string()
+        .min(1, "Name is required")
         .min(2, "Name must be at least 2 characters")
         .trim(),
 
     email: z.string()
+        .min(1, "Email is required")
         .email("Invalid email format")
         .trim(),
 
     phone: z.string()
+        .min(1, "Phone number is required")
         .min(11, "Phone number must be at least 11 digits")
         .trim(),
 
-    profile_pic: z.object({
-        url: z.string(),
-        publicId: z.string(),
-        _id: z.string().optional(),
-    }).nullable().default(null),
+    profile_pic: apiImageSchema,
 
-    role: z.enum(['user', 'admin', 'owner'])
-        .default('user'),
+    role: z.enum(['user', 'admin', 'owner']).default('user'),
 
     favoritesCount: z.number().default(0),
     reviewsCount: z.number().default(0),
@@ -80,17 +79,13 @@ export const userSchema = z.object({
     updatedAt: z.string().optional(),
 });
 
-// Admin Users Schemas
+// Admin / Dashboard Schemas
 export const adminUserSummarySchema = z.object({
     _id: z.string(),
     fullname: z.string(),
     email: z.string(),
     role: z.enum(['user', 'admin', 'owner']),
-    profile_pic: z.object({
-        url: z.string(),
-        publicId: z.string(),
-        _id: z.string().optional(),
-    }).nullable().optional(),
+    profile_pic: apiImageSchema,
     phone: z.string().optional().nullable(),
     createdAt: z.string().optional(),
 });
@@ -111,22 +106,27 @@ export const singleUserResponseSchema = z.object({
         fullname: z.string(),
         email: z.string(),
         role: z.enum(['user', 'admin', 'owner']),
-        profile_pic: z.object({
-            url: z.string(),
-            publicId: z.string(),
-            _id: z.string().optional(),
-        }).nullable().optional(),
+        profile_pic: apiImageSchema,
         phone: z.string().optional().nullable(),
         address: addressSchema.optional(),
         createdAt: z.string().optional(),
     }),
 });
 
+// Client Form Schema
 export const editUserSchema = z.object({
     fullname: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
-    phone: z.string().optional(),
+
+    phone: z.string()
+        .regex(/^(?:\+20|0020)?0?1[0125]\d{8}$/, "Phone number must be a valid Egyptian number")
+        .optional()
+        .or(z.literal("")),
+
     role: z.enum(["admin", "owner", "user"]),
+
+    profile_pic: fileUploadSchema.or(apiImageSchema).optional(),
+
     address: z.object({
         details: z.string().optional(),
         street: z.string().optional(),
@@ -135,47 +135,56 @@ export const editUserSchema = z.object({
     }).optional(),
 });
 
-// Login schema
-export interface LoginResponse {
-    user: Omit<User, 'Token'>;
-    Token: string;
-    message?: string;
-}
-
+// Auth Schemas (Login / Register / Passwords)
 export const LoginSchema = z.object({
-    email: z.string().email("Invalid email format").trim(),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    email: z.string().min(1, "Email is required").email("Invalid email format").trim(),
+    password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
     remember: z.boolean().optional(),
 });
 
-// Signup schema
-export const SignupSchema = z.object({
-    fullname: z.string().min(3, "Name must be at least 3 characters"),
-    email: z.string().email("Invalid email format"),
-    phone: z.string().regex(/^(?:\+20|0020)?0?1[0125]\d{8}$/, "Phone number must be a valid Egyptian number"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string()
+export const RegisterSchema = z.object({
+    fullname: z.string().min(1, "Name is required").min(3, "Name must be at least 3 characters"),
+    email: z.string().min(1, "Email is required").email("Invalid email format"),
+    phone: z.string().min(1, "Phone number is required").regex(/^(?:\+20|0020)?0?1[0125]\d{8}$/, "Phone number must be a valid Egyptian number"),
+    password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(1, "Confirm password is required")
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
 
-// Forget Password Schema
 export const ForgetSchema = z.object({
-    email: z.string().email("Invalid email format"),
+    email: z.string().min(1, "Email is required").email("Invalid email format"),
 });
 
-// Reset Password Schema
 export const ResetPasswordSchema = z.object({
-    email: z.string().email("Invalid email format"),
-    otp: z.string().min(6, "OTP must be at least 6 characters"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string()
+    password: z
+        .string()
+        .min(8, { message: "Password must be at least 8 characters long" }),
+    confirmPassword: z
+        .string()
+        .min(8, { message: "Confirm password must be at least 8 characters long" }),
 }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
 });
 
+export const ChangePasswordSchema = z.object({
+    currentPassword: z
+        .string()
+        .min(1, { message: "Current password is required" }),
+    newPassword: z
+        .string()
+        .min(8, { message: "New password must be at least 8 characters long" }),
+    confirmPassword: z
+        .string()
+        .min(8, { message: "Please confirm your new password" }),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+});
+
+// Types Export
 export type User = z.infer<typeof userSchema>;
 export type Address = z.infer<typeof addressSchema>;
 export type Favorite = z.infer<typeof favoriteSchema>;
@@ -185,6 +194,7 @@ export type SingleUserData = z.infer<typeof singleUserResponseSchema>["Data"];
 export type EditUserFormData = z.infer<typeof editUserSchema>;
 
 export type LoginFormValues = z.infer<typeof LoginSchema>;
-export type SignupFormValues = z.infer<typeof SignupSchema>;
+export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type ForgetFormValues = z.infer<typeof ForgetSchema>;
 export type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
+export type ChangePasswordFormValues = z.infer<typeof ChangePasswordSchema>;

@@ -44,7 +44,7 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
             <ReviewHeader
                 resRating={resRating}
                 count={reviews.length}
-                isOwner={isOwner}
+                isNotAuthorToReview={currentUser?.role === "owner" || currentUser?.role === "admin"}
                 onWriteClick={handleActionClick}
                 hasReviewed={hasReviewed}
             />

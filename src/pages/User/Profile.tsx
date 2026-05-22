@@ -41,7 +41,7 @@ const Profile = () => {
                         </div>
                         
                         <div className="mt-8 pt-4">
-                            <Link to="/change-password" className="text-primary font-bold text-sm hover:underline">Change Password</Link>
+                            <Link to="/auth/change-password" className="text-primary font-bold text-sm hover:underline">Change Password</Link>
                         </div>
                     </div>
                     <div>

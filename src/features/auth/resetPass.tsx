@@ -1,119 +1,97 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import axiosInstance from '../../lib/api';
-import { API_ENDPOINTS } from '../../lib/EndPoints';
-import { ResetPasswordSchema, type ResetPasswordFormValues } from '../../types/UserSchema';
-import toast from 'react-hot-toast';
+import { Link } from 'react-router-dom';
+import { LuLock, LuEye, LuEyeOff } from "react-icons/lu";
 import Button from '../../ui/Button';
-import { FaLock } from 'react-icons/fa';
+import { useResetPass } from './hooks/useResetPass';
 
 const ResetPass: React.FC = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // Pre-fill email if coming from forget-password page
-  const emailFromState = location.state?.email || '';
-
-  const { register, handleSubmit, formState: { errors } } = useForm<ResetPasswordFormValues>({
-    resolver: zodResolver(ResetPasswordSchema),
-    defaultValues: {
-      email: emailFromState,
-      otp: '',
-      password: '',
-      confirmPassword: ''
-    }
-  });
-
-  const resetMutation = useMutation({
-    mutationFn: async (data: ResetPasswordFormValues) => {
-      const response = await axiosInstance.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);
-      return response.data;
-    },
-    onSuccess: () => {
-      toast.success("Password updated successfully!");
-      navigate('/auth/login');
-    },
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Invalid OTP or request failed");
-      } else {
-        toast.error("Something went wrong");
-      }
-    }
-  });
-
-  const onSubmit = (data: ResetPasswordFormValues) => {
-    resetMutation.mutate(data);
-  };
+  // Destructuring all operations from the custom hook
+  const {
+    email,
+    showPassword,
+    setShowPassword,
+    showConfirmPassword,
+    setShowConfirmPassword,
+    register,
+    handleSubmit,
+    errors,
+    isLoading,
+    onSubmit
+  } = useResetPass();
 
   return (
     <>
+      {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-text-primary mb-2">Reset Password</h1>
-        <p className="text-gray-500 text-sm font-medium leading-relaxed px-4">
-          Enter your new password and OTP to reset it.
+        <h1 className="text-3xl font-bold text-text-primary mb-3 font-heading">Reset Password</h1>
+        <p className="text-text-secondary text-sm font-medium leading-relaxed px-4 font-sans">
+          Enter your new password for <span className="text-text-primary font-semibold">{email}</span> to regain access.
         </p>
       </div>
-      <form className="space-y-6 text-left" onSubmit={handleSubmit(onSubmit)}>
-        {/* OTP Field */}
-        <div className='flex flex-col gap-1'>
-          <label className="text-sm font-bold text-gray-500 mb-2 tracking-wider">OTP Code</label>
-          <input
-            required
-            {...register('otp')}
-            placeholder="Enter 6-digit OTP"
-            className={`w-full px-4 py-3 bg-white border rounded-xl outline-none transition-all text-sm ${errors.otp ? 'border-danger focus:ring-1 focus:ring-danger' : 'border-gray-200 focus:border-primary'
-              }`}
-          />
-          {errors.otp && <p className="text-danger text-[10px] font-medium">{errors.otp.message}</p>}
-        </div>
 
-        {/* New Password */}
+      <form
+        className="space-y-5 text-left font-sans"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+
+        {/* New Password input field */}
         <div>
-          <label className="text-sm font-bold text-gray-500 mb-2 tracking-wider">New Password</label>
+          <label className="block text-sm font-semibold text-text-primary mb-1.5">New Password</label>
           <div className="relative">
-            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" />
+            <LuLock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
             <input
-              type="password"
-              required
+              type={showPassword ? "text" : "password"}
               {...register('password')}
               placeholder="Enter new password"
-              className={`w-full pl-10 pr-4 py-3 bg-white border rounded-xl outline-none transition-all text-sm ${errors.password ? 'border-danger focus:ring-1 focus:ring-danger' : 'border-gray-200 focus:border-primary'
-                }`}
+              className={`w-full pl-11 pr-12 py-3 text-sm bg-surface text-text-primary border ${errors.password ? 'border-danger focus:border-danger' : 'border-border-light focus:border-primary'
+                } rounded-xl outline-none transition-all auth-input-shadow duration-200`}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer hover:text-text-secondary transition-colors"
+            >
+              {showPassword ? <LuEyeOff size={20} /> : <LuEye size={20} />}
+            </button>
           </div>
-          {errors.password && <p className="text-danger text-[10px] font-medium">{errors.password.message}</p>}
+          {errors.password && <p className="text-danger text-xs mt-1 font-medium pl-1">{errors.password.message}</p>}
         </div>
 
-        {/* Confirm Password */}
-        <div className='flex flex-col gap-1'>
-          <label className="text-sm font-bold text-gray-500 mb-2 tracking-wider">Confirm Password</label>
+        {/* Confirm Password input field */}
+        <div>
+          <label className="block text-sm font-semibold text-text-primary mb-1.5">Confirm Password</label>
           <div className="relative">
-            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 w-4 h-4" />
+            <LuLock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5" />
             <input
-              type="password"
-              required
+              type={showConfirmPassword ? "text" : "password"}
               {...register('confirmPassword')}
               placeholder="Re-enter new password"
-              className={`w-full pl-10 pr-4 py-3 bg-white border rounded-xl outline-none transition-all text-sm ${errors.confirmPassword ? 'border-danger focus:ring-1 focus:ring-danger' : 'border-gray-200 focus:border-primary'
-                }`}
+              className={`w-full pl-11 pr-12 py-3 text-sm bg-surface text-text-primary border ${errors.confirmPassword ? 'border-danger focus:border-danger' : 'border-border-light focus:border-primary'
+                } rounded-xl outline-none transition-all auth-input-shadow duration-200`}
             />
+            <button
+              type="button"
+              onClick={() => { setShowConfirmPassword(!showConfirmPassword); }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer hover:text-text-secondary transition-colors"
+            >
+              {showConfirmPassword ? <LuEyeOff size={20} /> : <LuEye size={20} />}
+            </button>
           </div>
-          {errors.confirmPassword && <p className="text-danger text-[10px] font-medium">{errors.confirmPassword.message}</p>}
+          {errors.confirmPassword && <p className="text-danger text-xs mt-1 font-medium pl-1">{errors.confirmPassword.message}</p>}
         </div>
 
-        <Button 
-        type="submit" 
-        disabled={resetMutation.isPending}
-        className="w-full py-3.5 rounded-xl shadow-lg shadow-red-100 mt-2">
-          {resetMutation.isPending ? "Changing Password..." : "Change Password"}
+        {/* Change Password Button */}
+        <Button
+          type="submit"
+          variant="primary"
+          isLoading={isLoading}
+          className="w-full py-4 rounded-xl text-base font-bold tracking-wide mt-4"
+        >
+          Change Password
         </Button>
 
-        <div className="text-center pt-4">
-          <Link to="/auth/login" className="text-primary font-bold text-sm hover:underline">
+        {/* Footer Link */}
+        <div className="text-center pt-2">
+          <Link to="/auth/login" className="text-primary font-bold text-sm hover:text-primary-hover hover:underline transition-colors">
             Back to Login
           </Link>
         </div>

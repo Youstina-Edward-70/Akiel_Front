@@ -11,8 +11,10 @@ const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange
     const imageUrl = coverPhoto instanceof File
         ? "/images/default-rest.svg"
         : coverPhoto?.url || "/images/default-rest.svg";
-    const { isFavorite, toggleFavorite } = useToggleFavorite(_id!);
+    const { isFavorite, toggleFavorite } = useToggleFavorite(_id);
     const { user } = useAuthStore();
+
+    const showFavoriteButton = user && user.role !== "owner" && user.role !== "admin";
 
     return (
         <div className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col h-full">
@@ -34,7 +36,7 @@ const RestaurantCard = ({ _id, name, coverPhoto, rating, cuisineType, priceRange
 
                 {/* Favorite Button (Only for Users) */}
                 <div className="absolute top-3 right-3 z-10">
-                    {user?.role !== "owner" && user?.role !== "admin" && (
+                    {showFavoriteButton && (
                         <button
                             onClick={(e) => {
                                 e.preventDefault();

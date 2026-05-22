@@ -15,7 +15,7 @@ const RestaurantMenu = ({ restaurantId, isOwner }: { restaurantId: string; isOwn
     const navigate = useNavigate();
 
     const { data: menuData = [], isLoading, deleteDish, isDeleting } = useRestaurantMenu(restaurantId);
-    
+
     const [dishToDelete, setDishToDelete] = useState<{ id: string; dishName: string } | null>(null);
 
     const handleEditItem = (itemId: string) => {
@@ -42,12 +42,17 @@ const RestaurantMenu = ({ restaurantId, isOwner }: { restaurantId: string; isOwn
     return (
         <div className="relative min-h-100 pb-24 font-sans">
             {/* Header */}
-            <div className="flex items-center justify-between mb-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 mb-10 border-b border-gray-100">
                 <div className="flex items-center gap-4">
-                    <div className="w-1.5 h-8 bg-primary rounded-full" />
-                    <h2 className="text-2xl font-black text-text-primary tracking-tight">
-                        Restaurant Menu
-                    </h2>
+                    <div className="w-2 h-10 bg-primary rounded-full" />
+                    <div>
+                        <h2 className="text-3xl font-black text-text-primary tracking-tight">
+                            Restaurant Menu
+                        </h2>
+                        <p className="text-gray-400 font-medium text-sm mt-1">
+                            Explore our delicious dishes and special recipes
+                        </p>
+                    </div>
                 </div>
 
                 {/* Floating Action Button */}
@@ -56,7 +61,7 @@ const RestaurantMenu = ({ restaurantId, isOwner }: { restaurantId: string; isOwn
                         <Button
                             variant="primary"
                             onClick={handleAddNewDish}
-                            className="group p-4 rounded-full shadow-2xl flex items-center gap-0 hover:gap-2 transition-all duration-300"
+                            className="group p-4 rounded-full flex items-center gap-0 hover:gap-2"
                         >
                             <IoAddOutline className="text-3xl" />
                             <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-bold whitespace-nowrap">

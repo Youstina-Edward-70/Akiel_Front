@@ -70,7 +70,7 @@ export const useToggleFavorite = (restaurantId: string) => {
             if (context?.previousFavorites) {
                 queryClient.setQueryData(["user-favorites"], context.previousFavorites);
             }
-            toast.error(error.response?.data?.message || "Operation failed");
+            toast.error(error.response?.data?.message || error.response?.data?.error || "Operation failed");
         },
         onSuccess: (_data, currentlyFavorite) => {
             toast.success(`${currentlyFavorite ? "Removed from favorites" : "Added to favorites"} successfully`);

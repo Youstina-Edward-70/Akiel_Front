@@ -36,8 +36,8 @@ export const API_ENDPOINTS = {
     OWNER: {
         MY_RESTAURANT: `${BASE_URL}/user/my/dashboard`, // GET
         CREATE_RESTAURANT: `${BASE_URL}/owner/restaurants`, // POST
-        UPDATE_RESTAURANT: (id: string) => `${BASE_URL}restaurant-data/main-data/${id}`, // PUT
-        DELETE_RESTAURANT: (id: string) => `${BASE_URL}restaurants/${id}`, // DELETE
+        UPDATE_RESTAURANT: (id: string) => `${BASE_URL}/restaurant-data/main-data/${id}`, // PUT
+        DELETE_RESTAURANT: (id: string) => `${BASE_URL}/restaurants/${id}`, // DELETE
 
         // Cover Photo Actions
         COVER: {
@@ -81,10 +81,11 @@ export const API_ENDPOINTS = {
 
     // --- Auth ---
     AUTH: {
-        LOGIN: `${BASE_URL}/auth/login`, // POST
         REGISTER: `${BASE_URL}/auth/register`, // POST
-        RESET_PASSWORD: `${BASE_URL}/auth/reset-password`, // POST
+        LOGIN: `${BASE_URL}/auth/login`, // POST
         FORGOT_PASSWORD: `${BASE_URL}/auth/forgot-password`, // POST
-        LOGOUT: `${BASE_URL}/auth/logout`,
+        VERIFY_OTP: `${BASE_URL}/auth/verify-otp`, // POST
+        RESET_PASSWORD: `${BASE_URL}/auth/reset-password`, // PATCH
+        CHANGE_PASSWORD: `${BASE_URL}/user/changePassword`, // PATCH
     }
 };

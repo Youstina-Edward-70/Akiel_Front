@@ -1,11 +1,20 @@
 import { motion } from "framer-motion";
 import { IoTrashOutline } from "react-icons/io5";
 import Button from "../../../../../ui/Button";
-import type { Image } from "../../../../../types/RestaurantSchema";
+import type { ApiImage } from "../../../../../types/RestaurantSchema";
 
-type RemoteImage = Exclude<Image, File | null | undefined>;
+type RemoteImage = NonNullable<ApiImage>;
 
-const PhotoCard = ({ img, index, isOwner, onDelete }: { img: RemoteImage; index: number; isOwner: boolean; onDelete: (img: RemoteImage) => void }) => {
+interface PhotoCardProps {
+    img: RemoteImage;
+    index: number;
+    isOwner: boolean;
+    onDelete: (img: RemoteImage) => void;
+}
+
+const PhotoCard = ({ img, index, isOwner, onDelete }: PhotoCardProps) => {
+    console.log(img);
+    
     return (
         <motion.div
             layout

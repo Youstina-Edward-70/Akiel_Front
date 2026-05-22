@@ -37,7 +37,7 @@ const CoverActions = ({
     const showHeartButton = !isOwner && role !== 'admin';
 
     return (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 self-end md:self-auto shrink-0">
             {isOwner ? (
                 <>
                     <input
@@ -51,17 +51,17 @@ const CoverActions = ({
                         variant="normal"
                         onClick={() => setIsDeleteModalOpen(true)}
                         disabled={isDeletingCover}
-                        className="w-14 h-14 rounded-full bg-white shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white shadow-xl hover:bg-gray-50 flex items-center justify-center transition-all"
                     >
-                        <IoTrashOutline className="text-primary text-2xl" />
+                        <IoTrashOutline className="text-primary text-xl md:text-2xl" />
                     </Button>
 
                     <Button
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUpdatingCover}
-                        className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all"
+                        className="w-12 h-12 md:w-14 md:h-14 rounded-full shadow-xl flex items-center justify-center transition-all"
                     >
-                        <IoImageOutline className="text-white text-2xl" />
+                        <IoImageOutline className="text-white text-xl md:text-2xl" />
                     </Button>
 
                     <ConfirmPopUp
@@ -80,12 +80,12 @@ const CoverActions = ({
                 showHeartButton && (
                 <button
                     onClick={onToggleFavorite}
-                    className="p-4 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 transition-all active:scale-90 shadow-2xl cursor-pointer group/heart"
+                    className="p-3 md:p-4 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 hover:bg-white/20 transition-all active:scale-90 shadow-2xl cursor-pointer group/heart"
                 >
                     {isFavorite ? (
-                        <IoHeart className="text-red-500 h-6 w-6 filter drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                        <IoHeart className="text-red-500 h-5 w-5 md:h-6 md:w-6 filter drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
                     ) : (
-                        <IoHeartOutline className="text-white h-6 w-6 group-hover/heart:text-red-400 transition-colors" />
+                        <IoHeartOutline className="text-white h-5 w-5 md:h-6 md:w-6 group-hover/heart:text-red-400 transition-colors" />
                     )}
                 </button>
                 )

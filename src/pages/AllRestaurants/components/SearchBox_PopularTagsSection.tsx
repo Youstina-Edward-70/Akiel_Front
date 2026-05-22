@@ -33,7 +33,7 @@ const SearchBox_PopularTags = () => {
                     Popular:
                 </span>
 
-                <div className="flex items-center gap-2 overflow-x-auto py-2 no-scrollbar">
+                <div className="flex items-center gap-2 overflow-x-auto p-2 no-scrollbar">
                     {CuisineTypes.map((cuisine) => {
                         const isActive = selectedCuisines.includes(cuisine.name);
                         const Icon = cuisine.icon;

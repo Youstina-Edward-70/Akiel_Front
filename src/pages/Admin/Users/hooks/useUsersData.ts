@@ -35,7 +35,7 @@ export const useUsersData = () => {
             closeModals();
         },
         onError: (error: AxiosError<ApiError>) => {
-            toast.error(error?.response?.data?.message || "Failed to delete user");
+            toast.error(error?.response?.data?.message || error?.response?.data?.error || "Failed to delete user");
         },
     });
 

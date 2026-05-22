@@ -1,9 +1,20 @@
-import { useSearchActions } from "../../../features/search/hooks/useSearchActions";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { CuisineTypes } from "../../../types/constants";
 import Button from "../../../ui/Button";
 
 const CategoriesSection = () => {
-    const { handleTagClick } = useSearchActions();
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleTagClick = (cuisineName: string) => {
+        const params = new URLSearchParams(searchParams);
+            params.append("cuisineType", cuisineName);
+        
+        if (location.pathname === "/") {
+            navigate(`/search?${params.toString()}`);
+        }
+    };
 
     return (
         <section className="py-16">

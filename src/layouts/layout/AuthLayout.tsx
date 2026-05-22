@@ -5,17 +5,25 @@ const AuthLayout: React.FC = () => {
   const location = useLocation();
 
   const getPageConfig = () => {
-    if (location.pathname.includes('signup')) {
+    if (location.pathname.includes('login')) {
       return {
-        image: "https://images.unsplash.com/photo-1541544537156-7627a7a4aa1c?auto=format&fit=crop&q=80",
-        title: "The Heart of Cairo's Dining",
+        image: "/images/authImages/login.png",
+        title: "Taste the Heart of Egypt",
+        subtitle: "Discover authentic flavors, hidden gems, and the finest restaurants across the Nile valley."
+      };
+    }
+
+    if (location.pathname.includes('register')) {
+      return {
+        image: "/images/authImages/register.png",
+        title: "The Heart of Egypt's Dining",
         subtitle: "Join thousands of food lovers and discover hidden culinary gems in the city."
       };
     }
 
     if (location.pathname.includes('forget-password')) {
       return {
-        image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80",
+        image: "/images/authImages/forgetPass.png",
         title: "Akiel",
         subtitle: "Discover the best culinary experiences."
       };
@@ -23,17 +31,25 @@ const AuthLayout: React.FC = () => {
     
     if (location.pathname.includes('reset-password')) {
       return {
-        image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1381&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        title: "Savor the Spirit of Cairo",
-        subtitle: "From traditional bites to modern delights, experience the true essence of Egyptian gastronomy."
+        image: "/images/authImages/resetPass.png",
+        title: "Back to the Heart of Dining",
+        subtitle: "Reset your access to continue exploring authentic flavors and hidden culinary gems."
       };
     }
 
-    // Default (Login)
+    if (location.pathname.includes('change-password')) {
+      return {
+        image: "/images/authImages/changePass.png",
+        title: "A Feast Awaits",
+        subtitle: "Explore Egypt's most delightful and hidden culinary gems."
+      };
+    }
+
+    // Default (otp-verification)
     return {
-      image: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&q=80",
-      title: "Taste the Heart of Egypt",
-      subtitle: "Discover authentic flavors, hidden gems, and the finest restaurants across the Nile valley."
+      image: "/images/authImages/OTP_verification.png",
+      title: "Secure Your Taste of Egypt",
+      subtitle: "Your security ensures a seamless journey through the finest flavors across the Nile valley."
     };
   };
 

@@ -7,13 +7,12 @@ import ConfirmPopUp from "../../../../../ui/ConfirmPopUp";
 import EmptyState from "../../../../../ui/EmptyState";
 import { MdImageNotSupported } from "react-icons/md";
 import Button from "../../../../../ui/Button";
-import type { Image } from "../../../../../types/RestaurantSchema";
+import type { ApiImage } from "../../../../../types/RestaurantSchema";
 
-type RemoteImage = Exclude<Image, File | null | undefined>;
+type RemoteImage = NonNullable<ApiImage>;
 
 const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isOwner: boolean }) => {
     const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [photoToDelete, setPhotoToDelete] = useState<RemoteImage | null>(null);
 
     const { photos, isLoading, uploadPhoto, deletePhoto, isDeleting } = useRestaurantPhotos(restaurantId);
@@ -26,6 +25,10 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
             e.target.value = "";
         }
     };
+
+    const validPhotos = (photos || []).filter(
+        (img): img is RemoteImage => !!img && typeof img === "object" && "_id" in img && !!img._id
+    );
 
     return (
         <div className="space-y-8">
@@ -40,12 +43,17 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
             />
 
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="w-1.5 h-8 bg-primary rounded-full" />
-                    <h2 className="text-2xl font-black text-text-primary tracking-tight">
-                        Restaurant Photos
-                    </h2>
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-6 pb-6 mb-10 border-b border-gray-100">
+                <div className="flex items-center gap-4">
+                    <div className="w-2 h-10 bg-primary rounded-full" />
+                    <div>
+                        <h2 className="text-3xl font-black text-text-primary tracking-tight">
+                            Restaurant Photos
+                        </h2>
+                        <p className="text-gray-400 font-medium text-sm mt-1">
+                            A visual journey through our dining area and food items
+                        </p>
+                    </div>
                 </div>
 
                 {/* Add New Photo Button */}
@@ -74,7 +82,7 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
             ) : photos.length > 0 ? (
                 <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
                     <AnimatePresence mode="popLayout">
-                        {photos.filter((img): img is RemoteImage => !!img && !(img instanceof File)).map((img, index) => (
+                        {validPhotos.map((img, index) => (
                             <PhotoCard
                                 key={img._id}
                                 img={img}
@@ -98,10 +106,13 @@ const RestaurantPhotos = ({ restaurantId, isOwner }: { restaurantId: string; isO
             <ConfirmPopUp
                 isOpen={!!photoToDelete}
                 onClose={() => setPhotoToDelete(null)}
-                onConfirm={() => photoToDelete &&
-                    deletePhoto(photoToDelete._id, {
-                        onSuccess: () => setPhotoToDelete(null)
-                    })}
+                onConfirm={() => {
+                    if (photoToDelete && photoToDelete._id) {
+                        deletePhoto(photoToDelete._id, {
+                            onSuccess: () => setPhotoToDelete(null)
+                        });
+                    }
+                }}
                 isLoading={isDeleting}
                 title="Delete Photo"
                 message="Are you sure you want to delete this photo? This action cannot be undone."

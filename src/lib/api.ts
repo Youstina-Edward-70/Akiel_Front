@@ -7,6 +7,7 @@ const api = axios.create({
 
 export interface ApiError {
     message: string;
+    error?: string;
 }
 
 // Requests Interceptor

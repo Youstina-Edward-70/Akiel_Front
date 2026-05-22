@@ -1,74 +1,58 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import axiosInstance from '../../lib/api';
-import { API_ENDPOINTS } from '../../lib/EndPoints';
-import { ForgetSchema, type ForgetFormValues } from '../../types/UserSchema';
-import toast from 'react-hot-toast';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { FaArrowLeft } from "react-icons/fa";
 import Button from '../../ui/Button';
+import { useForgetPass } from './hooks/useForgetPass';
 
 const ForgetPass: React.FC = () => {
-  const navigate = useNavigate();
-
-  const { register, handleSubmit, formState: { errors } } = useForm<ForgetFormValues>({
-    resolver: zodResolver(ForgetSchema)
-  });
-
-  const forgetMutation = useMutation({
-    mutationFn: async (data: ForgetFormValues) => {
-      const response = await axiosInstance.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, data);
-      return response.data;
-    },
-    onSuccess: (_, variables) => {
-      toast.success("OTP code sent to your email!");
-      // Navigate to reset password page with email in state
-      navigate('/auth/reset-password', { state: { email: variables.email } });
-    },
-    onError: (error) => {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to send OTP");
-      } else {
-        toast.error("Something went wrong");
-      }
-    }
-  });
-
-  const onSubmit = (data: ForgetFormValues) => {
-    forgetMutation.mutate(data);
-  };
+  // Destructuring all operations from the custom hook
+  const {
+    register,
+    handleSubmit,
+    errors,
+    isLoading,
+    onSubmit
+  } = useForgetPass();
 
   return (
     <>
+      {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-text-primary mb-3">Forgot Password?</h1>
-        <p className="text-gray-500 text-sm leading-relaxed px-4 font-medium">
+        <h1 className="text-3xl font-bold text-text-primary mb-3 font-heading">Forgot Password</h1>
+        <p className="text-text-secondary text-sm leading-relaxed px-4 font-medium font-sans">
           Enter the email or phone number associated with your account and we will send you a reset link.
         </p>
       </div>
 
-      <form className="space-y-6 text-left" onSubmit={handleSubmit(onSubmit)}>
+      <form className="space-y-6 text-left font-sans" onSubmit={handleSubmit(onSubmit)}>
+
+        {/* Email input field */}
         <div className="flex flex-col gap-1">
-          <label className="block text-sm text-gray-700 mb-1.5 font-medium">Email</label>
+          <label className="block text-sm text-text-primary mb-1.5 font-semibold">Email</label>
           <input
             type="email"
-            required
             {...register('email')}
             placeholder="Enter your email"
-            className="w-full px-4 py-3 text-sm bg-surface border border-gray-200 rounded-lg focus:border-primary outline-none transition-all"
+            className={`w-full px-4 py-3 text-sm bg-surface border ${errors.email ? 'border-danger focus:border-danger' : 'border-border-light focus:border-primary'
+              } rounded-xl outline-none transition-all auth-input-shadow duration-200 text-text-primary`}
           />
-          {errors.email && <p className="text-danger text-[10px] font-medium">{errors.email.message}</p>}
+          {errors.email && <p className="text-danger text-xs mt-1 font-medium pl-1">{errors.email.message}</p>}
         </div>
 
-        <Button type="submit" className="w-full bg-primary text-white py-3.5 rounded-xl font-bold shadow-lg shadow-red-200 hover:bg-primary-hover transition-all active:scale-[0.98]">
-          Send OTP Code
+        {/* Send OTP Button */}
+        <Button
+          type="submit"
+          variant="primary"
+          isLoading={isLoading}
+          className="w-full py-4 rounded-xl text-base font-bold tracking-wide mt-4"
+        >
+          Send OTP
         </Button>
 
-        <div className="text-center pt-4">
-          <Link to="/auth/login" className="text-primary font-bold text-sm flex items-center justify-center gap-2 hover:gap-3 transition-all">
-            <span><FaArrowLeft /></span> Back to Login
+        {/* Footer Link */}
+        <div className="text-center pt-2">
+          <Link to="/auth/login" className="text-primary font-bold text-sm flex items-center justify-center gap-2 hover:gap-3 transition-all duration-200">
+            <FaArrowLeft size={12} /> Back to Login
           </Link>
         </div>
       </form>

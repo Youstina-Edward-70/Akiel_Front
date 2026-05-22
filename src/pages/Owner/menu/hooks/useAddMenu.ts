@@ -65,7 +65,7 @@ const formMethods = useForm<MenuFormInput>({
             navigate(-1);
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to save menu.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to save menu.";
             toast.error(msg);
         }
     });

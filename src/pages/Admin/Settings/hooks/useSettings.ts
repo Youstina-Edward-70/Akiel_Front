@@ -52,7 +52,7 @@ export function useSettings() {
             toast.success("Settings updated successfully");
         },
         onError: (error: AxiosError<ApiError>) => {
-            toast.error(error?.response?.data?.message || "Failed to update settings");
+            toast.error(error?.response?.data?.message || error?.response?.data?.error || "Failed to update settings");
         },
     });
 

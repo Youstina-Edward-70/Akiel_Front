@@ -37,7 +37,7 @@ export const useRequestsData = () => {
             toast.success(message);
         },
         onError: (error: AxiosError<ApiError>) => {
-            toast.error(error?.response?.data?.message || "Failed to update status");
+            toast.error(error?.response?.data?.message || error?.response?.data?.error || "Failed to update status");
         }
     });
 

@@ -13,7 +13,7 @@ const useRestaurantDetails = (id: string) => {
         queryKey: ["restaurant", id],
         queryFn: async () => {
             const { data } = await axiosInstance.get(API_ENDPOINTS.DETAILS.GET_BY_ID(id!));
-            return data.Data;
+            return data.Data || data.data;
         },
         enabled: !!id,
     });
@@ -32,7 +32,7 @@ const useRestaurantDetails = (id: string) => {
             toast.success("Restaurant information updated!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to update information.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to update information.";
             toast.error(msg);
         }
     });
@@ -55,7 +55,7 @@ const useRestaurantDetails = (id: string) => {
             toast.success("Cover photo updated successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to update cover photo.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to update cover photo.";
             toast.error(msg);
         }
     });
@@ -70,7 +70,7 @@ const useRestaurantDetails = (id: string) => {
             toast.success("Cover photo removed Successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            toast.error(error.response?.data?.message || "Failed to remove cover");
+            toast.error(error.response?.data?.message || error.response?.data?.error || "Failed to remove cover");
         }
     });
 

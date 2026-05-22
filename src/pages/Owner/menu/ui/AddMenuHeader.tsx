@@ -5,7 +5,7 @@ import Button from "../../../../ui/Button";
 import { MenuSchema } from "../../../../types/RestaurantSchema";
 import { z } from "zod";
 
-type DishInput = z.infer<typeof MenuSchema>["dishes"][number];
+type DishInput = z.input<typeof MenuSchema>["dishes"][number];
 
 interface AddMenuHeaderProps {
     onAdd: (data: DishInput) => void;
@@ -31,11 +31,11 @@ const AddMenuHeader = ({ onAdd, isPending }: AddMenuHeaderProps) => {
                 type="button"
                 onClick={() => onAdd({
                     id: nanoid(),
-                    name: "",
+                    dishName: "",
                     price: "",
                     description: "",
-                    category: "" as unknown as DishInput["category"],
-                    image: null as unknown as DishInput["image"],
+                    category: "",
+                    image: null,
                 })}
                 className="rounded-full px-6 py-3 text-sm font-bold"
                 disabled={isPending}

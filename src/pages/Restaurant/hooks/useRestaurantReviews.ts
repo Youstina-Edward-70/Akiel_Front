@@ -17,7 +17,7 @@ const useRestaurantReviews = (restaurantId: string) => {
             const { data } = await axiosInstance.get(
                 `${API_ENDPOINTS.DETAILS.GET_BY_ID(restaurantId)}/details?select=reviews`
             );
-            return data.Data.reviews || [];
+            return data.Data.reviews || data.data.reviews || [];
         },
         enabled: !!restaurantId,
     });
@@ -43,7 +43,7 @@ const useRestaurantReviews = (restaurantId: string) => {
             toast.success("Review updated successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to update review. Please try again.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to update review. Please try again.";
             toast.error(msg);
         }
     });
@@ -58,7 +58,7 @@ const useRestaurantReviews = (restaurantId: string) => {
             toast.success("Review deleted successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to delete review. Please try again.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to delete review. Please try again.";
             toast.error(msg);
         },
     });

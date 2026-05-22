@@ -36,9 +36,11 @@ import Settings from '../pages/Admin/Settings/Settings';
 
 // Auth Features
 import Login from "../features/auth/login";
-import Signup from "../features/auth/signup";
+import Register from "../features/auth/register";
 import ForgetPass from "../features/auth/forgetPass";
 import ResetPass from "../features/auth/resetPass";
+import ChangePass from '../features/auth/changePass';
+import OtpVerify from '../features/auth/otpVerify';
 
 export const Routes = createBrowserRouter([
     {
@@ -103,9 +105,11 @@ export const Routes = createBrowserRouter([
         element: <AuthLayout />,
         children: [
             { path: "login", element: <Login /> },
-            { path: "signup", element: <Signup /> },
+            { path: "register", element: <Register /> },
             { path: "forget-password", element: <ForgetPass /> },
             { path: "reset-password", element: <ResetPass /> },
+            { path: "change-password", element: <ChangePass /> },
+            { path: "otp-verification", element: <OtpVerify /> },
         ],
     },
     // Catch-all for 404

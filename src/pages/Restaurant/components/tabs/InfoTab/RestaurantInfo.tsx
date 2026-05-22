@@ -53,7 +53,7 @@ const RestaurantInfo = ({ restaurant, isOwner }: { restaurant: Restaurant; isOwn
                     <Button
                         variant="primary"
                         onClick={handleEditNavigation}
-                        className="group p-4 rounded-full shadow-2xl flex items-center gap-0 hover:gap-2 transition-all duration-300"
+                        className="group p-4 rounded-full flex items-center gap-0 hover:gap-2"
                     >
                         <IoCreateOutline className="text-3xl" />
                         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-bold whitespace-nowrap">

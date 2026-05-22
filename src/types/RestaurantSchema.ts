@@ -7,8 +7,16 @@ import {
   LIMITS,
 } from "./constants";
 
-const imageSchema = z.union([
-  z.instanceof(File).refine((file) => file.type.startsWith("image/"), {
+// Image Schemas
+export const apiImageSchema = z.object({
+  url: z.string().url(),
+  publicId: z.string().optional().nullable(),
+  _id: z.string().optional(),
+}).nullable().default(null);
+
+export const fileUploadSchema = z.union([
+  z.instanceof(File)
+    .refine((file) => file.type.startsWith("image/"), {
       message: "Must select image only (JPG, PNG, etc...)",
     })
     .refine((file) => file.size <= 5 * 1024 * 1024, {
@@ -16,12 +24,13 @@ const imageSchema = z.union([
     }),
   z.object({
     url: z.string().url(),
+    publicId: z.string().optional().nullable(),
     _id: z.string().optional(),
-    publicId: z.string().optional(),
   })
-]).nullable().refine(val => val !== null, "Image is required.");
+]).nullable();
 
-const addressSchema = z.object({
+// Sub-Schemas (Address / Dishes / Hours)
+export const addressSchema = z.object({
   _id: z.string().optional(),
   governorate: z.string().min(1, "Governorate is required"),
   city: z.string().min(1, "City is required"),
@@ -48,9 +57,9 @@ export const DishSchema = z.object({
     }),
   description: z.string().min(2, "Description must be at least 2 characters."),
   category: z.enum(MenuCategories).refine((val) => val !== "", {
-  message: "Category must be selected",
-}),
-  image: imageSchema,
+    message: "Category must be selected",
+  }),
+  image: fileUploadSchema,
 });
 
 export interface DishIssues {
@@ -89,14 +98,11 @@ const ownerSummarySchema = z.object({
   profile_pic: z.string().nullable().optional(),
 });
 
+// Admin / Dashboard Request Schemas
 export const RequestSummarySchema = z.object({
   _id: z.string(),
   name: z.string(),
-  coverPhoto: z.object({
-    url: z.string().url(),
-    publicId: z.string(),
-    _id: z.string(),
-  }),
+  coverPhoto: apiImageSchema,
   Owner: ownerSummarySchema,
   rejectionCount: z.number(),
   createdAt: z.string(),
@@ -114,11 +120,7 @@ export const SingleRequestResponseSchema = z.object({
     _id: z.string(),
     email: z.string().email(),
     name: z.string(),
-    coverPhoto: z.object({
-      url: z.string().url(),
-      publicId: z.string(),
-      _id: z.string(),
-    }),
+    coverPhoto: apiImageSchema,
     delivery: z.boolean(),
     cuisineType: z.array(z.string()),
     phoneNumber: z.string(),
@@ -126,22 +128,24 @@ export const SingleRequestResponseSchema = z.object({
     address: z.array(addressSchema),
     openingHours: z.array(openingHoursSchema),
     Owner: ownerSummarySchema,
-    status: z.enum(["pending", "approved", "rejected"]),
+    status: z.enum(RestaurantStatuses),
     rejectionCount: z.number(),
     createdAt: z.string(),
   }),
 });
 
+// Main Restaurant Schema
 export const restaurantSchema = z.object({
   _id: z.string(),
   name: z.string()
     .min(LIMITS.NAME_MIN, `Name must be at least ${LIMITS.NAME_MIN} characters`)
     .max(LIMITS.NAME_MAX, `Name cannot exceed ${LIMITS.NAME_MAX} characters`),
 
-  coverPhoto: imageSchema,
+  coverPhoto: apiImageSchema,
   rating: z.number().min(0).max(5).default(0),
   delivery: z.boolean().default(false),
   priceRange: z.enum(PriceRanges),
+  
   cuisineType: z.array(z.enum(cuisineNames))
     .min(1, "Select at least one cuisine type")
     .max(LIMITS.CUISINE_TYPES, `Max ${LIMITS.CUISINE_TYPES} cuisine types allowed`),
@@ -165,7 +169,7 @@ export const restaurantSchema = z.object({
     .max(LIMITS.MENU_ITEMS, `Max ${LIMITS.MENU_ITEMS} menu items allowed`)
     .default([]),
 
-  gallery: z.array(imageSchema)
+  gallery: z.array(apiImageSchema)
     .max(LIMITS.GALLERY_PHOTOS, `Max ${LIMITS.GALLERY_PHOTOS} photos allowed`)
     .default([]),
 
@@ -173,36 +177,64 @@ export const restaurantSchema = z.object({
     .min(1, "At least one address/branch is required")
     .max(LIMITS.BRANCHES, `Max ${LIMITS.BRANCHES} branches allowed`),
 
-  openingHours: z.array(openingHoursSchema).length(7, "Must provide hours for all 7 days"),
+  openingHours: z.array(openingHoursSchema)
+    .min(1, "At least one working day must be added")
+    .max(7, "Working days cannot exceed 7 days"),
 
   Owner: z.string(),
   rejectionReason: z.string().optional(),
   createdAt: z.string().or(z.date()).optional(),
 });
 
+// Types Export
 export type Restaurant = z.infer<typeof restaurantSchema>;
 export type OpeningHour = z.infer<typeof openingHoursSchema>;
 export type MenuFormValues = z.infer<typeof MenuSchema>;
 export type Dish = z.infer<typeof DishSchema>;
-export type DishFieldValue = string | File | Image | null | undefined;
 export type Address = z.infer<typeof addressSchema>;
-export type Image = z.infer<typeof imageSchema>;
+export type ApiImage = z.infer<typeof apiImageSchema>;
+export type FileUploadImage = z.infer<typeof fileUploadSchema>;
 export type RequestSummary = z.infer<typeof RequestSummarySchema>;
 export type SingleRequestData = z.infer<typeof SingleRequestResponseSchema>["Data"];
 
+// Client Form Schema
 export const RestaurantFormSchema = z.object({
   name: z.string().min(LIMITS.NAME_MIN, `Name must be at least ${LIMITS.NAME_MIN} characters`),
   description: z.string().min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
   phoneNumber: z.string().regex(/^01[0125][0-9]{8}$/, "Invalid Egyptian phone number"),
   email: z.string().email("Invalid email address"),
   delivery: z.boolean().default(false),
+  
+  coverPhoto: fileUploadSchema, 
+  priceRange: z.enum(PriceRanges),
+  cuisineType: z.array(z.string()).min(1, "Select at least one cuisine type"),
+
   address: z.array(addressSchema).min(1, "At least one address is required"),
+  
   openingHours: z.array(z.object({
       day: z.string(),
       opens: z.string().optional().nullable(),
       closes: z.string().optional().nullable(),
       isClosed: z.boolean().default(false)
-  })).optional()
+  })).min(1, "At least one working day is required").optional()
 });
 
 export type RestaurantFormInput = z.input<typeof RestaurantFormSchema>;
+
+// UI Component Props
+export interface RestaurantCardProps {
+    _id: string;
+    name: string;
+    coverPhoto: ApiImage | File;
+    rating: number;
+    cuisineType: string[];
+    priceRange: string;
+    openingHours: {
+        _id?: string;
+        day: string;
+        closes?: string | null;
+        opens?: string | null;
+        isClosed: boolean;
+    }[];
+    delivery: boolean;
+}

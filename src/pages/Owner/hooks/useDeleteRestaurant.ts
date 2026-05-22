@@ -18,7 +18,7 @@ export const useDeleteRestaurant = () => {
             toast.success("Restaurant deleted successfully");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const message = error.response?.data?.message || "Failed to delete restaurant";
+            const message = error.response?.data?.message || error.response?.data?.error || "Failed to delete restaurant";            
             toast.error(message);
         }
     });

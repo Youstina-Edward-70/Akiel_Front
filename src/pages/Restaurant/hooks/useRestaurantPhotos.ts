@@ -3,19 +3,19 @@ import axiosInstance, { type ApiError } from "../../../lib/api";
 import { API_ENDPOINTS } from "../../../lib/EndPoints";
 import { toast } from "react-hot-toast";
 import type { AxiosError } from "axios";
-import type { Image } from "../../../types/RestaurantSchema";
+import type { ApiImage } from "../../../types/RestaurantSchema";
 
 const useRestaurantPhotos = (restaurantId: string) => {
     const queryClient = useQueryClient();
 
     // Fetch Photos
-    const query = useQuery<Image[]>({
+    const query = useQuery<ApiImage[]>({
         queryKey: ["restaurant-photos", restaurantId],
         queryFn: async () => {
             const { data } = await axiosInstance.get(
                 `${API_ENDPOINTS.DETAILS.GET_BY_ID(restaurantId)}/details?select=gallery`
             );
-            return data.Data.Gallery || [];
+            return data.Data.Gallery || data.data.Gallery || data.Data.gallery || data.data.gallery || [];
         },
         enabled: !!restaurantId,
     });
@@ -41,7 +41,7 @@ const useRestaurantPhotos = (restaurantId: string) => {
             toast.success("Photos uploaded successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to upload photos. Please try again.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to upload photos. Please try again.";
             toast.error(msg);
         },
     });
@@ -57,7 +57,7 @@ const useRestaurantPhotos = (restaurantId: string) => {
             toast.success("Photo deleted successfully!");
         },
         onError: (error: AxiosError<ApiError>) => {
-            const msg = error.response?.data?.message || "Failed to delete photo. Please try again.";
+            const msg = error.response?.data?.message || error.response?.data?.error || "Failed to delete photo. Please try again.";
             toast.error(msg);
         },
     });
