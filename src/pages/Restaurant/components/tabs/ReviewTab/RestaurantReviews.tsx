@@ -9,7 +9,6 @@ import SkeletonReviewCard from "./SkeletonReviewCard";
 import EmptyState from "../../../../../ui/EmptyState";
 import { FaCommentSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import type { Review } from "../../../../../types/UserSchema";
 
 const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId: string; isOwner: boolean; resRating: number }) => {
     const navigate = useNavigate();
@@ -18,24 +17,18 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
         isLoading,
         deleteReview,
         isDeleting,
-        userReview,
         hasReviewed
     } = useRestaurantReviews(restaurantId);
     const { user: currentUser } = useAuthStore();
 
     const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
+    
     const handleActionClick = () => {
-        if (hasReviewed && userReview) {
-            handleEditReview(userReview);
-        } else {
-            navigate(`/restaurant/review/add/${restaurantId}`);
-        }
+        navigate(`/restaurant/${restaurantId}/review`);
     };
 
-    const handleEditReview = (rev: Review) => {
-        navigate(`/restaurant/review/edit/${restaurantId}/${rev._id}`, {
-            state: { review: rev }
-        });
+    const handleEditReview = () => {
+        navigate(`/restaurant/${restaurantId}/review`);
     };
 
     return (
@@ -65,7 +58,7 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
                                     key={rev._id}
                                     rev={rev}
                                     isAuthor={rev.user?._id === currentUser?.id}
-                                    onEdit={() => handleEditReview(rev)}
+                                    onEdit={handleEditReview}
                                     onDelete={() => setReviewToDelete(rev._id!)}
                                     isDeleting={isDeleting && reviewToDelete === rev._id}
                                 />

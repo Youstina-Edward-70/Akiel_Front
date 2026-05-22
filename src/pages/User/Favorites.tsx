@@ -15,7 +15,7 @@ const Favorites = () => {
                         <div className="flex items-center gap-4">
                             <h1 className="text-[28px] font-heading font-black text-text-primary">My Favorites</h1>
                             <span className="bg-primary-light text-primary px-3 py-1 rounded-full text-xs font-bold">
-                                {favorites.length} Restaurants
+                                {Array.isArray(favorites) ? favorites.length : 0} Restaurants
                             </span>
                         </div>
                         <p className="text-text-secondary text-sm font-medium max-w-xl leading-relaxed mt-1">
@@ -26,7 +26,7 @@ const Favorites = () => {
             </div>
 
             <div className="max-w-6xl mx-auto px-4 mt-12">
-                {favorites.length === 0 ? (
+                {(!favorites || !Array.isArray(favorites) || favorites.length === 0) ? (
                     <EmptyFavorites />
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

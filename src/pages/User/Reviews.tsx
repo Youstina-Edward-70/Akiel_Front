@@ -15,7 +15,7 @@ const Reviews = () => {
                         <div className="flex items-center gap-4">
                             <h1 className="text-[28px] font-heading font-black text-text-primary">My Reviews</h1>
                             <span className="bg-orange-50 text-orange-500 px-3 py-1 rounded-full text-xs font-bold">
-                                {reviews.length} Reviews
+                                {Array.isArray(reviews) ? reviews.length : 0} Reviews
                             </span>
                         </div>
                         <p className="text-text-secondary text-sm font-medium max-w-xl leading-relaxed mt-1">
@@ -26,7 +26,7 @@ const Reviews = () => {
             </div>
 
             <div className="max-w-5xl mx-auto px-4 mt-12">
-                {reviews.length === 0 ? (
+                {(!reviews || !Array.isArray(reviews) || reviews.length === 0) ? (
                     <EmptyReviews />
                 ) : (
                     <div className="space-y-6">

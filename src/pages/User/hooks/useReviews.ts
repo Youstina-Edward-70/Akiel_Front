@@ -38,7 +38,8 @@ export const useReviews = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                setReviews(data.reviews || data || []);
+                const extractedReviews = data.reviews || data.Data || data.data || data;
+                setReviews(Array.isArray(extractedReviews) ? extractedReviews : []);
             }
         };
 

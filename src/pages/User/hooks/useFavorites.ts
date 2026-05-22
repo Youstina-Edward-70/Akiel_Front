@@ -35,14 +35,15 @@ export const useFavorites = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                setFavorites(data.favorites || data || []);
+                const extractedFavs = data.favorites || data.Data || data.data || data;
+                setFavorites(Array.isArray(extractedFavs) ? extractedFavs : []);
             }
         };
 
         if (token) {
             fetchFavorites().then(
                 () => setIsLoading(false),
-                () => setIsLoading(false) // بديل الـ catch
+                () => setIsLoading(false)
             );
         } else {
             setIsLoading(false);
@@ -66,7 +67,7 @@ export const useFavorites = () => {
 
         performRemove().then(
             () => {},
-            () => toast("Network issue", { icon: "❌" }) // بديل الـ catch
+            () => toast("Network issue", { icon: "❌" })
         );
     };
 
