@@ -28,7 +28,6 @@ export const useReviews = () => {
     const authUser = useAuthStore((s: unknown) => (s as StoreState).user);
     const token = state.token || authUser?.Token || authUser?.token;
 
-    // تغليف الدالة بـ useCallback لحل التحذير
     const fetchReviews = useCallback(async () => {
         setIsLoading(true);
         const response = await fetch(`${API_URL}/reviews/my-reviews`, {
@@ -55,7 +54,7 @@ export const useReviews = () => {
         } else {
             setIsLoading(false);
         }
-    }, [token, fetchReviews]); // إضافة fetchReviews هنا أخفى التحذير
+    }, [token, fetchReviews]); 
 
     const handleDelete = async (id: string) => {
         const performDelete = async () => {
