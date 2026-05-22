@@ -7,8 +7,8 @@ interface Props {
 }
 
 type FlexibleReviewData = {
-    restaurantId?: { name?: string };
-    restaurant?: { name?: string };
+    restaurantId?: { _id?: string, id?: string, name?: string } | string;
+    restaurant?: { _id?: string, id?: string, name?: string } | string;
     restaurantName?: string;
     createdAt?: string;
     date?: string;
@@ -22,8 +22,11 @@ type FlexibleReviewData = {
 const ReviewCard = ({ review, onDelete }: Props) => {
     const data = review as unknown as FlexibleReviewData;
     
-    const restaurantName = data.restaurantName || data.restaurantId?.name || data.restaurant?.name || "Restaurant";
+    const restObj = data.restaurantId || data.restaurant;
+    const restaurantName = (typeof restObj === 'object' ? restObj?.name : data.restaurantName) || "Restaurant";
     
+    const targetRestId = (typeof restObj === 'object' && restObj) ? (restObj._id || restObj.id) : (typeof restObj === 'string' ? restObj : "");
+
     const rawDate = data.createdAt || data.date;
     let displayDate = "Recently";
     if (rawDate) {
@@ -72,7 +75,7 @@ const ReviewCard = ({ review, onDelete }: Props) => {
             </div>
             <div className="flex justify-end border-t border-border-light pt-4 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <button 
-                    onClick={() => onDelete(data._id || data.id || "")} 
+                    onClick={() => onDelete(targetRestId as string)} 
                     className="text-danger hover:text-primary transition-colors text-sm font-bold flex items-center gap-2 cursor-pointer"
                 >
                     <FaTrash size={12} /> Delete Review
