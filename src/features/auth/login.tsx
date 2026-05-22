@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { LuMail, LuLock, LuEye, LuEyeOff } from "react-icons/lu";
 import { motion } from 'framer-motion';
@@ -55,7 +54,7 @@ const Login: React.FC = () => {
         <div>
           <div className="flex justify-between items-center mb-1.5">
             <label className="text-sm font-semibold text-gray-700">Password</label>
-            <Link to="/auth/forgot-password" className="text-xs font-bold text-primary hover:text-primary-hover hover:underline transition-colors">
+            <Link to="/auth/forget-password" className="text-xs font-bold text-primary hover:text-primary-hover hover:underline transition-colors">
               Forgot Password?
             </Link>
           </div>

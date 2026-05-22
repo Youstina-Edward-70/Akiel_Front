@@ -1,6 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft } from "react-icons/fa";
+import { motion } from 'framer-motion';
 import Button from '../../ui/Button';
 import { useForgetPass } from './hooks/useForgetPass';
 
@@ -15,7 +15,12 @@ const ForgetPass: React.FC = () => {
   } = useForgetPass();
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="w-full"
+    >
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-3 font-heading">Forgot Password</h1>
@@ -33,8 +38,9 @@ const ForgetPass: React.FC = () => {
             type="email"
             {...register('email')}
             placeholder="Enter your email"
-            className={`w-full px-4 py-3 text-sm bg-surface border ${errors.email ? 'border-danger focus:border-danger' : 'border-border-light focus:border-primary'
-              } rounded-xl outline-none transition-all auth-input-shadow duration-200 text-text-primary`}
+            className={`w-full px-4 py-3 text-sm bg-surface border ${
+              errors.email ? 'border-danger focus:border-danger' : 'border-border-light focus:border-primary'
+            } rounded-xl outline-none transition-all auth-input-shadow duration-200 text-text-primary`}
           />
           {errors.email && <p className="text-danger text-xs mt-1 font-medium pl-1">{errors.email.message}</p>}
         </div>
@@ -56,7 +62,7 @@ const ForgetPass: React.FC = () => {
           </Link>
         </div>
       </form>
-    </>
+    </motion.div>
   );
 };
 

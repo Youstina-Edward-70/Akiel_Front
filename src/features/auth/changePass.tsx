@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import Button from '../../ui/Button';
 import { LuLock, LuEye, LuEyeOff } from "react-icons/lu";
+import { motion } from 'framer-motion';
+import Button from '../../ui/Button';
 import { useChangePass } from './hooks/useChangePass';
 
 const ChangePass: React.FC = () => {
@@ -20,7 +21,12 @@ const ChangePass: React.FC = () => {
     } = useChangePass();
 
     return (
-        <>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="w-full"
+        >
             {/* Header */}
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-text-primary mb-3 font-heading">Change Password</h1>
@@ -120,7 +126,7 @@ const ChangePass: React.FC = () => {
                     </Link>
                 </div>
             </form>
-        </>
+        </motion.div>
     );
 };
 
