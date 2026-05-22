@@ -6,7 +6,6 @@ interface Props {
     onDelete: (id: string) => void;
 }
 
-// 👈 واجهة مرنة عشان نستخرج الداتا المتداخلة بدون استخدام any نهائياً
 type FlexibleReviewData = {
     restaurantId?: { name?: string };
     restaurant?: { name?: string };
@@ -21,13 +20,10 @@ type FlexibleReviewData = {
 };
 
 const ReviewCard = ({ review, onDelete }: Props) => {
-    // استخراج الداتا بالطريقة الآمنة
     const data = review as unknown as FlexibleReviewData;
     
-    // 👈 الكود دلوقتي هيدور على اسم المطعم في كل الأماكن المحتملة
     const restaurantName = data.restaurantName || data.restaurantId?.name || data.restaurant?.name || "Restaurant";
     
-    // 👈 تظبيط شكل التاريخ عشان يطلع زي الصورة الأولى (Month DD, YYYY)
     const rawDate = data.createdAt || data.date;
     let displayDate = "Recently";
     if (rawDate) {

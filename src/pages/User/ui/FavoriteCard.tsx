@@ -6,7 +6,6 @@ interface Props {
     onRemove: (id: string) => void;
 }
 
-// تعريف نوع مرن عشان نستوعب الداتا المتداخلة من غير أي مشاكل
 type FlexibleRestaurantData = {
     restaurantId?: FlexibleRestaurantData;
     restaurant?: FlexibleRestaurantData;

@@ -12,7 +12,6 @@ const InteractiveStars = ({ rating, setRating }: Props) => {
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
         const { left, width } = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - left;
-        // لو الماوس في النص الأول من النجمة تبقى نص، لو في النص التاني تبقى نجمة كاملة
         const isHalf = x < width / 2;
         setHoverValue(isHalf ? index - 0.5 : index);
     };
