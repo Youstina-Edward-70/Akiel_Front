@@ -9,8 +9,8 @@ interface AuthState {
     logout: () => void;
     getRole: () => string | undefined;
     updateUserRole: (newRole: 'user' | 'owner' | 'admin') => void;
-    // الدالة الجديدة اللي هتحدث الصورة والبيانات في النافبار
-    updateUser: (updatedData: Partial<User>) => void; 
+    updateUser: (updatedData: Partial<User>) => void;
+    setToken: (token: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,9 +35,12 @@ export const useAuthStore = create<AuthState>()(
                 user: state.user ? { ...state.user, role: newRole } : null
             })),
 
-            // تنفيذ الدالة الجديدة
             updateUser: (updatedData) => set((state) => ({
                 user: state.user ? { ...state.user, ...updatedData } : null
+            })),
+
+            setToken: (token) => set((state) => ({
+                user: state.user ? { ...state.user, Token: token } : null
             })),
         }),
         {
