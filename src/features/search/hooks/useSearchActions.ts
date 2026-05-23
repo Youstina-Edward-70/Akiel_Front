@@ -52,9 +52,9 @@ export function useSearchActions({ paramName = "searchQuery", pageParamName = "p
         const params = new URLSearchParams(searchParams);
 
         // Delivery
-        params.delete("hasDelivery");
-        if (delivery?.have && !delivery?.dontHave) params.set("hasDelivery", "true");
-        if (!delivery?.have && delivery?.dontHave) params.set("hasDelivery", "false");
+        params.delete("delivery");
+        if (delivery?.have && !delivery?.dontHave) params.set("delivery", "true");
+        if (!delivery?.have && delivery?.dontHave) params.set("delivery", "false");
 
         // Rating
         if (minRating && minRating > 0) {
@@ -76,7 +76,7 @@ export function useSearchActions({ paramName = "searchQuery", pageParamName = "p
 
     const clearFilters = () => {
         const params = new URLSearchParams(searchParams);
-        params.delete("hasDelivery");
+        params.delete("delivery");
         params.delete("minRating");
         params.delete("priceRange");
         params.set(pageParamName, "1");
