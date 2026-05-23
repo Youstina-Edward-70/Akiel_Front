@@ -6,10 +6,22 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../../lib/api";
 
 interface ProfileUser {
-    _id?: string; id?: string; role?: string; fullname?: string; email?: string;
-    phone?: string; profile_pic?: string; image?: string;
+    _id?: string; 
+    id?: string; 
+    role?: string; 
+    fullname?: string; 
+    email?: string;
+    phone?: string; 
+    profile_pic: {
+        url: string;
+        publicId?: string | null | undefined;
+        _id?: string | undefined;
+    } | null;
+    image?: string;
     address?: { governorate: string; city: string; street: string; details: string; }[];
-    favoritesCount?: number; reviewsCount?: number; restaurantId?: string;
+    favoritesCount?: number; 
+    reviewsCount?: number; 
+    restaurantId?: string;
 }
 interface AuthStoreType {
     user: ProfileUser | null;
@@ -21,9 +33,6 @@ interface UserStoreType {
     profile: ProfileUser | null;
     updateProfile: (p: ProfileUser) => void;
     clearProfile: () => void;
-}
-interface ProfileResponse {
-    data: { user?: ProfileUser; Data?: ProfileUser };
 }
 
 export const useProfile = () => {
@@ -38,23 +47,34 @@ export const useProfile = () => {
     const [isLogoutOpen, setIsLogoutOpen] = useState<boolean>(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
 
+    const updateProfile = userStore.updateProfile;
+
     useEffect(() => {
-        if (sessionToken && userId) {
-            const handleDataArrival = (res: ProfileResponse) => {
+        if (!sessionToken || !userId) return;
+
+        let isMounted = true;
+
+        const fetchProfile = async () => {
+            try {
+                const res = await axiosInstance.get(`/user/getUserProfile/${userId}`, {
+                    headers: { "Authorization": `Bearer ${sessionToken}` }
+                });
+                
                 const actualData = res.data.user || res.data.Data;
-                if (actualData) {
-                    userStore.updateProfile(actualData);
+                if (isMounted && actualData) {
+                    updateProfile(actualData);
                 }
-                setLoadingState(false);
-            };
-            const handleDataFailure = () => {
-                setLoadingState(false);
-            };
-            axiosInstance.get(`/user/profile/${userId}`, {
-                headers: { "Authorization": `Bearer ${sessionToken}` }
-            }).then(handleDataArrival, handleDataFailure);
-        }
-    }, [userId, sessionToken, userStore]);
+            } catch (error) {
+                console.error("Failed to fetch profile", error);
+            } finally {
+                if (isMounted) setLoadingState(false);
+            }
+        };
+
+        fetchProfile();
+        return () => { isMounted = false; };
+    }, [userId, sessionToken, updateProfile]);
+    
     const confirmExit = () => {
         userStore.clearProfile();
         authStore.logout();

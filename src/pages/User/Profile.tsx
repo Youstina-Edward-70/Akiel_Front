@@ -30,7 +30,7 @@ const Profile = () => {
     
     const addr = user?.address?.[0];
     const fullAddress = addr ? `${addr.street}, ${addr.city}, ${addr.governorate}` : "Not provided";
-    const profilePic = user?.profile_pic || user?.image || "";
+    const profilePic = user?.profile_pic?.url || user?.image || "";
     
     const ownerRestaurantId = user?.restaurantId || myRestaurantData?._id || myRestaurantData?.id || "";
 

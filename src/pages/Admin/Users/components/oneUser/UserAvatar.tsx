@@ -6,7 +6,7 @@ interface UserAvatarProps {
 
 const getAvatarUrl = (user: SingleUserData): string => {
     const pic = user.profile_pic;
-    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname)}&background=fee2e2&color=e23744`;
+    const fallback = `https://ui-avatars.com/api/?name=${user.fullname}`;
     if (!pic) return fallback;
     if (typeof pic === "object" && "url" in pic && pic.url) return pic.url;
     return fallback;
