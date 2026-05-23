@@ -7,7 +7,13 @@ import toast from "react-hot-toast";
 import axiosInstance from "../../../lib/api";
 
 interface EditFormInput { fullname: string; email: string; phone: string; address: { governorate: string; city: string; street: string; details: string; }; }
-interface StoreUser { _id?: string; id?: string; Token?: string; token?: string; fullname?: string; email?: string; phone?: string; profile_pic?: string; image?: string; address?: { governorate: string; city: string; street: string; details: string; }[]; }
+interface StoreUser { _id?: string; id?: string; Token?: string; token?: string; fullname?: string; email?: string; phone?: string; 
+    profile_pic: {
+        url: string;
+        publicId?: string | null | undefined;
+        _id?: string | undefined;
+    } | null;
+    image?: string; address?: { governorate: string; city: string; street: string; details: string; }[]; }
 interface FailureResponse { response?: { data?: { message?: string } } }
 
 export const useEditProfile = () => {
@@ -24,7 +30,7 @@ export const useEditProfile = () => {
     const currentEmail = safeProfile?.email || authUser?.email || "";
     const currentPhone = safeProfile?.phone || authUser?.phone || "";
     const currentAddress = safeProfile?.address?.[0] || authUser?.address?.[0] || { governorate: "", city: "", street: "", details: "" };
-    const currentPic = selectedImage || safeProfile?.profile_pic || authUser?.profile_pic || authUser?.image || "/default-avatar.png";
+    const currentPic = selectedImage || safeProfile?.profile_pic?.url || authUser?.profile_pic?.url || authUser?.image || "/default-avatar.png";
     const formMethods = useForm<EditFormInput>({
         defaultValues: { fullname: currentFullName, email: currentEmail, phone: currentPhone, address: currentAddress }
     });
@@ -41,7 +47,7 @@ export const useEditProfile = () => {
             const newUserData = {
                 ...authUser, fullname: formDataPayload.fullname, email: formDataPayload.email,
                 phone: formDataPayload.phone, address: [formDataPayload.address],
-                profile_pic: finalImgUrl, image: finalImgUrl
+                profile_pic: { url: finalImgUrl }, image: finalImgUrl
             };
             userStore.updateProfile(newUserData);
             if (typeof authStore.updateUser === "function") authStore.updateUser(newUserData);
@@ -70,7 +76,7 @@ export const useEditProfile = () => {
                     finishUpdate(finalImgUrl);
                 }, handleFault);
             } else {
-                finishUpdate(authUser?.profile_pic || authUser?.image || "/default-avatar.png");
+                finishUpdate(authUser?.profile_pic?.url || "/default-avatar.png");
             }
         }, handleFault);
     };

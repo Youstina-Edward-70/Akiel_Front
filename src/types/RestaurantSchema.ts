@@ -205,8 +205,7 @@ export const RestaurantFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   delivery: z.boolean().default(false),
   
-  coverPhoto: fileUploadSchema, 
-  priceRange: z.enum(PriceRanges),
+  coverPhoto: fileUploadSchema.optional(), 
   cuisineType: z.array(z.string()).min(1, "Select at least one cuisine type"),
 
   address: z.array(addressSchema).min(1, "At least one address is required"),

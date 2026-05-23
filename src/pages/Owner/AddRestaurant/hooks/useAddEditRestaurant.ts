@@ -14,21 +14,21 @@ interface FetchOpeningHour { day: string; isClosed: boolean; opens?: string; clo
 interface FailureResponse { response?: { data?: { message?: string } } }
 interface FetchedRestaurantData {
     name: string; description: string; phoneNumber: string; email: string; delivery: boolean;
-    whatsappNumber?: string; facebookLink?: string; 
+    whatsappNumber?: string; facebookLink?: string;
     address: { governorate: string; city: string; street: string; details: string; }[];
     cuisineType: string[]; image: string; openingHours: FetchOpeningHour[];
 }
 interface ApiResponse { data: { restaurant?: FetchedRestaurantData; Data?: FetchedRestaurantData; } }
 
 export const useAddEditRestaurant = () => {
-    const { id: restaurantId } = useParams<{ id: string }>(); 
+    const { id: restaurantId } = useParams<{ id: string }>();
     const isEditMode = !!restaurantId;
     const navigate = useNavigate();
-    
+
     const authUser = useAuthStore((state) => state.user) as unknown as AuthUserObj | null;
     const authState = useAuthStore.getState() as unknown as AuthStateObj;
     const token = authState.token || authUser?.Token || authUser?.token;
-    
+
     const [isLoadingData, setIsLoadingData] = useState<boolean>(isEditMode);
     const [selectedImageURL, setSelectedImageURL] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -42,12 +42,13 @@ export const useAddEditRestaurant = () => {
         resolver: zodResolver(RestaurantFormSchema),
         defaultValues: {
             name: "", description: "", phoneNumber: "", email: "", delivery: true,
+            cuisineType: [],
             address: [{ governorate: "", city: "", street: "", details: "" }],
             openingHours: []
         }
     });
 
-    const { register, control, handleSubmit, reset, watch, formState } = formMethods;
+    const { register, control, handleSubmit, reset, watch, setValue, formState } = formMethods;
     const addressArray = useFieldArray({ control, name: "address" });
     const issuesProp = ['e', 'r', 'r', 'o', 'r', 's'].join('') as keyof typeof formState;
     const formIssues = formState[issuesProp] as Record<string, { message?: string }>;
@@ -58,18 +59,18 @@ export const useAddEditRestaurant = () => {
             const rest = res.data.restaurant || res.data.Data;
             if (rest) {
                 reset({
-                    name: rest.name, description: rest.description, 
+                    name: rest.name, description: rest.description,
                     phoneNumber: rest.phoneNumber, email: rest.email, delivery: rest.delivery,
                     address: rest.address?.length ? rest.address : [{ governorate: "", city: "", street: "", details: "" }],
                     openingHours: rest.openingHours || []
                 });
-                
+
                 setWhatsappNum(rest.whatsappNumber || "");
                 setFbLink(rest.facebookLink || "");
-                
+
                 setSelectedCuisines(rest.cuisineType || []);
                 setSelectedImageURL(rest.image || null);
-                
+
                 if (rest.openingHours) {
                     const activeDays = rest.openingHours.filter(h => !h.isClosed).map(h => h.day.toLowerCase());
                     setSelectedDays(activeDays);
@@ -93,7 +94,11 @@ export const useAddEditRestaurant = () => {
     };
 
     const toggleCuisine = (cuisineName: string) => {
-        setSelectedCuisines(prev => prev.includes(cuisineName) ? prev.filter(c => c !== cuisineName) : [...prev, cuisineName]);
+        setSelectedCuisines(prev => {
+            const next = prev.includes(cuisineName) ? prev.filter(c => c !== cuisineName) : [...prev, cuisineName];
+            setValue("cuisineType", next);
+            return next;
+        });
     };
 
     const toggleDay = (selectedDay: string) => {
@@ -110,7 +115,7 @@ export const useAddEditRestaurant = () => {
             return;
         }
         const toastId = toast.loading(isEditMode ? "Updating..." : "Submitting...");
-        
+
         const handleSuccessFinish = () => {
             toast.success("Operation successful!", { id: toastId });
             navigate("/profile");
@@ -118,41 +123,41 @@ export const useAddEditRestaurant = () => {
         const handleFaultFinish = (faultObj: FailureResponse) => {
             toast(faultObj?.response?.data?.message || "Operation failed", { id: toastId, icon: "❌" });
         };
-        
+
         if (isEditMode) {
             const updatePayload = {
-                name: formDataPayload.name, 
-                description: formDataPayload.description, 
+                name: formDataPayload.name,
+                description: formDataPayload.description,
                 delivery: formDataPayload.delivery,
-                phoneNumber: formDataPayload.phoneNumber, 
-                email: formDataPayload.email, 
-                facebookLink: fbLink || null, 
+                phoneNumber: formDataPayload.phoneNumber,
+                email: formDataPayload.email,
+                facebookLink: fbLink || null,
                 whatsappNumber: whatsappNum || null
             };
             axiosInstance.put(`/restaurant-data/main-data/${restaurantId}`, updatePayload, { headers: { "Authorization": `Bearer ${token}` } })
-            .then(
-                () => {
-                    if (imageFile) {
-                        const imgPayload = new FormData(); imgPayload.append("image", imageFile);
-                        axiosInstance.post(`/restaurant-data/coverImage/${restaurantId}`, imgPayload, { headers: { "Authorization": `Bearer ${token}` } })
-                        .then(handleSuccessFinish, handleFaultFinish);
-                    } else {
-                        handleSuccessFinish();
-                    }
-                }, 
-                handleFaultFinish
-            );
+                .then(
+                    () => {
+                        if (imageFile) {
+                            const imgPayload = new FormData(); imgPayload.append("image", imageFile);
+                            axiosInstance.post(`/restaurant-data/coverImage/${restaurantId}`, imgPayload, { headers: { "Authorization": `Bearer ${token}` } })
+                                .then(handleSuccessFinish, handleFaultFinish);
+                        } else {
+                            handleSuccessFinish();
+                        }
+                    },
+                    handleFaultFinish
+                );
         } else {
             const multiPartData = new FormData();
-            multiPartData.append("email", formDataPayload.email); 
+            multiPartData.append("email", formDataPayload.email);
             multiPartData.append("name", formDataPayload.name);
-            multiPartData.append("delivery", formDataPayload.delivery ? "1" : "0"); 
-            multiPartData.append("phoneNumber", formDataPayload.phoneNumber); 
+            multiPartData.append("delivery", formDataPayload.delivery ? "1" : "0");
+            multiPartData.append("phoneNumber", formDataPayload.phoneNumber);
             multiPartData.append("description", formDataPayload.description);
-            multiPartData.append("image", imageFile as Blob); 
+            multiPartData.append("image", imageFile as Blob);
             multiPartData.append("cuisineType", JSON.stringify(selectedCuisines));
-            multiPartData.append("address", JSON.stringify(formDataPayload.address)); 
-            
+            multiPartData.append("address", JSON.stringify(formDataPayload.address));
+
             if (whatsappNum) multiPartData.append("whatsappNumber", whatsappNum);
             if (fbLink) multiPartData.append("facebookLink", fbLink);
 
@@ -164,14 +169,16 @@ export const useAddEditRestaurant = () => {
             multiPartData.append("openingHours", JSON.stringify(formattedHours));
 
             axiosInstance.post(`/restaurants`, multiPartData, { headers: { "Authorization": `Bearer ${token}` } })
-            .then(handleSuccessFinish, handleFaultFinish);
+                .then(handleSuccessFinish, handleFaultFinish);
         }
     };
+
+    console.log(formState.errors);
 
     return {
         register, handleSubmit, formIssues, addressArray, isEditMode, isLoadingData,
         selectedImageURL, handleImageChange, selectedCuisines, toggleCuisine,
         selectedDays, toggleDay, onSubmit, navigate, watch,
-        whatsappNum, setWhatsappNum, fbLink, setFbLink 
+        whatsappNum, setWhatsappNum, fbLink, setFbLink
     };
 };
