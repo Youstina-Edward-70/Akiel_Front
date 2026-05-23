@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../../store/authStore";
 
@@ -20,13 +20,18 @@ interface StoreState {
 
 export const useFavorites = () => {
     const [favorites, setFavorites] = useState<FavoriteRestaurant[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    
     const state = useAuthStore.getState() as unknown as StoreState;
     const authUser = useAuthStore((s: unknown) => (s as StoreState).user);
     const token = state.token || authUser?.Token || state.token || authUser?.token;
 
-    // دالة لجلب الداتا (استخدمناها كذا مرة عشان كدا عملناها في دالة منفصلة)
-    const fetchFavorites = async () => {
+    const fetchFavorites = useCallback(async () => {
+        if (!token) {
+            setIsLoading(false);
+            return;
+        }
+
         setIsLoading(true);
         const response = await fetch(`${API_URL}/favorites`, {
             method: "GET",
@@ -35,38 +40,22 @@ export const useFavorites = () => {
                 "Content-Type": "application/json"
             }
         });
+        
         const data = await response.json();
         if (response.ok) {
             const extractedFavs = data.favorites || data.Data || data.data || data;
             setFavorites(Array.isArray(extractedFavs) ? extractedFavs : []);
         }
         setIsLoading(false);
-    };
+    }, [token]);
 
     useEffect(() => {
-        const fetchFavorites = async () => {
-            setIsLoading(true);
-            const response = await fetch(`${API_URL}/favorites`, {
-                method: "GET",
-                headers: { 
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-            const data = await response.json();
-            if (response.ok) {
-                const extractedFavs = data.favorites || data.Data || data.data || data;
-                setFavorites(Array.isArray(extractedFavs) ? extractedFavs : []);
-            }
-            setIsLoading(false);
+        const loadData = async () => {
+            await fetchFavorites();
         };
-
-        if (token) {
-            fetchFavorites();
-        } else {
-            setIsLoading(false);
-        }
-    }, [token]); 
+        
+        loadData();
+    }, [fetchFavorites]); 
 
     const handleRemoveFavorite = async (id: string) => {
         const response = await fetch(`${API_URL}/favorites/${id}`, {
@@ -76,7 +65,7 @@ export const useFavorites = () => {
         
         if (response.ok) {
             toast.success("Removed successfully");
-            // بعد الحذف الناجح، بنعمل fetch جديد للداتا عشان نضمن تحديث القائمة فوراً
+            // بعد الحذف الناجح، الدالة هتشتغل بشكل طبيعي لتحديث القائمة
             await fetchFavorites();
         } else {
             toast.error("Failed to remove, please try again");
