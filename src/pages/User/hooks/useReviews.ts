@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../../../store/authStore";
 
@@ -12,6 +12,7 @@ export interface ReviewItem {
     rating: number;
     Content?: string;
     content?: string;
+    restaurantId?: unknown; 
 }
 
 interface StoreState {
@@ -27,31 +28,33 @@ export const useReviews = () => {
     const authUser = useAuthStore((s: unknown) => (s as StoreState).user);
     const token = state.token || authUser?.Token || authUser?.token;
 
-    useEffect(() => {
-        const fetchReviews = async () => {
-            const response = await fetch(`${API_URL}/reviews/my-reviews`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-            const data = await response.json();
-            if (response.ok) {
-                const extractedReviews = data.reviews || data.Data || data.data || data;
-                setReviews(Array.isArray(extractedReviews) ? extractedReviews : []);
+    const fetchReviews = useCallback(async () => {
+        setIsLoading(true);
+        const response = await fetch(`${API_URL}/reviews/my-reviews`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
-        };
+        });
+        const data = await response.json();
+        if (response.ok) {
+            const extractedReviews = data.reviews || data.Data || data.data || data;
+            setReviews(Array.isArray(extractedReviews) ? extractedReviews : []);
+        }
+        setIsLoading(false);
+    }, [token]);
 
+    useEffect(() => {
         if (token) {
             fetchReviews().then(
-                () => setIsLoading(false),
+                () => {},
                 () => setIsLoading(false)
             );
         } else {
             setIsLoading(false);
         }
-    }, [token]);
+    }, [token, fetchReviews]); 
 
     const handleDelete = async (id: string) => {
         const performDelete = async () => {
@@ -61,8 +64,11 @@ export const useReviews = () => {
             });
 
             if (response.ok) {
-                setReviews(prev => prev.filter(review => (review._id || review.id) !== id));
                 toast.success("Review deleted successfully");
+                fetchReviews().then(
+                    () => {},
+                    () => toast("Failed to refresh the list", { icon: "❌" })
+                );
             } else {
                 toast("Failed to delete review", { icon: "❌" });
             }

@@ -14,22 +14,29 @@ interface FetchOpeningHour { day: string; isClosed: boolean; opens?: string; clo
 interface FailureResponse { response?: { data?: { message?: string } } }
 interface FetchedRestaurantData {
     name: string; description: string; phoneNumber: string; email: string; delivery: boolean;
+    whatsappNumber?: string; facebookLink?: string; 
     address: { governorate: string; city: string; street: string; details: string; }[];
     cuisineType: string[]; image: string; openingHours: FetchOpeningHour[];
 }
 interface ApiResponse { data: { restaurant?: FetchedRestaurantData; Data?: FetchedRestaurantData; } }
+
 export const useAddEditRestaurant = () => {
     const { id: restaurantId } = useParams<{ id: string }>(); 
     const isEditMode = !!restaurantId;
     const navigate = useNavigate();
+    
     const authUser = useAuthStore((state) => state.user) as unknown as AuthUserObj | null;
     const authState = useAuthStore.getState() as unknown as AuthStateObj;
     const token = authState.token || authUser?.Token || authUser?.token;
+    
     const [isLoadingData, setIsLoadingData] = useState<boolean>(isEditMode);
     const [selectedImageURL, setSelectedImageURL] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
     const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
+    const [whatsappNum, setWhatsappNum] = useState<string>("");
+    const [fbLink, setFbLink] = useState<string>("");
 
     const formMethods = useForm<RestaurantFormInput>({
         resolver: zodResolver(RestaurantFormSchema),
@@ -56,6 +63,10 @@ export const useAddEditRestaurant = () => {
                     address: rest.address?.length ? rest.address : [{ governorate: "", city: "", street: "", details: "" }],
                     openingHours: rest.openingHours || []
                 });
+                
+                setWhatsappNum(rest.whatsappNumber || "");
+                setFbLink(rest.facebookLink || "");
+                
                 setSelectedCuisines(rest.cuisineType || []);
                 setSelectedImageURL(rest.image || null);
                 
@@ -75,16 +86,20 @@ export const useAddEditRestaurant = () => {
         }).then(handleSuccessData, handleFaultData);
 
     }, [restaurantId, isEditMode, token, reset]);
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) { setImageFile(file); setSelectedImageURL(URL.createObjectURL(file)); }
     };
+
     const toggleCuisine = (cuisineName: string) => {
         setSelectedCuisines(prev => prev.includes(cuisineName) ? prev.filter(c => c !== cuisineName) : [...prev, cuisineName]);
     };
+
     const toggleDay = (selectedDay: string) => {
         setSelectedDays(prev => prev.includes(selectedDay) ? prev.filter(d => d !== selectedDay) : [...prev, selectedDay]);
     };
+
     const onSubmit = (formDataPayload: RestaurantFormInput) => {
         if (selectedCuisines.length === 0) {
             toast("Please select at least one cuisine type.", { icon: "⚠️" });
@@ -95,6 +110,7 @@ export const useAddEditRestaurant = () => {
             return;
         }
         const toastId = toast.loading(isEditMode ? "Updating..." : "Submitting...");
+        
         const handleSuccessFinish = () => {
             toast.success("Operation successful!", { id: toastId });
             navigate("/profile");
@@ -105,8 +121,13 @@ export const useAddEditRestaurant = () => {
         
         if (isEditMode) {
             const updatePayload = {
-                name: formDataPayload.name, description: formDataPayload.description, delivery: formDataPayload.delivery,
-                phoneNumber: formDataPayload.phoneNumber, facebookLink: null, whatsappNumber: null
+                name: formDataPayload.name, 
+                description: formDataPayload.description, 
+                delivery: formDataPayload.delivery,
+                phoneNumber: formDataPayload.phoneNumber, 
+                email: formDataPayload.email, 
+                facebookLink: fbLink || null, 
+                whatsappNumber: whatsappNum || null
             };
             axiosInstance.put(`/restaurant-data/main-data/${restaurantId}`, updatePayload, { headers: { "Authorization": `Bearer ${token}` } })
             .then(
@@ -131,6 +152,9 @@ export const useAddEditRestaurant = () => {
             multiPartData.append("image", imageFile as Blob); 
             multiPartData.append("cuisineType", JSON.stringify(selectedCuisines));
             multiPartData.append("address", JSON.stringify(formDataPayload.address)); 
+            
+            if (whatsappNum) multiPartData.append("whatsappNumber", whatsappNum);
+            if (fbLink) multiPartData.append("facebookLink", fbLink);
 
             const formattedHours = Days.map((dayName) => {
                 const isSelected = selectedDays.includes(dayName);
@@ -143,9 +167,11 @@ export const useAddEditRestaurant = () => {
             .then(handleSuccessFinish, handleFaultFinish);
         }
     };
+
     return {
         register, handleSubmit, formIssues, addressArray, isEditMode, isLoadingData,
         selectedImageURL, handleImageChange, selectedCuisines, toggleCuisine,
-        selectedDays, toggleDay, onSubmit, navigate, watch
+        selectedDays, toggleDay, onSubmit, navigate, watch,
+        whatsappNum, setWhatsappNum, fbLink, setFbLink 
     };
 };
