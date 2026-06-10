@@ -7,7 +7,7 @@ const useFavorites = () => {
     const navigate = useNavigate();
 
     const { data: myFavorites, isLoading, error } = useQuery({
-        queryKey: ["my-favorites"],
+        queryKey: ["user-favorites"],
         queryFn: async () => {
             const { data } = await axiosInstance.get(API_ENDPOINTS.USER.FAVORITES.GET_MY_FAVORITES);
             return data.Data || data.data;

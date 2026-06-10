@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 import axiosInstance, { type ApiError } from "../../../lib/api";
 import { API_ENDPOINTS } from "../../../lib/EndPoints";
 import { useAuthStore } from "../../../store/authStore";
-import type { Favorite } from "../../../types/UserSchema";
+import type { FavoriteItem } from "../../../types/UserSchema";
 import toast from "react-hot-toast";
 
 export const useToggleFavorite = (restaurantId: string) => {
@@ -16,7 +16,7 @@ export const useToggleFavorite = (restaurantId: string) => {
     const isRegularUser = user?.role === "user";
 
     // Fetch favorites
-    const { data: favoriteList } = useQuery<Favorite[]>({
+    const { data: favoriteList } = useQuery<FavoriteItem[]>({
         queryKey: ["user-favorites"],
         queryFn: async () => {
             const res = await axiosInstance.get(API_ENDPOINTS.USER.FAVORITES.GET_MY_FAVORITES);
@@ -28,9 +28,8 @@ export const useToggleFavorite = (restaurantId: string) => {
     });
 
     // Determine if the current restaurant is in favorites
-    const isFavorite = Array.isArray(favoriteList) && favoriteList.some((fav: Favorite) => {
-        const restaurantObj = typeof fav.restaurant === 'object' ? fav.restaurant : null;
-        const favId = restaurantObj?._id || fav.restaurant || (typeof fav === 'string' ? fav : null);
+    const isFavorite = Array.isArray(favoriteList) && favoriteList.some((fav: FavoriteItem) => {
+        const favId = fav.restaurant?._id || fav.restaurant || (typeof fav === 'string' ? fav : null);
         return String(favId) === String(restaurantId);
     });
 
@@ -43,21 +42,20 @@ export const useToggleFavorite = (restaurantId: string) => {
         },
         onMutate: async (currentlyFavorite) => {
             await queryClient.cancelQueries({ queryKey: ["user-favorites"] });
-            const previousFavorites = queryClient.getQueryData<Favorite[]>(["user-favorites"]);
+            const previousFavorites = queryClient.getQueryData<FavoriteItem[]>(["user-favorites"]);
 
             if (previousFavorites) {
-                queryClient.setQueryData<Favorite[]>(["user-favorites"], (old = []) => {
+                queryClient.setQueryData<FavoriteItem[]>(["user-favorites"], (old = []) => {
                     if (currentlyFavorite) {
-                        return old.filter((fav: Favorite) => {
-                            const restaurantObj = typeof fav.restaurant === 'object' ? fav.restaurant : null;
-                            const id = restaurantObj?._id || fav.restaurant || (typeof fav === 'string' ? fav : fav._id);
+                        return old.filter((fav: FavoriteItem) => {
+                            const id = fav.restaurant?._id || fav.restaurant || fav._id;
                             return String(id) !== String(restaurantId);
                         });
                     } else {
                         const newFav = {
                             _id: Date.now().toString(),
                             restaurant: { _id: restaurantId }
-                        } as Favorite;
+                        } as FavoriteItem;
 
                         return [...old, newFav];
                     }
