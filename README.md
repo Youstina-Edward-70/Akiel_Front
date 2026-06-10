@@ -36,7 +36,7 @@ cd all-Restaurants-in-one/
 npm install
 ```
 
-### 🏃‍♂️ Running the Application
+## 🏃‍♂️ Running the Application
 To start the development server:
 ```bash
 npm run dev
@@ -47,30 +47,30 @@ http://localhost:5173 (or the port specified in your terminal).
 
 ### 💻 Tech Stack
 
-## 🔹 Core & Build Tools
+#### 🔹 Core & Build Tools
 * **React 19** - A modern JavaScript library for building interactive user interfaces.
 * **TypeScript** - Ensures type safety, reduces runtime errors, and improves code maintainability.
 * **Vite 8** - A next-generation, ultra-fast frontend build tool providing Hot Module Replacement (HMR).
 
-## 🔄 State Management & Data Fetching
+#### 🔄 State Management & Data Fetching
 * **TanStack React Query (v5)** - Powerful asynchronous state management for fetching, caching, and synchronizing server state.
 * **Zustand** - A lightweight, fast, and scalable barebones state-management solution for global client state.
 * **Axios** - Promise-based HTTP client for making clean and optimized API requests.
 
-## 🛣️ Routing & Security
+#### 🛣️ Routing & Security
 * **React Router (v7)** - Declarative, client-side routing for seamless navigation in Single Page Applications (SPAs).
 * **JWT Decode** - Used to decode JSON Web Tokens to handle user authentication and session management.
 
-## 📝 Forms & Validation
+#### 📝 Forms & Validation
 * **React Hook Form** - Performance-focused, flexible, and extensible forms validation framework.
 * **Zod** - TypeScript-first schema-declaration and validation library with static type inference, integrated via `@hookform/resolvers`.
 
-## 🎨 Styling & UI/UX
+#### 🎨 Styling & UI/UX
 * **Tailwind CSS (v4)** - A utility-first CSS framework for rapid and high-performance UI development.
 * **Framer Motion** - A production-ready motion library for creating smooth, interactive, and advanced animations.
 * **React Icons** - A comprehensive library providing popular icons from various icon packs.
 * **React Hot Toast** - Lightweight, customizable, and responsive toast notifications.
 
-## ⚙️ Optimization & Code Quality
+#### ⚙️ Optimization & Code Quality
 * **ESLint** - Pluggable linting utility to maintain consistent code quality and enforce best practices.
 * **Use-Debounce** - A lightweight hook used to optimize performance (e.g., search inputs) by delaying API requests.
