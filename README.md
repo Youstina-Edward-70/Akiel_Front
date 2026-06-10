@@ -36,7 +36,7 @@ cd all-Restaurants-in-one/
 npm install
 ```
 
-## 🏃‍♂️ Running the Application
+### 🏃‍♂️ Running the Application
 To start the development server:
 ```bash
 npm run dev
