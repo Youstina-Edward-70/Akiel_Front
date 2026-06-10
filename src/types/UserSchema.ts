@@ -100,6 +100,7 @@ export const userSchema = z.object({
     }),
 
     Token: z.string().optional(),
+    accessToken: z.string().optional(),
 
     createdAt: z.string().optional(),
     updatedAt: z.string().optional(),
