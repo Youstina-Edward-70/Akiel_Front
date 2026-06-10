@@ -12,9 +12,15 @@ export interface ApiError {
 }
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+interface FailedRequestQueueItem {
+    resolve: (token: string) => void;
+    reject: (error: unknown) => void;
+}
+
+let failedQueue: FailedRequestQueueItem[] = [];
+
+const processQueue = (error: unknown, token: string | null = null) => {
     failedQueue.forEach((prom) => {
         if (token) {
             prom.resolve(token);
@@ -95,8 +101,6 @@ api.interceptors.response.use(
                     }
                 }
             } catch (refreshError) {
-                console.error("❌ Refresh Token Request Failed:", refreshError?.response || refreshError);
-
                 processQueue(refreshError, null);
 
                 useAuthStore.getState().logout();
