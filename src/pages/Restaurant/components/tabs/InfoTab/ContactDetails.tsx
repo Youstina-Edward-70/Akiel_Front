@@ -1,5 +1,4 @@
-import { IoCallOutline, IoLogoWhatsapp } from "react-icons/io5";
-import { FaFacebook } from "react-icons/fa";
+import { IoCallOutline, IoLogoWhatsapp, IoLogoFacebook } from "react-icons/io5";
 
 interface ContactDetailsProps {
     phoneNumber: string;
@@ -28,7 +27,7 @@ export const ContactDetails = ({ phoneNumber, whatsappNumber, facebookLink }: Co
 
                 <div className="flex items-center gap-4 text-text-secondary">
                     <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
-                        <FaFacebook className="text-xl text-blue-600" />
+                        <IoLogoFacebook className="text-xl text-blue-600" />
                     </div>
                     <span className="font-bold">{facebookLink || 'Not Available'}</span>
                 </div>

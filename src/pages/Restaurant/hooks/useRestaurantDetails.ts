@@ -92,4 +92,4 @@ const useRestaurantDetails = (id: string) => {
     };
 }
 
-export default useRestaurantDetails
+export default useRestaurantDetails;

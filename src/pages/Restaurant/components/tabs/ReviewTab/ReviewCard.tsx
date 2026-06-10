@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import type { Review } from "../../../../../types/UserSchema";
 import { IoCreateOutline, IoStar, IoStarHalf, IoTrashOutline } from "react-icons/io5";
 import Button from "../../../../../ui/Button";
+import { formatDate } from "../../../../../utils/formatters";
 
 interface ReviewCardProps {
     rev: Review;
@@ -35,11 +36,7 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                     <div className="space-y-0.5">
                         <h4 className="font-bold text-text-primary text-base sm:text-lg">{rev.user?.name || "UNKNOWN"}</h4>
                         <p className="text-gray-400 text-[10px] sm:text-xs font-medium">
-                            {new Date(rev.createdAt).toLocaleDateString('en-GB', {
-                                day: 'numeric',
-                                month: 'short',
-                                year: 'numeric'
-                            })}
+                            {formatDate(rev.createdAt)}
                         </p>
                     </div>
                 </div>
@@ -49,28 +46,28 @@ const ReviewCard = ({ rev, isAuthor, onEdit, onDelete, isDeleting }: ReviewCardP
                     <span className="text-xs font-bold text-gray-500">
                         ({rev.rating.toFixed(2)})
                     </span>
-                        <div className="flex text-yellow-400">
-                            {[...Array(5)].map((_, i) => {
-                                const ratingValue = i + 1;
-                                const starProps = {
-                                    size: 18,
-                                    className: "transition-colors duration-200"
-                                }
-                                return (
-                                    <span key={i}>
-                                        {rev.rating >= ratingValue ? (
-                                            <IoStar {...starProps} className={`${starProps.className} fill-yellow-400`} />
-                                        ) : rev.rating >= ratingValue - 0.5 ? (
-                                            <IoStarHalf {...starProps} className={`${starProps.className} fill-yellow-400`} />
-                                        ) : (
-                                            <IoStar {...starProps} className={`${starProps.className} fill-gray-200`} />
-                                        )}
-                                    </span>
-                                );
-                            })}
-                        </div>
+                    <div className="flex text-yellow-400">
+                        {[...Array(5)].map((_, i) => {
+                            const ratingValue = i + 1;
+                            const starProps = {
+                                size: 18,
+                                className: "transition-colors duration-200"
+                            }
+                            return (
+                                <span key={i}>
+                                    {rev.rating >= ratingValue ? (
+                                        <IoStar {...starProps} className={`${starProps.className} fill-yellow-400`} />
+                                    ) : rev.rating >= ratingValue - 0.5 ? (
+                                        <IoStarHalf {...starProps} className={`${starProps.className} fill-yellow-400`} />
+                                    ) : (
+                                        <IoStar {...starProps} className={`${starProps.className} fill-gray-200`} />
+                                    )}
+                                </span>
+                            );
+                        })}
                     </div>
                 </div>
+            </div>
 
             {/* Review Content */}
             <div className="mt-4 sm:mt-6 space-y-3">

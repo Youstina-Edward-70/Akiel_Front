@@ -1,68 +1,83 @@
-import React, { useState } from 'react';
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
+import z from 'zod';
 import { HiOutlineMail, HiOutlineLocationMarker } from 'react-icons/hi';
 import { FaWhatsapp, FaGlobe, FaInstagram, FaAt, FaTelegramPlane } from 'react-icons/fa';
 import Button from '../../../ui/Button';
+import { useContact } from '../hooks/useContact';
+
+const contactSchema = z.object({
+    userName: z.string().min(2, "Name must be more than 2 characters"),
+    email: z.string().email("Email is invalid"),
+    message: z.string().min(10, "Message must be 10 letters at least")
+});
+
+type ContactFormData = z.infer<typeof contactSchema>;
 
 const ContactSection = () => {
-    // Form State
-    const [formData, setFormData] = useState({
-        userName: '',
-        email: '',
-        message: ''
+    const { mutate: sendMessage, isPending } = useContact();
+
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<ContactFormData>({
+        resolver: zodResolver(contactSchema)
     });
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    // Handle Input Change
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    // Handle Submit
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        // API or EmailJS
-        console.log("Form Submitted:", formData);
+    const onSubmit = (data: ContactFormData) => {
+        sendMessage(
+            { name: data.userName, email: data.email, message: data.message },
+            { onSuccess: () => reset() }
+        );
     };
 
     return (
         <section className="py-16 px-4 bg-gray-50">
             <div className="max-w-6xl mx-auto bg-white rounded-4xl overflow-hidden shadow-2xl flex flex-col md:flex-row border border-gray-100">
-                
+
                 {/* --- Left Side: Form --- */}
                 <div className="flex-2 p-8 md:p-14">
                     <h2 className="text-4xl font-black text-text-primary mb-10">Contact Us</h2>
-                    
-                    <form onSubmit={handleSubmit} className="space-y-8">
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                         <div className="grid md:grid-cols-2 gap-8">
                             {/* Name Input */}
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-text-primary ml-1">Your Name</label>
                                 <input
-                                    required
-                                    type="text"
-                                    name="userName"
-                                    value={formData.userName}
-                                    onChange={handleChange}
-                                    placeholder="Enter your name"
-                                    className="w-full p-4 bg-surface rounded-2xl border border-transparent focus:border-red-500 focus:bg-white outline-none transition-all placeholder:text-gray-400"
+                                    {...register("userName")}
+                                    className={`w-full p-4 bg-surface rounded-2xl border outline-none transition-all placeholder:text-gray-400 
+                                        ${errors.userName ? "border-danger focus:border-danger" : "border-transparent focus:border-primary focus:bg-white"}`}
                                 />
+
+                                {/* Error Container */}
+                                <div className="min-h-5">
+                                    {errors.userName && (
+                                        <p className="pl-2 pt-1 text-xs font-semibold text-danger">
+                                            {errors.userName.message}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                             {/* Email Input */}
                             <div className="space-y-2">
                                 <label className="text-sm font-bold text-text-primary ml-1">Email Address</label>
                                 <input
-                                    required
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
+                                    {...register("email")}
                                     placeholder="name@example.com"
-                                    className="w-full p-4 bg-surface rounded-2xl border border-transparent focus:border-red-500 focus:bg-white outline-none transition-all placeholder:text-gray-400"
+                                    className={`w-full p-4 bg-surface rounded-2xl border outline-none transition-all placeholder:text-gray-400 
+                                        ${errors.email ? "border-danger focus:border-danger" : "border-transparent focus:border-primary focus:bg-white"}`}
                                 />
+                                {/* Error Container */}
+                                <div className="min-h-5">
+                                    {errors.email && (
+                                        <p className="pl-2 pt-1 text-xs font-semibold text-danger">
+                                            {errors.email.message}
+                                        </p>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -70,24 +85,30 @@ const ContactSection = () => {
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-text-primary ml-1">Message</label>
                             <textarea
-                                required
-                                name="message"
-                                value={formData.message}
-                                onChange={handleChange}
+                                {...register("message")}
                                 rows={5}
                                 placeholder="Tell us how we can help you..."
-                                className="w-full p-4 bg-surface rounded-2xl border border-transparent focus:border-red-500 focus:bg-white outline-none transition-all resize-none placeholder:text-gray-400"
+                                className={`w-full p-4 bg-surface rounded-2xl border outline-none transition-all resize-none placeholder:text-gray-400 
+                                    ${errors.message ? "border-danger focus:border-danger" : "border-transparent focus:border-primary focus:bg-white"}`}
                             />
+                            {/* Error Container */}
+                            <div className="min-h-5">
+                                {errors.message && (
+                                    <p className="pl-2 pt-1 text-xs font-semibold text-danger">
+                                        {errors.message.message}
+                                    </p>
+                                )}
+                            </div>
                         </div>
 
                         {/* Submit Button */}
-                        <Button 
+                        <Button
                             type="submit"
-                            disabled={isSubmitting}
-                            className="w-full text-white py-4 rounded-2xl font-bold text-lg flex items-center gap-3 shadow-lg"
+                            isLoading={isPending}
+                            className="w-full py-4 rounded-2xl font-bold text-lg flex items-center gap-3"
                         >
-                            {isSubmitting ? 'Sending...' : 'Send Message'}
-                            {!isSubmitting && (<FaTelegramPlane className="text-xl" />)}
+                            {isPending ? 'Sending...' : 'Send Message'}
+                            {!isPending && (<FaTelegramPlane className="text-xl" />)}
                         </Button>
                     </form>
                 </div>
@@ -96,10 +117,10 @@ const ContactSection = () => {
                 <div className="flex-1 bg-primary p-10 md:p-14 text-white flex flex-col justify-between relative overflow-hidden">
                     {/* Background Decoration */}
                     <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white opacity-5 rounded-full" />
-                    
+
                     <div>
                         <h3 className="text-2xl font-bold mb-12 tracking-tight">Get in Touch</h3>
-                        
+
                         <div className="space-y-10">
                             {/* Email */}
                             <div className="flex items-center gap-5 group">

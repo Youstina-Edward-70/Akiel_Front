@@ -9,10 +9,10 @@ interface UserAddressFieldsProps {
 type AddressKey = keyof NonNullable<EditUserFormData["address"]>;
 
 const fields: { name: AddressKey & string; label: string; placeholder: string }[] = [
-    { name: "details", label: "Details", placeholder: "Enter your address details" },
-    { name: "street", label: "Street", placeholder: "Enter your street" },
-    { name: "city", label: "City", placeholder: "Enter your city" },
-    { name: "governorate", label: "Governorate", placeholder: "Enter your governorate" },
+    { name: "details", label: "Details", placeholder: "Enter address details" },
+    { name: "street", label: "Street", placeholder: "Enter street" },
+    { name: "city", label: "City", placeholder: "Enter city" },
+    { name: "governorate", label: "Governorate", placeholder: "Enter governorate" },
 ];
 
 export const UserAddressFields = ({ register }: UserAddressFieldsProps) => (

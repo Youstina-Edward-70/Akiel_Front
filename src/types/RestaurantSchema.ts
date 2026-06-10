@@ -35,7 +35,7 @@ export const addressSchema = z.object({
   governorate: z.string().min(1, "Governorate is required"),
   city: z.string().min(1, "City is required"),
   street: z.string().min(1, "Street is required"),
-  details: z.string().optional().default(""),
+  details: z.string().nullable().optional(),
 });
 
 export const DishSchema = z.object({
@@ -72,22 +72,44 @@ export interface DishIssues {
 
 export const MenuSchema = z.object({
   dishes: z.array(DishSchema)
+    .max(LIMITS.MENU_ITEMS, `Menu cannot have more than ${LIMITS.MENU_ITEMS} dishes`)
+    .refine((dishes) => {
+      const names = dishes.map(d => d.dishName.trim().toLowerCase());
+      return names.length === new Set(names).size;
+    }, {
+      message: "Dish names must be unique",
+    })
 });
 
 const openingHoursSchema = z.object({
   _id: z.string().optional(),
-  day: z.string(),
+  day: z.string().min(1, "Day is required"),
   opens: z.string().nullable().optional(),
   closes: z.string().nullable().optional(),
-  isClosed: z.boolean().default(false),
+  isClosed: z.boolean(),
+})
+
+const openingHoursInputSchema = z.object({
+  day: z.string().min(1, "Day is required"),
+  opens: z.string().nullable().optional(),
+  closes: z.string().nullable().optional(),
+  isClosed: z.boolean(),
 }).refine((data) => {
   if (!data.isClosed) {
-    return data.opens && data.closes;
+    return !!(data.opens && data.opens.trim() !== "" && data.closes && data.closes.trim() !== "");
   }
   return true;
 }, {
-  message: "Opens and closes time are required when restaurant is open",
+  message: "Opening and closing times are required for open days.",
   path: ["opens"]
+}).refine((data) => {
+  if (!data.isClosed && data.opens && data.closes) {
+    return data.opens < data.closes;
+  }
+  return true;
+}, {
+  message: "Opening time must be before closing time.",
+  path: ["closes"]
 });
 
 const cuisineNames = CuisineTypes.map(c => c.name) as [string, ...string[]];
@@ -145,12 +167,13 @@ export const restaurantSchema = z.object({
   rating: z.number().min(0).max(5).default(0),
   delivery: z.boolean().default(false),
   priceRange: z.enum(PriceRanges),
-  
+
   cuisineType: z.array(z.enum(cuisineNames))
     .min(1, "Select at least one cuisine type")
     .max(LIMITS.CUISINE_TYPES, `Max ${LIMITS.CUISINE_TYPES} cuisine types allowed`),
 
   reviewsCount: z.number().default(0),
+  rejectionCount: z.number().default(0),
   status: z.enum(RestaurantStatuses).default('pending'),
 
   isFavorite: z.boolean().default(false),
@@ -158,12 +181,11 @@ export const restaurantSchema = z.object({
   serverTime: z.string().optional(),
 
   email: z.string().email("Invalid email address"),
-  description: z.string()
-    .min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
+  description: z.string().default("").optional(),
 
   phoneNumber: z.string().min(10, "Invalid phone number"),
-  facebookLink: z.string().url("Invalid Facebook URL").optional(),
-  whatsappNumber: z.string().min(10).nullable().optional(),
+  facebookLink: z.string().url("Invalid Facebook URL").nullable().optional(),
+  whatsappNumber: z.string().min(10, "Invalid whatsapp number").nullable().optional(),
 
   menu: z.array(DishSchema)
     .max(LIMITS.MENU_ITEMS, `Max ${LIMITS.MENU_ITEMS} menu items allowed`)
@@ -186,54 +208,91 @@ export const restaurantSchema = z.object({
   createdAt: z.string().or(z.date()).optional(),
 });
 
+// Restaurant Form Schema (for validation in Add/Edit forms)
+export const baseRestaurantSchema = z.object({
+  name: z.string().min(LIMITS.NAME_MIN, `Name must be at least ${LIMITS.NAME_MIN} characters`),
+  delivery: z.boolean(),
+  cuisineType: z.array(z.enum(cuisineNames))
+    .min(1, "Select at least one cuisine type")
+    .max(LIMITS.CUISINE_TYPES, `Max ${LIMITS.CUISINE_TYPES} cuisine types allowed`),
+  address: z.array(
+    z.object({
+      governorate: z.string().min(1, "Governorate is required"),
+      city: z.string().min(1, "City is required"),
+      street: z.string().min(1, "Street is required"),
+      details: z.string().nullable().optional(),
+    }))
+    .min(1, "At least one address/branch is required")
+    .max(LIMITS.BRANCHES, `Max ${LIMITS.BRANCHES} branches allowed`),
+  openingHours: z.array(openingHoursInputSchema)
+    .min(1, "At least one working day must be added")
+    .max(7, "Working days cannot exceed 7 days"),
+  phoneNumber: z.string().regex(/^01[0125][0-9]{8}$/, "Invalid Egyptian phone number"),
+
+  description: z.string().nullable().optional(),
+  whatsappNumber: z.string().nullable().optional(),
+  facebookLink: z.string().nullable().optional(),
+});
+
+export const createRestaurantSchema = baseRestaurantSchema.extend({
+  email: z.string().email("Invalid email address"),
+  image: fileUploadSchema.refine((val) => val !== null, {
+    message: "Image is required",
+  }),
+});
+
+export const formRestaurantSchema = baseRestaurantSchema.extend({
+  email: z.string().email("Invalid email address").optional(),
+  image: fileUploadSchema.optional(),
+  coverPreview: z.string().nullable().optional(),
+});
+
+export const updateRestaurantSchema = baseRestaurantSchema;
+
+// Notifications
+const notificationItemSchema = z.object({
+  _id: z.string(),
+  message: z.string(),
+  createdAt: z.string().datetime(),
+});
+
+export const notificationsResponseSchema = z.array(notificationItemSchema);
+
 // Types Export
 export type Restaurant = z.infer<typeof restaurantSchema>;
-export type OpeningHour = z.infer<typeof openingHoursSchema>;
 export type MenuFormValues = z.infer<typeof MenuSchema>;
 export type Dish = z.infer<typeof DishSchema>;
+
+export type OpeningHour = z.infer<typeof openingHoursSchema>;
 export type Address = z.infer<typeof addressSchema>;
+
 export type ApiImage = z.infer<typeof apiImageSchema>;
 export type FileUploadImage = z.infer<typeof fileUploadSchema>;
+
 export type RequestSummary = z.infer<typeof RequestSummarySchema>;
 export type SingleRequestData = z.infer<typeof SingleRequestResponseSchema>["Data"];
 
-// Client Form Schema
-export const RestaurantFormSchema = z.object({
-  name: z.string().min(LIMITS.NAME_MIN, `Name must be at least ${LIMITS.NAME_MIN} characters`),
-  description: z.string().min(LIMITS.DESCRIPTION_MIN, `Description must be at least ${LIMITS.DESCRIPTION_MIN} characters`),
-  phoneNumber: z.string().regex(/^01[0125][0-9]{8}$/, "Invalid Egyptian phone number"),
-  email: z.string().email("Invalid email address"),
-  delivery: z.boolean().default(false),
-  
-  coverPhoto: fileUploadSchema.optional(), 
-  cuisineType: z.array(z.string()).min(1, "Select at least one cuisine type"),
+export type RestaurantFormInput = z.infer<typeof formRestaurantSchema>;
+export type CreateRestaurantInput = z.infer<typeof createRestaurantSchema>;
+export type UpdateRestaurantInput = z.infer<typeof updateRestaurantSchema>;
 
-  address: z.array(addressSchema).min(1, "At least one address is required"),
-  
-  openingHours: z.array(z.object({
-      day: z.string(),
-      opens: z.string().optional().nullable(),
-      closes: z.string().optional().nullable(),
-      isClosed: z.boolean().default(false)
-  })).min(1, "At least one working day is required").optional()
-});
-
-export type RestaurantFormInput = z.input<typeof RestaurantFormSchema>;
+export type NotificationsResponse = z.infer<typeof notificationsResponseSchema>;
+export type NotificationItem = z.infer<typeof notificationItemSchema>;
 
 // UI Component Props
 export interface RestaurantCardProps {
-    _id: string;
-    name: string;
-    coverPhoto: ApiImage | File;
-    rating: number;
-    cuisineType: string[];
-    priceRange: string;
-    openingHours: {
-        _id?: string;
-        day: string;
-        closes?: string | null;
-        opens?: string | null;
-        isClosed: boolean;
-    }[];
-    delivery: boolean;
+  _id: string;
+  name: string;
+  coverPhoto: ApiImage | File;
+  rating: number;
+  cuisineType: string[];
+  priceRange: string;
+  openingHours: {
+    _id?: string;
+    day: string;
+    closes?: string | null;
+    opens?: string | null;
+    isClosed: boolean;
+  }[];
+  delivery: boolean;
 }

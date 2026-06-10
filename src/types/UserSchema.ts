@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { apiImageSchema, fileUploadSchema } from './RestaurantSchema';
+import { apiImageSchema, fileUploadSchema, type RestaurantCardProps } from './RestaurantSchema';
 
 // Address Schema
 const addressSchema = z.object({
@@ -25,17 +25,43 @@ export const favoriteSchema = z.object({
     updatedAt: z.string().optional(),
 });
 
+export interface FavoriteItem {
+    _id: string;
+    restaurant: RestaurantCardProps;
+    user: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export const reviewSchema = z.object({
     _id: z.string().optional(),
     restaurant: z.string(),
-    Content: z.string().min(3, "Comment is too short"),
-    rating: z.number().min(0).max(5),
+    Content: z.string(),
+    rating: z.number(),
     createdAt: z.string(),
     user: z.object({
         _id: z.string(),
         name: z.string(),
         profile: apiImageSchema,
     }),
+});
+
+export const reviewUserSchema = z.object({
+    _id: z.string().optional(),
+    restaurant: z.object({
+        _id: z.string(),
+        name: z.string(),
+        coverPhoto: apiImageSchema,
+        rating: z.number(),
+    }),
+    Content: z.string(),
+    rating: z.number(),
+    createdAt: z.string(),
+});
+
+export const reviewFormSchema = z.object({
+    Content: z.string().min(3, "Comment is too short"),
+    rating: z.number().min(1, "Please select at least 1 star").max(5),
 });
 
 // Main User Schema
@@ -114,7 +140,7 @@ export const singleUserResponseSchema = z.object({
 });
 
 // Client Form Schema
-export const editUserSchema = z.object({
+export const updateAccountSchema = z.object({
     fullname: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
 
@@ -122,8 +148,6 @@ export const editUserSchema = z.object({
         .regex(/^(?:\+20|0020)?0?1[0125]\d{8}$/, "Phone number must be a valid Egyptian number")
         .optional()
         .or(z.literal("")),
-
-    role: z.enum(["admin", "owner", "user"]),
 
     profile_pic: fileUploadSchema.or(apiImageSchema).optional(),
 
@@ -133,6 +157,10 @@ export const editUserSchema = z.object({
         city: z.string().optional(),
         governorate: z.string().optional(),
     }).optional(),
+});
+
+export const editUserSchema = updateAccountSchema.extend({
+    role: z.enum(["admin", "owner", "user"]),
 });
 
 // Auth Schemas (Login / Register / Passwords)
@@ -189,8 +217,11 @@ export type User = z.infer<typeof userSchema>;
 export type Address = z.infer<typeof addressSchema>;
 export type Favorite = z.infer<typeof favoriteSchema>;
 export type Review = z.infer<typeof reviewSchema>;
+export type ReviewUser = z.infer<typeof reviewUserSchema>;
+export type ReviewFormData = z.infer<typeof reviewFormSchema>;
 export type AdminUserSummary = z.infer<typeof adminUserSummarySchema>;
 export type SingleUserData = z.infer<typeof singleUserResponseSchema>["Data"];
+export type UpdateAccountFormData = z.infer<typeof updateAccountSchema>;
 export type EditUserFormData = z.infer<typeof editUserSchema>;
 
 export type LoginFormValues = z.infer<typeof LoginSchema>;

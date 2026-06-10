@@ -24,11 +24,20 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
     const [reviewToDelete, setReviewToDelete] = useState<string | null>(null);
     
     const handleActionClick = () => {
-        navigate(`/restaurant/${restaurantId}/review`);
+        if (hasReviewed) {
+            const oldReview = reviews?.find(rev => rev.user?._id === currentUser?._id || rev.user?._id === currentUser?.id);
+
+            if (oldReview?._id) {
+                navigate(`/restaurant/${restaurantId}/edit-review/${oldReview._id}`);
+                return;
+            }
+        }
+
+        navigate(`/restaurant/${restaurantId}/add-review`);
     };
 
-    const handleEditReview = () => {
-        navigate(`/restaurant/${restaurantId}/review`);
+    const handleEditReview = (revId: string) => {
+        navigate(`/restaurant/${restaurantId}/edit-review/${revId}`);
     };
 
     return (
@@ -58,7 +67,7 @@ const RestaurantReviews = ({ restaurantId, isOwner, resRating }: { restaurantId:
                                     key={rev._id}
                                     rev={rev}
                                     isAuthor={rev.user?._id === currentUser?.id}
-                                    onEdit={handleEditReview}
+                                    onEdit={() => handleEditReview(rev._id!)}
                                     onDelete={() => setReviewToDelete(rev._id!)}
                                     isDeleting={isDeleting && reviewToDelete === rev._id}
                                 />

@@ -9,12 +9,11 @@ const Navbar = () => {
     const user = useAuthStore((state) => state.user);
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
-    
+
     const { data: myRestaurant } = useMyRestaurant();
-    
-    const activeLink = ({ isActive }: { isActive: boolean }) => 
-        `transition-all duration-300 ease-in-out block py-2 md:py-0 whitespace-nowrap ${
-            isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary font-medium"
+
+    const activeLink = ({ isActive }: { isActive: boolean }) =>
+        `transition-all duration-300 ease-in-out block py-2 md:py-0 whitespace-nowrap ${isActive ? "text-primary font-bold" : "text-text-primary hover:text-primary font-medium"
         }`;
 
     const toggleMenu = () => setIsOpen(!isOpen);
@@ -23,14 +22,14 @@ const Navbar = () => {
         <nav className="bg-white shadow w-full top-0 left-0 z-999 sticky">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16 gap-4">
-                    
+
                     {/* Logo */}
                     <div className="shrink-0">
                         <Link to="/" className="flex items-center">
                             <img src="/Logo.svg" alt="Logo" className="h-8 w-auto" />
                         </Link>
                     </div>
-                    
+
                     {/* NavLinks */}
                     <div className="hidden md:flex flex-1 justify-center items-center gap-6 lg:gap-8 mx-4 overflow-hidden">
                         <NavLink to="/" className={activeLink}>Home</NavLink>
@@ -57,7 +56,7 @@ const Navbar = () => {
                                     </Button>
                                 </>
                             ) : (
-                                <Link to="/profile" className="flex items-center gap-3 group">
+                                <Link to={`/profile/${user.id}`} className="flex items-center gap-3 group">
                                     <div className="text-right hidden lg:block">
                                         <p className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors duration-300 whitespace-nowrap">
                                             {user.fullname}
@@ -67,7 +66,11 @@ const Navbar = () => {
                                         </p>
                                     </div>
                                     <img
-                                        src={user.profile_pic?.url || `https://ui-avatars.com/api/?name=${user.fullname}`}
+                                        src={
+                                            user.profile_pic && typeof user.profile_pic === "object" && "url" in user.profile_pic
+                                                ? user.profile_pic.url
+                                                : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname || "User")}`
+                                        }
                                         alt="Profile"
                                         className="rounded-full border-2 border-border-light w-10 h-10 object-cover p-0.5 group-hover:border-primary transition-colors duration-300 shrink-0"
                                     />
@@ -92,9 +95,8 @@ const Navbar = () => {
             </div>
 
             {/* Menu Navbar for mobile */}
-            <div className={`md:hidden bg-white border-t border-gray-100 px-6 absolute w-full left-0 shadow-lg transition-all duration-300 ease-in-out origin-top ${
-                isOpen ? "opacity-100 scale-y-100 max-h-100 py-4 space-y-3 visible" : "opacity-0 scale-y-95 max-h-0 overflow-hidden invisible"
-            }`}>
+            <div className={`md:hidden bg-white border-t border-gray-100 px-6 absolute w-full left-0 shadow-lg transition-all duration-300 ease-in-out origin-top ${isOpen ? "opacity-100 scale-y-100 max-h-100 py-4 space-y-3 visible" : "opacity-0 scale-y-95 max-h-0 overflow-hidden invisible"
+                }`}>
                 <NavLink to="/" onClick={() => setIsOpen(false)} className={activeLink}>
                     Home
                 </NavLink>
@@ -109,29 +111,33 @@ const Navbar = () => {
                 <NavLink to="/about" onClick={() => setIsOpen(false)} className={activeLink}>
                     About Us
                 </NavLink>
-                
+
                 {/* Auth for mobile */}
                 <div className="pt-4 border-t border-gray-100">
                     {!user ? (
                         <div className="flex flex-col gap-2">
-                            <Link 
-                                to="/auth/login" 
+                            <Link
+                                to="/auth/login"
                                 onClick={() => setIsOpen(false)}
                                 className="w-full text-center py-2 text-text-primary hover:text-primary transition-colors duration-300"
                             >
                                 Login
                             </Link>
-                            <Button 
-                                onClick={() => { navigate('/auth/register'); setIsOpen(false); }} 
+                            <Button
+                                onClick={() => { navigate('/auth/register'); setIsOpen(false); }}
                                 className="w-full py-2 rounded-full"
                             >
                                 Register
                             </Button>
                         </div>
                     ) : (
-                        <Link to="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2">
+                        <Link to={`/profile/${user.id}`} onClick={() => setIsOpen(false)} className="flex items-center gap-3 py-2">
                             <img
-                                src={user.profile_pic?.url || `https://ui-avatars.com/api/?name=${user.fullname}`}
+                                src={
+                                    user.profile_pic && typeof user.profile_pic === "object" && "url" in user.profile_pic
+                                        ? user.profile_pic.url
+                                        : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname || "User")}`
+                                }
                                 alt="Profile"
                                 className="rounded-full border-2 border-border-light w-10 h-10 object-cover p-0.5"
                             />

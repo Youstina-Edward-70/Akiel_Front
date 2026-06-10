@@ -1,6 +1,11 @@
 const BASE_URL = "https://all-restaurants-in-one.vercel.app"; // Backend URL
 
 export const API_ENDPOINTS = {
+    // --- Contact ---
+    CONTACT: {
+        SEND_MESSAGE: `${BASE_URL}/contact`, // POST
+    },
+
     // --- Home Page ---
     RESTAURANTS: {
         LIST: `${BASE_URL}/restaurants`,
@@ -18,24 +23,30 @@ export const API_ENDPOINTS = {
 
     // --- User Data ---
     USER: {
-        PROFILE: `${BASE_URL}/auth/profile`,
-        UPDATE_PROFILE: `${BASE_URL}/user/update`,
+        PROFILE: (userId: string) => `${BASE_URL}/user/getUserProfile/${userId}`, // GET
+        EDIT_PROFILE: (userId: string) => `${BASE_URL}/user/editUserProfile/${userId}`, // PATCH
+        UPLOAD_PHOTO: `${BASE_URL}/user/uploadProfilePhoto`, // PATCH
+        DELETE_PHOTO: (userId: string) => `${BASE_URL}/user/deleteProfilePhoto/${userId}`, // DELETE
+        DELETE_ACCOUNT: (userId: string) => `${BASE_URL}/user/deleteAccount/${userId}`, // DELETE
+        
         REVIEWS: {
             GET_MY_REVIEWS: `${BASE_URL}/reviews/my-reviews`, // GET
             ADD_OR_UPDATE_REVIEW: (restaurantId: string) => `${BASE_URL}/reviews/add-review/${restaurantId}`, // POST
             DELETE_REVIEW: (restaurantId: string) =>
                 `/reviews/delete-review/${restaurantId}`, // DELETE
         },
+
         FAVORITES: {
-            TOGGLE: (id: string) => `${BASE_URL}/favorites/${id}`, // POST / DELETE (add to or remove rest from favorite list)
             GET_MY_FAVORITES: `${BASE_URL}/favorites`, // GET
+            TOGGLE: (id: string) => `${BASE_URL}/favorites/${id}`, // POST / DELETE (add to or remove rest from favorite list)
         },
     },
 
     // --- Owner Dashboard ---
     OWNER: {
         MY_RESTAURANT: `${BASE_URL}/user/my/dashboard`, // GET
-        CREATE_RESTAURANT: `${BASE_URL}/owner/restaurants`, // POST
+        MY_NOTIFICATIONS: `${BASE_URL}/notifications`, // GET
+        CREATE_RESTAURANT: `${BASE_URL}/restaurants`, // POST
         UPDATE_RESTAURANT: (id: string) => `${BASE_URL}/restaurant-data/main-data/${id}`, // PUT
         DELETE_RESTAURANT: (id: string) => `${BASE_URL}/restaurants/${id}`, // DELETE
 

@@ -12,17 +12,24 @@ export const formatTime = (timeStr: string | null | undefined): string => {
 
 export const formatDate = (dateStr: string | null | undefined): string => {
     if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString('en-US', {
-        month: 'short', 
+    return new Date(dateStr).toLocaleDateString('en-GB', {
         day: 'numeric', 
+        month: 'long', 
         year: 'numeric'
     });
 };
 
 
-export const formatAddress = (address: Address): string => {
-    if (!address) return "";
-    return `${address.details}, ${address.street} - ${address.city}, ${address.governorate}`;
+export const formatAddress = (address?: Address): string => {
+    if (!address) return "Not provided";
+    const parts = [
+        address.details,
+        address.street,
+        address.city,
+        address.governorate
+    ].filter(Boolean);
+
+    return parts.length > 0 ? parts.join(", ") : "Not provided";
 };
 
 export const checkIfOpen = (openingHours: OpeningHour[]): boolean => {

@@ -6,7 +6,7 @@ const SkeletonRestaurantDetails = () => (
                 {/* Badges Row Skeleton */}
                 <div className="flex flex-wrap gap-3 mb-6">
                     {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="h-10 w-24 bg-gray-300/50 rounded-xl" />
+                        <div key={i} className="h-10 w-24 bg-gray-300/50 rounded-full" />
                     ))}
                 </div>
 
@@ -20,7 +20,7 @@ const SkeletonRestaurantDetails = () => (
                     </div>
 
                     {/* Action Button Skeleton (Edit/Favorite) */}
-                    <div className="h-16 w-16 md:w-40 bg-gray-300/50 rounded-2xl" />
+                    <div className="h-16 w-16 bg-gray-300/50 rounded-full" />
                 </div>
             </div>
         </div>

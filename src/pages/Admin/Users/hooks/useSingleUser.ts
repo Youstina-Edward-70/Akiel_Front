@@ -19,7 +19,7 @@ export const useSingleUser = () => {
         queryFn: async () => {
             if (!id) throw new Error("User ID is missing");
             const { data } = await axiosInstance.get(API_ENDPOINTS.ADMIN.USERS.GET_ONE_USER(id));
-            return data.user;
+            return data.user || data.Data;
         },
         enabled: !!id,
     });

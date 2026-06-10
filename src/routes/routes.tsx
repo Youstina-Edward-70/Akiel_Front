@@ -13,17 +13,18 @@ import AboutUs from '../pages/About/AboutUs';
 import NotFound from '../pages/NotFound';
 
 // Authenticated
-import Profile from '../pages/User/Profile';
-import EditProfile from '../pages/User/EditProfile';
+import Profile from '../pages/User/Profile/Profile';
+import EditProfile from '../pages/User/EditProfile/EditProfile';
 
 // User
-import Favorites from '../pages/User/Favorites';
-import Reviews from '../pages/User/Reviews';
-import AddRestaurant from '../pages/Owner/AddRestaurant';
-import AddReview from '../pages/User/AddReview';
+import Favorites from '../pages/User/Favorites/Favorites';
+import Reviews from '../pages/User/Reviews/Reviews';
+import AddEditReview from '../pages/User/Reviews/AddEditReview/AddEditReview';
+import Add_EditRestaurant from '../pages/User/AddEditRest/Add_EditRestaurant';
+import MyDashboard from '../pages/User/MyDashboard/MyDashboard';
+import MyNotifications from '../pages/User/MyNotifications/MyNotifications';
 
 // Owner
-import MyRestaurant from '../pages/Owner/MyRestaurant';
 import AddMenuPage from '../pages/Owner/menu/AddMenuPage';
 import EditDishPage from '../pages/Owner/menu/EditDishPage';
 
@@ -57,8 +58,8 @@ export const Routes = createBrowserRouter([
             {
                 element: <ProtectedRoute allowedRoles={["user", "admin", "owner"]} />,
                 children: [
-                    { path: "/profile", element: <Profile /> },
-                    { path: "/profile/edit", element: <EditProfile /> },
+                    { path: "/profile/:id", element: <Profile /> },
+                    { path: "/profile/edit/:id", element: <EditProfile /> },
                 ]
             },
             // User Routes
@@ -67,17 +68,18 @@ export const Routes = createBrowserRouter([
                 children: [
                     { path: "/favorites", element: <Favorites /> },
                     { path: "/reviews", element: <Reviews /> },
-                    { path: "/add-restaurant", element: <AddRestaurant /> },
-                    { path: "/restaurant/:id/review", element: <AddReview /> }, 
+                    { path: "/restaurant/:id/add-review", element: <AddEditReview /> },
+                    { path: "/restaurant/:id/edit-review/:revId", element: <AddEditReview /> },
+                    { path: "/add-restaurant", element: <Add_EditRestaurant /> },
+                    { path: "/my-dashboard/:id", element: <MyDashboard /> },
+                    { path: "/my-notifications", element: <MyNotifications /> },
                 ]
             },
             // Owner Routes
             {
                 element: <ProtectedRoute allowedRoles={["owner"]} />,
                 children: [
-                    { path: "/my-restaurant", element: <MyRestaurant /> },
-                    { path: "/my-restaurant", element: <AddRestaurant /> },
-                    { path: "/edit-restaurant/:id", element: <AddRestaurant /> },
+                    { path: "/edit-restaurant/:id", element: <Add_EditRestaurant /> },
                     { path: "/restaurant/:id/menu/add", element: <AddMenuPage /> },
                     { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
                 ]
@@ -94,7 +96,7 @@ export const Routes = createBrowserRouter([
                 children: [
                     { index: true, element: <Requests /> },
                     { path: "requests", element: <Requests /> },
-                    { path: "requests/:id", element: <SingleRequest />},
+                    { path: "requests/:id", element: <SingleRequest /> },
                     { path: "users", element: <Users /> },
                     { path: "users/:id", element: <EditSingleUser /> },
                     { path: "settings", element: <Settings /> },
@@ -116,7 +118,7 @@ export const Routes = createBrowserRouter([
     },
     // Catch-all for 404
     {
-        path: "*", 
+        path: "*",
         element: <NotFound code="404" message="Page Not Found!" subtitle="The page you are looking for doesn't exist or has been moved." />
     }
 ]);
