@@ -62,6 +62,15 @@ export const Routes = createBrowserRouter([
                     { path: "/profile/edit/:id", element: <EditProfile /> },
                 ]
             },
+            {
+                element: <ProtectedRoute allowedRoles={["user", "owner"]} />,
+                children: [
+                    { path: "/add-restaurant", element: <Add_EditRestaurant /> },
+                    { path: "/edit-restaurant/:id", element: <Add_EditRestaurant /> },
+                    { path: "/my-dashboard/:id", element: <MyDashboard /> },
+                    { path: "/my-notifications", element: <MyNotifications /> },
+                ]
+            },
             // User Routes
             {
                 element: <ProtectedRoute allowedRoles={["user"]} />,
@@ -70,16 +79,12 @@ export const Routes = createBrowserRouter([
                     { path: "/reviews", element: <Reviews /> },
                     { path: "/restaurant/:id/add-review", element: <AddEditReview /> },
                     { path: "/restaurant/:id/edit-review/:revId", element: <AddEditReview /> },
-                    { path: "/add-restaurant", element: <Add_EditRestaurant /> },
-                    { path: "/my-dashboard/:id", element: <MyDashboard /> },
-                    { path: "/my-notifications", element: <MyNotifications /> },
                 ]
             },
             // Owner Routes
             {
                 element: <ProtectedRoute allowedRoles={["owner"]} />,
                 children: [
-                    { path: "/edit-restaurant/:id", element: <Add_EditRestaurant /> },
                     { path: "/restaurant/:id/menu/add", element: <AddMenuPage /> },
                     { path: "/restaurant/:id/menu/edit/:dishId", element: <EditDishPage /> },
                 ]

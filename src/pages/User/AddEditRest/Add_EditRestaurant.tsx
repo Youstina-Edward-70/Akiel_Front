@@ -25,7 +25,8 @@ const AddEditRestaurant = () => {
         selectedDays,
         handleCuisineToggle,
         handleDayToggle,
-        isLoadingDetails
+        isLoadingDetails,
+        isLoadingDashboard
     } = useRestaurantForm();
 
     return (
@@ -44,7 +45,7 @@ const AddEditRestaurant = () => {
                     </p>
                 </div>
 
-                {isLoadingDetails ? (
+                {isLoadingDetails || isLoadingDashboard ? (
                     <FormSkeleton />
                 ) : (
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">

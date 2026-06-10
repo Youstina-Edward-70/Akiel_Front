@@ -36,10 +36,14 @@ const SingleRequest = () => {
         return <ErrorState onGoBack={goBack} errorInWhat="Requests" message="Failed to load request details." />;
     }
 
+    const reqCover = request.coverPhoto instanceof File
+        ? "/images/default-rest.svg"
+        : request.coverPhoto?.url || "/images/default-rest.svg";
+
     return (
         <div className="space-y-5 md:space-y-6 px-4 md:px-0">
             <RequestHero
-                coverUrl={request.coverPhoto.url}
+                coverUrl={reqCover}
                 name={request.name}
                 cuisines={request.cuisineType}
                 rejectionCount={request.rejectionCount}

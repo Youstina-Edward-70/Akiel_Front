@@ -29,21 +29,38 @@ export const useRequestsData = () => {
 
     const { mutate: handleDecision, isPending } = useMutation({
         mutationFn: async ({ id, action, reason }: { id: string; action: 'approve' | 'reject'; reason?: string }) => {
-            return await axiosInstance.post(API_ENDPOINTS.ADMIN.REQUESTS.ACCEPT_OR_REGECT_RESTAURANT(id), { action, reason });
+            const {data} = await axiosInstance.post(
+                API_ENDPOINTS.ADMIN.REQUESTS.ACCEPT_OR_REGECT_RESTAURANT(id), 
+                { action, reason }
+            );
+            return data;
         },
-        onSuccess: (_, variables) => {
+        onMutate: async ({ id }) => {
+            await queryClient.cancelQueries({ queryKey: ["admin-requests"] });
+
+            const previousRequests = queryClient.getQueryData<RequestSummary[]>(["admin-requests"]);
+
+            if (previousRequests) {
+                queryClient.setQueryData<RequestSummary[]>(["admin-requests"], (old = []) => {
+                    return old.filter((req) => String(req._id) !== String(id));
+                });
+            }
+
+            return { previousRequests };
+        },
+        onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ["admin-requests"] });
-            const message = variables.action === 'approve' ? "Restaurant approved!" : "Restaurant rejected!";
-            toast.success(message);
+            toast.success(data.message);
         },
         onError: (error: AxiosError<ApiError>) => {
+
             toast.error(error?.response?.data?.message || error?.response?.data?.error || "Failed to update status");
         }
     });
 
     const handleRejectClick = (req: RequestSummary) => {
         setSelectedReq(req);
-        if (req.rejectionCount >= maxLimit) {
+        if (req.rejectionCount >= maxLimit - 1) {
             setShowWarningModal(true);
         } else {
             setShowReasonModal(true);

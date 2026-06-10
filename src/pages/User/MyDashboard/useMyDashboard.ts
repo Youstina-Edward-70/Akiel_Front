@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuthStore } from "../../../store/authStore";
 import type { AxiosError } from "axios";
 import axiosInstance, { type ApiError } from "../../../lib/api";
 import { API_ENDPOINTS } from "../../../lib/EndPoints";
@@ -7,6 +8,7 @@ import type { Restaurant } from "../../../types/RestaurantSchema";
 
 const useMyDashboard = (id: string ) => {
     const queryClient = useQueryClient();
+    const updateUserRest = useAuthStore((state) => state.updateResutaurantOwner);
     
     // Fetch Restaurant Details
     const query = useQuery<Restaurant>({
@@ -73,6 +75,7 @@ const useMyDashboard = (id: string ) => {
         }
     });
 
+    // Delete Restaurant
     const deleteResutaurantMutation = useMutation({
         mutationFn: async (restaurantId: string) => {
             const { data } = await axiosInstance.delete(API_ENDPOINTS.OWNER.DELETE_RESTAURANT(restaurantId));
@@ -81,6 +84,7 @@ const useMyDashboard = (id: string ) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["restaurants"] });
             queryClient.invalidateQueries({ queryKey: ["my-restaurant"] });
+            updateUserRest(false);
             toast.success("Restaurant deleted successfully");
         },
         onError: (error: AxiosError<ApiError>) => {

@@ -100,8 +100,17 @@ export const useRestaurantForm = () => {
         enabled: isEditMode && !!id,
     });
 
+    const { data: myDashboard, isLoading: isLoadingDashboard } = useQuery({
+        queryKey: ["restaurantDetails", id],
+        queryFn: async () => {
+            const res = await axiosInstance.get(API_ENDPOINTS.OWNER.MY_RESTAURANT);
+            return res.data?.Data;
+        },
+        enabled: isEditMode && !!id,
+    });
+
     useEffect(() => {
-        if (existingRestaurant) {
+        if (existingRestaurant || myDashboard) {
             reset({
                 name: existingRestaurant.name || "",
                 description: existingRestaurant.description || "",
@@ -120,7 +129,7 @@ export const useRestaurantForm = () => {
                 image: null,
             });
         }
-    }, [existingRestaurant, reset]);
+    }, [existingRestaurant, myDashboard, reset]);
 
     const createRestaurantApi = async (data: CreateRestaurantInput) => {
         const formData = new FormData();
@@ -201,6 +210,7 @@ export const useRestaurantForm = () => {
         selectedDays,
         handleCuisineToggle,
         handleDayToggle,
-        isLoadingDetails
+        isLoadingDetails,
+        isLoadingDashboard
     };
 };
