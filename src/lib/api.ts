@@ -108,6 +108,7 @@ api.interceptors.response.use(
 
                 }
             } catch (refreshError) {
+                console.error("Refresh token endpoint failed with:", refreshError.response?.status, refreshError.response?.data);
                 processQueue(refreshError, null);
 
                 useAuthStore.getState().logout();
