@@ -99,6 +99,13 @@ api.interceptors.response.use(
                             accessToken: accessToken
                         });
                     }
+
+                    processQueue(null, accessToken);
+
+                    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+                    return api(originalRequest);
+
                 }
             } catch (refreshError) {
                 processQueue(refreshError, null);
