@@ -83,7 +83,7 @@ api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const response = await axios.get(
+                const response = await axios.create().get(
                     'https://all-restaurants-in-one.vercel.app/api/refresh',
                     { withCredentials: true }
                 );
