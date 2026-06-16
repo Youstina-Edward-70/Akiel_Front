@@ -13,7 +13,6 @@ interface PhotoCardProps {
 }
 
 const PhotoCard = ({ img, index, isOwner, onDelete }: PhotoCardProps) => {
-    console.log(img);
     
     return (
         <motion.div

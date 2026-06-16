@@ -84,7 +84,7 @@ api.interceptors.response.use(
 
             try {
                 const response = await axios.create().get(
-                    'https://all-restaurants-in-one.vercel.app/api/refresh',
+                    'https://all-restaurants-in-one.vercel.app/refresh',
                     { withCredentials: true }
                 );
 
@@ -108,7 +108,6 @@ api.interceptors.response.use(
 
                 }
             } catch (refreshError) {
-                console.error("Refresh token endpoint failed with:", refreshError.response?.status, refreshError.response?.data);
                 processQueue(refreshError, null);
 
                 useAuthStore.getState().logout();
