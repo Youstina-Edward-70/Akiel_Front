@@ -101,7 +101,7 @@ export const useEditProfile = () => {
                 updateUser(updatedUser);
             }
             toast.success("Profile details updated successfully!");
-            navigate("/profile");
+            navigate(-1);
         },
         onError: (error: AxiosError<ApiError>) => {
             const errorMsg = error?.response?.data?.message || error?.response?.data?.error || "Failed to update profile";
@@ -110,8 +110,6 @@ export const useEditProfile = () => {
     });
 
     const onSubmit = form.handleSubmit((data) => {
-        console.log(data);
-        
         updateAccount(data)
     });
 
