@@ -28,7 +28,7 @@ git clone https://github.com/Youstina-Edward-70/Akiel_Front.git
 
 **2. Navigate to the Frontend Directory:**
 ```bash
-cd all-Restaurants-in-one/
+cd Akiel_Front/
 ```
 
 **3. Install Dependencies:**
